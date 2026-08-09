@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PlayerCountStep from './components/Setup/PlayerCountStep';
 import PlayerNamesStep from './components/Setup/PlayerNamesStep';
 import GameSelectStep from './components/Setup/GameSelectStep';
@@ -38,27 +38,116 @@ const MARK_SYMBOLS = ['', '/', 'X', '⭕'];
 const IMPOSSIBLE_X01_SCORES = [163, 166, 169, 172, 173, 175, 176, 178, 179];
 
 export default function App() {
-  const [step, setStep] = useState(1);
-  const [playerCount, setPlayerCount] = useState(1);
-  const [players, setPlayers] = useState([]);
-  const [selectedGame, setSelectedGame] = useState(null); 
-  const [gameMode, setGameMode] = useState('standard'); 
-  const [targetLegs, setTargetLegs] = useState(3);
-  const [winner, setWinner] = useState(null);
+  // LOCALSTORAGE DAHİL EDİLMİŞ STATE TANIMLARI
+  const [step, setStep] = useState(() => {
+    return parseInt(localStorage.getItem('dart_step')) || 1;
+  });
 
-  const [activePlayerIndex, setActivePlayerIndex] = useState(0);
-  const [currentTargets, setCurrentTargets] = useState(DEFAULT_CRICKET_TARGETS);
-  
-  const [scores, setScores] = useState({});
-  const [penaltyPoints, setPenaltyPoints] = useState({});
-  const [turnDartsCount, setTurnDartsCount] = useState(0);
+  const [playerCount, setPlayerCount] = useState(() => {
+    return parseInt(localStorage.getItem('dart_playerCount')) || 1;
+  });
 
-  const [x01Scores, setX01Scores] = useState({});
+  const [players, setPlayers] = useState(() => {
+    const saved = localStorage.getItem('dart_players');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [selectedGame, setSelectedGame] = useState(() => {
+    return localStorage.getItem('dart_selectedGame') || null;
+  });
+
+  const [gameMode, setGameMode] = useState(() => {
+    return localStorage.getItem('dart_gameMode') || 'standard';
+  });
+
+  const [targetLegs, setTargetLegs] = useState(() => {
+    return parseInt(localStorage.getItem('dart_targetLegs')) || 3;
+  });
+
+  const [winner, setWinner] = useState(() => {
+    return localStorage.getItem('dart_winner') || null;
+  });
+
+  const [activePlayerIndex, setActivePlayerIndex] = useState(() => {
+    return parseInt(localStorage.getItem('dart_activePlayerIndex')) || 0;
+  });
+
+  const [currentTargets, setCurrentTargets] = useState(() => {
+    const saved = localStorage.getItem('dart_currentTargets');
+    return saved ? JSON.parse(saved) : DEFAULT_CRICKET_TARGETS;
+  });
+
+  const [scores, setScores] = useState(() => {
+    const saved = localStorage.getItem('dart_scores');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  const [penaltyPoints, setPenaltyPoints] = useState(() => {
+    const saved = localStorage.getItem('dart_penaltyPoints');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  const [turnDartsCount, setTurnDartsCount] = useState(() => {
+    return parseInt(localStorage.getItem('dart_turnDartsCount')) || 0;
+  });
+
+  const [x01Scores, setX01Scores] = useState(() => {
+    const saved = localStorage.getItem('dart_x01Scores');
+    return saved ? JSON.parse(saved) : {};
+  });
+
   const [numpadInput, setNumpadInput] = useState('');
 
-  const [roundsWon, setRoundsWon] = useState({});
-  const [playerRoundsCount, setPlayerRoundsCount] = useState({});
-  const [gameHistory, setGameHistory] = useState([]);
+  const [roundsWon, setRoundsWon] = useState(() => {
+    const saved = localStorage.getItem('dart_roundsWon');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  const [playerRoundsCount, setPlayerRoundsCount] = useState(() => {
+    const saved = localStorage.getItem('dart_playerRoundsCount');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  const [gameHistory, setGameHistory] = useState(() => {
+    const saved = localStorage.getItem('dart_gameHistory');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  // STATE DEĞİŞİKLİKLERİNİ LOCALSTORAGE'A KAYDETME
+  useEffect(() => {
+    localStorage.setItem('dart_step', step);
+    localStorage.setItem('dart_playerCount', playerCount);
+    localStorage.setItem('dart_players', JSON.stringify(players));
+    if (selectedGame) localStorage.setItem('dart_selectedGame', selectedGame);
+    localStorage.setItem('dart_gameMode', gameMode);
+    localStorage.setItem('dart_targetLegs', targetLegs);
+    if (winner) localStorage.setItem('dart_winner', winner); else localStorage.removeItem('dart_winner');
+    localStorage.setItem('dart_activePlayerIndex', activePlayerIndex);
+    localStorage.setItem('dart_currentTargets', JSON.stringify(currentTargets));
+    localStorage.setItem('dart_scores', JSON.stringify(scores));
+    localStorage.setItem('dart_penaltyPoints', JSON.stringify(penaltyPoints));
+    localStorage.setItem('dart_turnDartsCount', turnDartsCount);
+    localStorage.setItem('dart_x01Scores', JSON.stringify(x01Scores));
+    localStorage.setItem('dart_roundsWon', JSON.stringify(roundsWon));
+    localStorage.setItem('dart_playerRoundsCount', JSON.stringify(playerRoundsCount));
+    localStorage.setItem('dart_gameHistory', JSON.stringify(gameHistory));
+  }, [
+    step, playerCount, players, selectedGame, gameMode, targetLegs, winner,
+    activePlayerIndex, currentTargets, scores, penaltyPoints, turnDartsCount,
+    x01Scores, roundsWon, playerRoundsCount, gameHistory
+  ]);
+
+  // YANLIŞLIKLA SAYFA KAPATMA / YENİLEME UYARISI (BEFOREUNLOAD)
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (step === 5 && !winner) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [step, winner]);
 
   const getTargetsForMode = (mode) => {
     if (mode === 'extended') return EXTENDED_CRICKET_TARGETS;
@@ -339,9 +428,12 @@ export default function App() {
   };
 
   const handleResetGame = () => {
-    if (window.confirm("Yeni oyun başlatmak istediğinize emin misiniz?")) {
+    if (window.confirm("Yeni oyun başlatmak istediğinize emin misiniz? Bütün maç hafızası silinecek.")) {
+      localStorage.clear();
       setStep(1);
       setPlayers([]);
+      setSelectedGame(null);
+      setGameMode('standard');
       setScores({});
       setX01Scores({});
       setPenaltyPoints({});

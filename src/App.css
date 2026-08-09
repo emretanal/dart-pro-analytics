@@ -6,11 +6,14 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-body {
+/* MOBİL PULL-TO-REFRESH ENGELLEME */
+html, body {
   background-color: #262730;
   color: #ffffff;
   margin: 0;
   user-select: none;
+  overscroll-behavior-y: contain; /* Sayfayı aşağı çekip yenilemeyi engeller */
+  touch-action: manipulation;
 }
 
 .app-container {
@@ -395,7 +398,7 @@ body {
   background: rgba(255, 255, 255, 0.2);
 }
 
-/* EXTENDED CRICKET ÖZEL SIKIŞTIRILMIŞ (COMPACT) MOBİL TASARIM */
+/* EXTENDED CRICKET COMPACT MOBİL TASARIM */
 .compact-extended .cricket-board-table {
   border-spacing: 2px;
 }
