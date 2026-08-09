@@ -264,24 +264,24 @@ body {
 /* CRICKET TABLO */
 .board-scroll-wrapper {
   overflow-x: auto;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
 .cricket-board-table {
   width: 100%;
   border-collapse: separate;
-  border-spacing: 6px;
+  border-spacing: 4px;
   table-layout: fixed;
 }
 
 .num-col {
-  width: 55px;
+  width: 45px;
   color: #888;
   font-size: 0.85rem;
 }
 
 .player-col-header {
-  padding: 6px 4px;
+  padding: 4px 2px;
   opacity: 0.35;
   transition: all 0.2s ease-in-out;
 }
@@ -289,19 +289,19 @@ body {
 .player-col-header.active {
   opacity: 1;
   background: rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
+  border-radius: 8px;
 }
 
 .rounds-label {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: #aaa;
   font-weight: normal;
 }
 
 .p-name {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 400;
-  margin: 2px 0;
+  margin: 1px 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -310,12 +310,12 @@ body {
 
 .player-col-header.active .p-name {
   font-weight: 800 !important;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   color: #ffffff !important;
 }
 
 .p-score {
-  font-size: 2.2rem;
+  font-size: 1.8rem;
   font-weight: 300;
   line-height: 1;
   color: #aaa;
@@ -327,19 +327,19 @@ body {
 }
 
 .analytics-box {
-  margin-top: 6px;
-  padding-top: 4px;
+  margin-top: 4px;
+  padding-top: 2px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: #bbb;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
 }
 
 .analytics-label {
   color: #777;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
 }
 
 .player-col-header.active .analytics-box {
@@ -347,18 +347,18 @@ body {
 }
 
 .penalty-box {
-  margin-top: 2px;
+  margin-top: 1px;
   color: #ff5252;
   font-weight: 700;
 }
 
 .penalty-label {
   color: #ff8a8a;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
 }
 
 .target-num-cell {
-  font-size: 2rem;
+  font-size: 1.6rem;
   font-weight: 300;
   color: #e6e6e6;
   text-align: center;
@@ -370,12 +370,12 @@ body {
 
 .board-mark-btn {
   width: 100%;
-  height: 48px;
+  height: 42px;
   border: 2px solid #4f5060;
-  border-radius: 24px;
+  border-radius: 20px;
   background: rgba(255, 255, 255, 0.02);
   color: #fff;
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   font-weight: bold;
   cursor: pointer;
   display: flex;
@@ -393,6 +393,39 @@ body {
 .board-mark-btn:active {
   transform: scale(0.95);
   background: rgba(255, 255, 255, 0.2);
+}
+
+/* EXTENDED CRICKET ÖZEL SIKIŞTIRILMIŞ (COMPACT) MOBİL TASARIM */
+.compact-extended .cricket-board-table {
+  border-spacing: 2px;
+}
+
+.compact-extended .target-num-cell {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.compact-extended .board-mark-btn {
+  height: 31px;
+  font-size: 1.1rem;
+  border-radius: 12px;
+  border-width: 1.5px;
+}
+
+.compact-extended .num-col {
+  width: 35px;
+}
+
+.compact-extended .p-score {
+  font-size: 1.4rem;
+}
+
+.compact-extended .p-name {
+  font-size: 1rem;
+}
+
+.compact-extended .analytics-box {
+  font-size: 0.65rem;
 }
 
 /* X01 EKRAN VE NUMPAD STİLLERİ */
@@ -499,25 +532,25 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 10px;
+  padding-top: 6px;
 }
 
 .btn-text {
   background: none;
   border: none;
   color: #fff;
-  font-size: 1.05rem;
+  font-size: 1rem;
   cursor: pointer;
   opacity: 0.8;
-  padding: 10px 14px;
+  padding: 8px 12px;
 }
 
 .btn-next {
   background: #3b3c4a;
   border: none;
   color: #fff;
-  padding: 14px 28px;
-  font-size: 1.05rem;
+  padding: 12px 24px;
+  font-size: 1rem;
   font-weight: 600;
   border-radius: 10px;
   cursor: pointer;

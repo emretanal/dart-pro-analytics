@@ -35,7 +35,6 @@ const EXTENDED_CRICKET_TARGETS = [
 
 const MARK_SYMBOLS = ['', '/', 'X', '⭕'];
 
-// 3 Dart ile Atılması İmkansız Olan Skorlar (PDC Standartı)
 const IMPOSSIBLE_X01_SCORES = [163, 166, 169, 172, 173, 175, 176, 178, 179];
 
 export default function App() {
@@ -50,16 +49,13 @@ export default function App() {
   const [activePlayerIndex, setActivePlayerIndex] = useState(0);
   const [currentTargets, setCurrentTargets] = useState(DEFAULT_CRICKET_TARGETS);
   
-  // Cricket State
   const [scores, setScores] = useState({});
   const [penaltyPoints, setPenaltyPoints] = useState({});
   const [turnDartsCount, setTurnDartsCount] = useState(0);
 
-  // X01 State
   const [x01Scores, setX01Scores] = useState({});
   const [numpadInput, setNumpadInput] = useState('');
 
-  // Ortak State
   const [roundsWon, setRoundsWon] = useState({});
   const [playerRoundsCount, setPlayerRoundsCount] = useState({});
   const [gameHistory, setGameHistory] = useState([]);
@@ -263,7 +259,6 @@ export default function App() {
     }
   };
 
-  // X01 SKOR GİRİŞİ (NUMPAD)
   const handleNumpadPress = (val) => {
     if (val === 'DEL') {
       setNumpadInput((prev) => prev.slice(0, -1));
@@ -279,14 +274,12 @@ export default function App() {
   const submitX01Score = () => {
     const enteredScore = parseInt(numpadInput) || 0;
 
-    // KONTROL 1: 180'den büyük skor girilemez
     if (enteredScore > 180) {
       alert("Bir turda maksimum 180 puan atılabilir!");
       setNumpadInput('');
       return;
     }
 
-    // KONTROL 2: 3 Dart ile atılması imkansız skor kontrolü (179, 178, 176, 175, 173, 172, 169, 166, 163)
     if (IMPOSSIBLE_X01_SCORES.includes(enteredScore)) {
       alert(`${enteredScore} skoru 3 dart ile atılması imkansız bir skordur! Lütfen doğru puanı girin.`);
       setNumpadInput('');
@@ -298,7 +291,6 @@ export default function App() {
     const currentScore = x01Scores[activePlayerIndex];
     const remaining = currentScore - enteredScore;
 
-    // Bust (Aşma) veya Kazanç Kontrolü
     if (remaining < 0 || remaining === 1) {
       alert(`BUST! (${enteredScore} puan geçersiz. Skor değiştirilmedi)`);
     } else if (remaining === 0) {
@@ -405,7 +397,7 @@ export default function App() {
 
         {/* OYUN EKRANI: CRICKET */}
         {step === 5 && selectedGame === 'cricket' && (
-          <div className="darts-score-theme">
+          <div className={`darts-score-theme ${gameMode === 'extended' ? 'compact-extended' : ''}`}>
             
             <div className="board-scroll-wrapper">
               <table className="cricket-board-table">
@@ -473,11 +465,10 @@ export default function App() {
           </div>
         )}
 
-        {/* OYUN EKRANI: X01 (301 / 501 / 701) */}
+        {/* OYUN EKRANI: X01 */}
         {step === 5 && selectedGame === 'x01' && (
           <div className="darts-score-theme x01-theme">
             
-            {/* Skor Kartları */}
             <div className="x01-header-grid" style={{ gridTemplateColumns: `repeat(${players.length}, 1fr)` }}>
               {players.map((name, idx) => (
                 <div key={idx} className={`x01-player-card ${idx === activePlayerIndex ? 'active' : ''}`}>
@@ -492,7 +483,6 @@ export default function App() {
               ))}
             </div>
 
-            {/* Numpad Puan Girişi */}
             <div className="numpad-container">
               <div className="numpad-display">
                 <span className="numpad-label">Girilen Skor:</span>
@@ -527,7 +517,6 @@ export default function App() {
           </div>
         )}
 
-        {/* FULLSCREEN WINNER POPUP */}
         {winner && (
           <div className="winner-overlay">
             <div className="winner-modal">
