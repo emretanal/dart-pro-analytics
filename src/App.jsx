@@ -36,7 +36,59 @@ const EXTENDED_CRICKET_TARGETS = [
 const MARK_SYMBOLS = ['', '/', 'X', '⭕'];
 const IMPOSSIBLE_X01_SCORES = [163, 166, 169, 172, 173, 175, 176, 178, 179];
 
+const TRANSLATIONS = {
+  tr: {
+    targetCol: 'Hedef',
+    historyLogs: 'Geçmiş Maçlar',
+    noHistory: 'Henüz kaydedilmiş bir maç bulunmuyor.',
+    clearLogs: 'Tüm Maç Geçmişini Temizle',
+    clearLogsConfirm: 'Tüm maç geçmişini silmek istediğinize emin misiniz?',
+    resetConfirm: 'Yeni oyun başlatmak istediğinize emin misiniz? Akıştaki maç sıfırlanacak.',
+    maxScoreErr: 'Bir turda maksimum 180 puan atılabilir!',
+    impossibleScoreErr: 'skoru 3 dart ile atılması imkansız bir skordur! Lütfen doğru puanı girin.',
+    turnLimitErr: 'Bu turda 3 dart hakkınızı kullandınız! END TURN butonuna basarak sırayı devredin.',
+    close: '✕ Kapat',
+    winner: 'Kazanan',
+    congrats: 'TEBRİKLER!',
+    wonText: 'Leg galibiyeti alarak oyunu kazandı!',
+    newGame: 'Yeni Oyun Başlat',
+    exit: 'Çıkış',
+    endTurn: 'TURU BİTİR',
+    undo: 'Geri Al',
+    enteredScore: 'Girilen Skor:',
+    penalty: 'Ceza',
+    darts: 'Dart',
+    rounds: 'Tur'
+  },
+  en: {
+    targetCol: 'Target',
+    historyLogs: 'Match History',
+    noHistory: 'No match logs recorded yet.',
+    clearLogs: 'Clear All Match Logs',
+    clearLogsConfirm: 'Are you sure you want to clear all match history?',
+    resetConfirm: 'Are you sure you want to start a new game? Current match will be reset.',
+    maxScoreErr: 'Maximum 180 points can be scored in one turn!',
+    impossibleScoreErr: 'is an impossible score with 3 darts! Please enter correct score.',
+    turnLimitErr: 'You used all 3 darts for this turn! Press END TURN to switch player.',
+    close: '✕ Close',
+    winner: 'Winner',
+    congrats: 'CONGRATULATIONS!',
+    wonText: 'Legs won to win the match!',
+    newGame: 'Start New Game',
+    exit: 'Exit',
+    endTurn: 'END TURN',
+    undo: 'Undo',
+    enteredScore: 'Entered Score:',
+    penalty: 'Penalty',
+    darts: 'Darts',
+    rounds: 'Rounds'
+  }
+};
+
 export default function App() {
+  const [lang, setLang] = useState(() => localStorage.getItem('dart_lang') || 'tr');
+  const t = TRANSLATIONS[lang];
+
   const [step, setStep] = useState(() => parseInt(localStorage.getItem('dart_step')) || 1);
   const [playerCount, setPlayerCount] = useState(() => parseInt(localStorage.getItem('dart_playerCount')) || 1);
   const [players, setPlayers] = useState(() => {
@@ -63,8 +115,6 @@ export default function App() {
     return saved ? JSON.parse(saved) : {};
   });
   const [turnDartsCount, setTurnDartsCount] = useState(() => parseInt(localStorage.getItem('dart_turnDartsCount')) || 0);
-
-  // MULTIPLIER MODU ('single', 'double', 'triple')
   const [multiplier, setMultiplier] = useState('single');
 
   const [x01Scores, setX01Scores] = useState(() => {
@@ -93,6 +143,7 @@ export default function App() {
   const [showHistoryModal, setShowHistoryModal] = useState(false);
 
   useEffect(() => {
+    localStorage.setItem('dart_lang', lang);
     localStorage.setItem('dart_step', step);
     localStorage.setItem('dart_playerCount', playerCount);
     localStorage.setItem('dart_players', JSON.stringify(players));
@@ -111,7 +162,7 @@ export default function App() {
     localStorage.setItem('dart_gameHistory', JSON.stringify(gameHistory));
     localStorage.setItem('dart_match_logs', JSON.stringify(matchLogs));
   }, [
-    step, playerCount, players, selectedGame, gameMode, targetLegs, winner,
+    lang, step, playerCount, players, selectedGame, gameMode, targetLegs, winner,
     activePlayerIndex, currentTargets, scores, penaltyPoints, turnDartsCount,
     x01Scores, roundsWon, playerRoundsCount, gameHistory, matchLogs
   ]);
@@ -129,7 +180,7 @@ export default function App() {
 
   const saveMatchToLogs = (winnerName, finalRoundsWon) => {
     const now = new Date();
-    const formattedDate = `${now.toLocaleDateString('tr-TR')} - ${now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}`;
+    const formattedDate = `${now.toLocaleDateString(lang === 'tr' ? 'tr-TR' : 'en-US')} - ${now.toLocaleTimeString(lang === 'tr' ? 'tr-TR' : 'en-US', { hour: '2-digit', minute: '2-digit' })}`;
 
     const playerStats = players.map((name, idx) => ({
       name,
@@ -288,12 +339,11 @@ export default function App() {
     ]);
   };
 
-  // MULTI-MARK KONTROLLÜ TIKLAMA MANTIĞI
   const handleCellClick = (playerIdx, targetId) => {
     if (playerIdx !== activePlayerIndex || winner) return;
 
     if (turnDartsCount >= 3) {
-      alert("Bu turda 3 dart hakkınızı kullandınız! END TURN butonuna basarak sırayı devredin.");
+      alert(t.turnLimitErr);
       return;
     }
 
@@ -302,19 +352,16 @@ export default function App() {
     const targetObj = currentTargets.find(t => t.id === targetId);
     const currentMarks = scores[playerIdx]?.[targetId] || 0;
 
-    // Multiplier hesabı (Single: +1, Double: +2, Triple: +3)
     let addedMarks = 1;
     if (multiplier === 'double') addedMarks = 2;
     if (multiplier === 'triple') addedMarks = 3;
 
-    // Bull için Triple engeli (Bull sadece Single/Double atılabilir)
     if (targetId === 'Bull' && multiplier === 'triple') {
-      addedMarks = 2; // Bull Triple basılırsa Double say
+      addedMarks = 2;
     }
 
     const newMarks = currentMarks + addedMarks;
 
-    // CEZALI MODDA EKSTRA MARK HESABI
     if (gameMode === 'cutthroat' && newMarks > 3) {
       const extraMarks = Math.min(addedMarks, newMarks - 3);
       const updatedPenalties = { ...penaltyPoints };
@@ -340,8 +387,8 @@ export default function App() {
     };
 
     setScores(updatedScores);
-    setTurnDartsCount((prev) => prev + 1); // 1 DART HARCANDI
-    setMultiplier('single'); // Atıştan sonra normale dön
+    setTurnDartsCount((prev) => prev + 1);
+    setMultiplier('single');
 
     const hasClosedAll = currentTargets.every(
       (target) => (updatedPlayerScores[target.id] || 0) >= 3
@@ -385,13 +432,13 @@ export default function App() {
     const enteredScore = parseInt(numpadInput) || 0;
 
     if (enteredScore > 180) {
-      alert("Bir turda maksimum 180 puan atılabilir!");
+      alert(t.maxScoreErr);
       setNumpadInput('');
       return;
     }
 
     if (IMPOSSIBLE_X01_SCORES.includes(enteredScore)) {
-      alert(`${enteredScore} skoru 3 dart ile atılması imkansız bir skordur! Lütfen doğru puanı girin.`);
+      alert(`${enteredScore} ${t.impossibleScoreErr}`);
       setNumpadInput('');
       return;
     }
@@ -402,7 +449,7 @@ export default function App() {
     const remaining = currentScore - enteredScore;
 
     if (remaining < 0 || remaining === 1) {
-      alert(`BUST! (${enteredScore} puan geçersiz. Skor değiştirilmedi)`);
+      alert(`BUST! (${enteredScore})`);
     } else if (remaining === 0) {
       setX01Scores((prev) => ({ ...prev, [activePlayerIndex]: 0 }));
       setTimeout(() => startNextLeg(activePlayerIndex), 50);
@@ -451,7 +498,7 @@ export default function App() {
   };
 
   const handleResetGame = () => {
-    if (window.confirm("Yeni oyun başlatmak istediğinize emin misiniz? Akıştaki maç sıfırlanacak.")) {
+    if (window.confirm(t.resetConfirm)) {
       setStep(1);
       setPlayers([]);
       setSelectedGame(null);
@@ -467,7 +514,7 @@ export default function App() {
   };
 
   const clearAllMatchLogs = () => {
-    if (window.confirm("Tüm maç geçmişini silmek istediğinize emin misiniz?")) {
+    if (window.confirm(t.clearLogsConfirm)) {
       setMatchLogs([]);
       localStorage.removeItem('dart_match_logs');
     }
@@ -510,19 +557,23 @@ export default function App() {
 
   return (
     <div className="app-container">
-      {step === 1 && (
-        <div style={{ textAlign: 'right', marginBottom: '10px' }}>
+      {/* ÜST BAR: DİL DEĞİŞTİRİCİ VE GEÇMİŞ MAÇLAR */}
+      <div className="top-header-bar">
+        <button className="btn-lang-toggle" onClick={() => setLang(lang === 'tr' ? 'en' : 'tr')}>
+          🌐 {lang.toUpperCase()}
+        </button>
+        {step === 1 && (
           <button className="btn-logs-toggle" onClick={() => setShowHistoryModal(true)}>
-            📊 Geçmiş Maçlar ({matchLogs.length})
+            📊 {t.historyLogs} ({matchLogs.length})
           </button>
-        </div>
-      )}
+        )}
+      </div>
 
       <main className="app-content">
-        {step === 1 && <PlayerCountStep onSelect={handlePlayerCountSelect} />}
-        {step === 2 && <PlayerNamesStep playerCount={playerCount} onSubmit={handlePlayerNamesSubmit} onBack={() => setStep(1)} />}
-        {step === 3 && <GameSelectStep onSelect={handleGameSelect} onBack={() => setStep(2)} />}
-        {step === 4 && <LegTargetStep onSelect={handleLegTargetSelect} onBack={() => setStep(3)} />}
+        {step === 1 && <PlayerCountStep onSelect={handlePlayerCountSelect} lang={lang} />}
+        {step === 2 && <PlayerNamesStep playerCount={playerCount} onSubmit={handlePlayerNamesSubmit} onBack={() => setStep(1)} lang={lang} />}
+        {step === 3 && <GameSelectStep onSelect={handleGameSelect} onBack={() => setStep(2)} lang={lang} />}
+        {step === 4 && <LegTargetStep onSelect={handleLegTargetSelect} onBack={() => setStep(3)} lang={lang} />}
 
         {/* CRICKET EKRANI */}
         {step === 5 && selectedGame === 'cricket' && (
@@ -531,18 +582,18 @@ export default function App() {
               <table className="cricket-board-table">
                 <thead>
                   <tr className="header-row">
-                    <th className="num-col">Target</th>
+                    <th className="num-col">{t.targetCol}</th>
                     {players.map((name, idx) => (
                       <th key={idx} className={`player-col-header ${idx === activePlayerIndex ? 'active' : ''}`}>
-                        <div className="rounds-label">Rounds: {roundsWon[idx] || 0} / {targetLegs}</div>
+                        <div className="rounds-label">{t.rounds}: {roundsWon[idx] || 0} / {targetLegs}</div>
                         <div className="p-name">{name}</div>
                         <div className="p-score">{roundsWon[idx] || 0}</div>
                         <div className="analytics-box">
-                          <div><span className="analytics-label">Darts:</span> {getTotalDarts(idx)}</div>
+                          <div><span className="analytics-label">{t.darts}:</span> {getTotalDarts(idx)}</div>
                           <div><span className="analytics-label">MPR:</span> {calculateMPR(idx)}</div>
                           {gameMode === 'cutthroat' && (
                             <div className="penalty-box">
-                              <span className="penalty-label">Ceza:</span> {penaltyPoints[idx] || 0}
+                              <span className="penalty-label">{t.penalty}:</span> {penaltyPoints[idx] || 0}
                             </div>
                           )}
                         </div>
@@ -570,9 +621,8 @@ export default function App() {
               </table>
             </div>
 
-            {/* D VE T MOD BUTONLARIYLA YENİLENMİŞ ACTION BAR */}
             <div className="action-bar cricket-action-bar">
-              <button className="btn-text" onClick={handleResetGame}>Exit</button>
+              <button className="btn-text" onClick={handleResetGame}>{t.exit}</button>
               
               <div className="multiplier-group">
                 <button 
@@ -590,11 +640,11 @@ export default function App() {
               </div>
 
               <button className="btn-next" onClick={handleNextTurn}>
-                END TURN ({turnDartsCount}/3)
+                {t.endTurn} ({turnDartsCount}/3)
               </button>
               
               <button className="btn-text" onClick={handleUndo} style={{ opacity: gameHistory.length === 0 ? 0.3 : 1 }} disabled={gameHistory.length === 0}>
-                Undo
+                {t.undo}
               </button>
             </div>
           </div>
@@ -611,7 +661,7 @@ export default function App() {
                   <div className="x01-big-score">{x01Scores[idx]}</div>
                   <div className="analytics-box">
                     <div><span className="analytics-label">3-Dart Avg:</span> {calculateX01Avg(idx)}</div>
-                    <div><span className="analytics-label">Darts:</span> {(playerRoundsCount[idx] || 0) * 3}</div>
+                    <div><span className="analytics-label">{t.darts}:</span> {(playerRoundsCount[idx] || 0) * 3}</div>
                   </div>
                 </div>
               ))}
@@ -619,7 +669,7 @@ export default function App() {
 
             <div className="numpad-container">
               <div className="numpad-display">
-                <span className="numpad-label">Girilen Skor:</span>
+                <span className="numpad-label">{t.enteredScore}</span>
                 <span className="numpad-value">{numpadInput || '0'}</span>
               </div>
               <div className="numpad-grid">
@@ -636,9 +686,9 @@ export default function App() {
             </div>
 
             <div className="action-bar">
-              <button className="btn-text" onClick={handleResetGame}>Exit</button>
+              <button className="btn-text" onClick={handleResetGame}>{t.exit}</button>
               <button className="btn-text" onClick={handleUndo} style={{ opacity: gameHistory.length === 0 ? 0.3 : 1 }} disabled={gameHistory.length === 0}>
-                Undo
+                {t.undo}
               </button>
             </div>
           </div>
@@ -649,11 +699,11 @@ export default function App() {
           <div className="winner-overlay">
             <div className="winner-modal">
               <div className="trophy-icon">🏆</div>
-              <h1>TEBRİKLER!</h1>
+              <h1>{t.congrats}</h1>
               <h2 className="winner-name">{winner}</h2>
-              <p className="winner-desc">{targetLegs} Leg galibiyeti alarak oyunu kazandı!</p>
+              <p className="winner-desc">{targetLegs} {t.wonText}</p>
               <button className="btn-setup-submit btn-large" onClick={handleResetGame}>
-                Yeni Oyun Başlat
+                {t.newGame}
               </button>
             </div>
           </div>
@@ -664,12 +714,12 @@ export default function App() {
           <div className="winner-overlay">
             <div className="history-modal">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                <h2 style={{ margin: 0, color: '#4da6ff' }}>📜 Geçmiş Maçlar</h2>
-                <button className="btn-text" onClick={() => setShowHistoryModal(false)}>✕ Kapat</button>
+                <h2 style={{ margin: 0, color: '#4da6ff' }}>📜 {t.historyLogs}</h2>
+                <button className="btn-text" onClick={() => setShowHistoryModal(false)}>{t.close}</button>
               </div>
 
               {matchLogs.length === 0 ? (
-                <p style={{ color: '#aaa', padding: '20px 0' }}>Henüz kaydedilmiş bir maç bulunmuyor.</p>
+                <p style={{ color: '#aaa', padding: '20px 0' }}>{t.noHistory}</p>
               ) : (
                 <div className="history-list">
                   {matchLogs.map((log) => (
@@ -679,7 +729,7 @@ export default function App() {
                         <span className="history-game">🎯 {log.gameType}</span>
                       </div>
                       <div className="history-winner">
-                        🏆 Kazanan: <strong>{log.winner}</strong> ({log.targetLegs} Leg)
+                        🏆 {t.winner}: <strong>{log.winner}</strong> ({log.targetLegs} Leg)
                       </div>
                       <div className="history-players-grid">
                         {log.playerStats.map((p, idx) => (
@@ -696,7 +746,7 @@ export default function App() {
 
               {matchLogs.length > 0 && (
                 <button className="btn-del-logs" onClick={clearAllMatchLogs}>
-                  Tüm Maç Geçmişini Temizle
+                  {t.clearLogs}
                 </button>
               )}
             </div>

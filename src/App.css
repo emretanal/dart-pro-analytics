@@ -25,6 +25,25 @@ html, body {
   box-sizing: border-box;
 }
 
+/* ÜST DİL VE MAÇ GEÇMİŞİ BARİ */
+.top-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.btn-lang-toggle {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #4da6ff;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .darts-score-theme {
   display: flex;
   flex-direction: column;
@@ -652,8 +671,8 @@ html, body {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #ffffff;
-  padding: 8px 14px;
-  border-radius: 10px;
+  padding: 6px 12px;
+  border-radius: 8px;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
