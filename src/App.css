@@ -397,6 +397,37 @@ html, body {
   background: rgba(255, 255, 255, 0.2);
 }
 
+/* MULTIPLIER (D & T) BUTONLARI */
+.multiplier-group {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-mult {
+  background: #2b2c3a;
+  border: 1px solid #4f5060;
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 1.1rem;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-mult.active-double {
+  background: #ff9800;
+  border-color: #ffb74d;
+  box-shadow: 0 0 10px rgba(255, 152, 0, 0.5);
+}
+
+.btn-mult.active-triple {
+  background: #e91e63;
+  border-color: #f06292;
+  box-shadow: 0 0 10px rgba(233, 30, 99, 0.5);
+}
+
 /* EXTENDED CRICKET COMPACT MOBİL TASARIM */
 .compact-extended .cricket-board-table {
   border-spacing: 2px;

@@ -64,6 +64,9 @@ export default function App() {
   });
   const [turnDartsCount, setTurnDartsCount] = useState(() => parseInt(localStorage.getItem('dart_turnDartsCount')) || 0);
 
+  // MULTIPLIER MODU ('single', 'double', 'triple')
+  const [multiplier, setMultiplier] = useState('single');
+
   const [x01Scores, setX01Scores] = useState(() => {
     const saved = localStorage.getItem('dart_x01Scores');
     return saved ? JSON.parse(saved) : {};
@@ -83,7 +86,6 @@ export default function App() {
     return saved ? JSON.parse(saved) : [];
   });
 
-  // TAHSISE EDİLMİŞ BİTMİŞ MAÇLAR VERİTABANI (TARİH/SAAT BAZLI)
   const [matchLogs, setMatchLogs] = useState(() => {
     const saved = localStorage.getItem('dart_match_logs');
     return saved ? JSON.parse(saved) : [];
@@ -125,7 +127,6 @@ export default function App() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [step, winner]);
 
-  // MAÇ BİTTİĞİNDE OTOMATİK TARİHLİ KAYIT OLUSTURMA
   const saveMatchToLogs = (winnerName, finalRoundsWon) => {
     const now = new Date();
     const formattedDate = `${now.toLocaleDateString('tr-TR')} - ${now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}`;
@@ -218,6 +219,7 @@ export default function App() {
     setPlayerRoundsCount(initialPlayerRounds);
     setActivePlayerIndex(0);
     setTurnDartsCount(0);
+    setMultiplier('single');
     setNumpadInput('');
     setWinner(null);
     setGameHistory([]);
@@ -266,6 +268,7 @@ export default function App() {
     setPlayerRoundsCount(newPlayerRounds);
     setActivePlayerIndex(0);
     setTurnDartsCount(0);
+    setMultiplier('single');
     setNumpadInput('');
     setGameHistory([]);
   };
@@ -285,6 +288,7 @@ export default function App() {
     ]);
   };
 
+  // MULTI-MARK KONTROLLÜ TIKLAMA MANTIĞI
   const handleCellClick = (playerIdx, targetId) => {
     if (playerIdx !== activePlayerIndex || winner) return;
 
@@ -297,15 +301,28 @@ export default function App() {
 
     const targetObj = currentTargets.find(t => t.id === targetId);
     const currentMarks = scores[playerIdx]?.[targetId] || 0;
-    const newMarks = currentMarks + 1;
 
-    if (gameMode === 'cutthroat' && currentMarks >= 3) {
+    // Multiplier hesabı (Single: +1, Double: +2, Triple: +3)
+    let addedMarks = 1;
+    if (multiplier === 'double') addedMarks = 2;
+    if (multiplier === 'triple') addedMarks = 3;
+
+    // Bull için Triple engeli (Bull sadece Single/Double atılabilir)
+    if (targetId === 'Bull' && multiplier === 'triple') {
+      addedMarks = 2; // Bull Triple basılırsa Double say
+    }
+
+    const newMarks = currentMarks + addedMarks;
+
+    // CEZALI MODDA EKSTRA MARK HESABI
+    if (gameMode === 'cutthroat' && newMarks > 3) {
+      const extraMarks = Math.min(addedMarks, newMarks - 3);
       const updatedPenalties = { ...penaltyPoints };
       players.forEach((_, pIdx) => {
         if (pIdx !== playerIdx) {
           const otherMarks = scores[pIdx]?.[targetId] || 0;
           if (otherMarks < 3) {
-            updatedPenalties[pIdx] = (updatedPenalties[pIdx] || 0) + targetObj.points;
+            updatedPenalties[pIdx] = (updatedPenalties[pIdx] || 0) + (targetObj.points * extraMarks);
           }
         }
       });
@@ -323,7 +340,8 @@ export default function App() {
     };
 
     setScores(updatedScores);
-    setTurnDartsCount((prev) => prev + 1);
+    setTurnDartsCount((prev) => prev + 1); // 1 DART HARCANDI
+    setMultiplier('single'); // Atıştan sonra normale dön
 
     const hasClosedAll = currentTargets.every(
       (target) => (updatedPlayerScores[target.id] || 0) >= 3
@@ -340,6 +358,14 @@ export default function App() {
       } else {
         setTimeout(() => startNextLeg(playerIdx), 50);
       }
+    }
+  };
+
+  const toggleMultiplier = (type) => {
+    if (multiplier === type) {
+      setMultiplier('single');
+    } else {
+      setMultiplier(type);
     }
   };
 
@@ -405,6 +431,7 @@ export default function App() {
 
     setActivePlayerIndex((prev) => (prev + 1) % players.length);
     setTurnDartsCount(0);
+    setMultiplier('single');
   };
 
   const handleUndo = () => {
@@ -420,6 +447,7 @@ export default function App() {
     setTurnDartsCount(lastState.turnDartsCount);
     if (lastState.currentTargets) setCurrentTargets(lastState.currentTargets);
     setGameHistory((prev) => prev.slice(0, -1));
+    setMultiplier('single');
   };
 
   const handleResetGame = () => {
@@ -482,7 +510,6 @@ export default function App() {
 
   return (
     <div className="app-container">
-      {/* ÜST GEÇMİŞ MAÇLAR BUTONU */}
       {step === 1 && (
         <div style={{ textAlign: 'right', marginBottom: '10px' }}>
           <button className="btn-logs-toggle" onClick={() => setShowHistoryModal(true)}>
@@ -543,11 +570,29 @@ export default function App() {
               </table>
             </div>
 
-            <div className="action-bar">
+            {/* D VE T MOD BUTONLARIYLA YENİLENMİŞ ACTION BAR */}
+            <div className="action-bar cricket-action-bar">
               <button className="btn-text" onClick={handleResetGame}>Exit</button>
+              
+              <div className="multiplier-group">
+                <button 
+                  className={`btn-mult ${multiplier === 'double' ? 'active-double' : ''}`}
+                  onClick={() => toggleMultiplier('double')}
+                >
+                  D
+                </button>
+                <button 
+                  className={`btn-mult ${multiplier === 'triple' ? 'active-triple' : ''}`}
+                  onClick={() => toggleMultiplier('triple')}
+                >
+                  T
+                </button>
+              </div>
+
               <button className="btn-next" onClick={handleNextTurn}>
                 END TURN ({turnDartsCount}/3)
               </button>
+              
               <button className="btn-text" onClick={handleUndo} style={{ opacity: gameHistory.length === 0 ? 0.3 : 1 }} disabled={gameHistory.length === 0}>
                 Undo
               </button>
@@ -614,7 +659,7 @@ export default function App() {
           </div>
         )}
 
-        {/* GEÇMİŞ MAÇLAR MODAL POPUP */}
+        {/* GEÇMİŞ MAÇLAR MODAL */}
         {showHistoryModal && (
           <div className="winner-overlay">
             <div className="history-modal">
