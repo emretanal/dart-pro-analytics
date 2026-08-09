@@ -6,13 +6,12 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* MOBİL PULL-TO-REFRESH ENGELLEME */
 html, body {
   background-color: #262730;
   color: #ffffff;
   margin: 0;
   user-select: none;
-  overscroll-behavior-y: contain; /* Sayfayı aşağı çekip yenilemeyi engeller */
+  overscroll-behavior-y: contain;
   touch-action: manipulation;
 }
 
@@ -615,4 +614,95 @@ html, body {
   font-size: 1.1rem;
   border-radius: 12px;
   width: 100%;
+}
+
+/* GEÇMİŞ MAÇLAR MODAL & STİLLERİ */
+.btn-logs-toggle {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.history-modal {
+  background: #1e1e26;
+  border: 1px solid #3d3e52;
+  border-radius: 20px;
+  padding: 20px;
+  max-width: 460px;
+  width: 90%;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.history-list {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-right: 4px;
+}
+
+.history-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid #3d3e52;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: left;
+}
+
+.history-card-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #8a8b9e;
+  margin-bottom: 6px;
+}
+
+.history-winner {
+  font-size: 1.05rem;
+  color: #ffcc00;
+  margin-bottom: 10px;
+}
+
+.history-players-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.history-p-item {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.8rem;
+  color: #ccc;
+}
+
+.history-p-item.is-winner {
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.hp-stat {
+  font-size: 0.75rem;
+  color: #8a8b9e;
+}
+
+.btn-del-logs {
+  background: rgba(255, 82, 82, 0.15);
+  color: #ff5252;
+  border: 1px solid #ff5252;
+  border-radius: 10px;
+  padding: 10px;
+  margin-top: 15px;
+  font-weight: bold;
+  cursor: pointer;
 }
