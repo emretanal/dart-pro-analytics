@@ -1,105 +1,108 @@
-/* ÜST DİL VE MAÇ GEÇMİŞİ BARİ - SABİT BOYUTLAR */
-.top-header-bar {
+/* KART VE GENEL HİZALAMA */
+.hero-card {
+  background: linear-gradient(145deg, #1e1e28, #2a2b38);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 24px 18px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  width: 100%;
+  max-width: 420px;
+  margin: 10px auto;
+  box-sizing: border-box;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
+}
+
+.setup-header-icon {
+  font-size: 3rem;
   margin-bottom: 8px;
-  min-height: 38px;
 }
 
-.btn-lang-toggle {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #4da6ff;
-  width: 90px;
-  height: 36px;
-  border-radius: 8px;
-  font-size: 0.85rem;
+.setup-title {
+  font-size: 1.6rem;
   font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-}
-
-.btn-logs-toggle {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.2);
   color: #ffffff;
-  min-width: 140px;
-  height: 36px;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
+  margin: 0 0 6px 0;
+  text-align: center;
 }
 
-/* OYUNCU SAYISI SEÇİM BÖLGESİ - SABİT IZGARA */
-.player-count-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-top: 15px;
+.setup-subtitle {
+  font-size: 0.9rem;
+  color: #8a8b9e;
+  margin: 0 0 20px 0;
+  text-align: center;
 }
 
-.btn-count-step {
-  height: 60px;
+/* OYUNCU İSİMLERİ FORMU */
+.names-form {
+  width: 100%;
   display: flex;
   flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+.names-input-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 280px;
+  overflow-y: auto;
+  width: 100%;
+  padding-right: 2px;
+  box-sizing: border-box;
+}
+
+.name-input-group {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-  font-weight: 700;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid #3d3e52;
   border-radius: 12px;
-  background: #0066cc;
-  color: white;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-  transition: transform 0.15s ease-in-out, background-color 0.15s;
+  padding: 8px 12px;
+  width: 100%;
   box-sizing: border-box;
-  width: 100%;
 }
 
-.btn-count-step .btn-num {
-  font-size: 1.2rem;
-  line-height: 1;
+.name-input-group:focus-within {
+  border-color: #4da6ff;
+  background: rgba(77, 166, 255, 0.08);
 }
 
-.btn-count-step .btn-text-sub {
-  font-size: 0.75rem;
-  font-weight: 400;
-  opacity: 0.85;
-  margin-top: 2px;
-}
-
-/* LEG HEDEFİ SEÇİM BÖLGESİ - SABİT IZGARA */
-.leg-select-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-
-.btn-leg-step {
-  background: #0066cc;
-  color: #ffffff;
-  border: none;
-  border-radius: 14px;
-  height: 65px;
-  width: 100%;
+.player-badge {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border-radius: 50%;
+  background: #3b3c4a;
+  color: #4da6ff;
+  font-weight: 700;
+  font-size: 0.85rem;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  transition: transform 0.15s ease-in-out, background-color 0.15s;
+}
+
+.name-input-field {
+  flex: 1;
+  background: transparent;
+  border: none;
   outline: none;
+  color: #ffffff;
+  font-size: 1rem;
+  padding: 4px 0;
+  font-weight: 500;
+  width: 100%;
+}
+
+/* BUTON AKSİYON SATIRI */
+.setup-action-row {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  margin-top: 10px;
   box-sizing: border-box;
 }
 
@@ -107,15 +110,16 @@
   background: #363742;
   color: #aaa;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   width: 100px;
   height: 48px;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .btn-setup-submit {
@@ -123,12 +127,16 @@
   background: #28a745;
   color: #ffffff;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   height: 48px;
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.btn-setup-submit:active {
+  background: #218838;
 }

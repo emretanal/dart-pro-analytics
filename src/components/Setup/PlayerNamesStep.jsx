@@ -35,7 +35,7 @@ export default function PlayerNamesStep({ playerCount, onSubmit, onBack, lang = 
   };
 
   return (
-    <div className="setup-card hero-card">
+    <div className="hero-card">
       <div className="setup-header-icon">👥</div>
       <h2 className="setup-title">{t.title}</h2>
       <p className="setup-subtitle">{t.subtitle}</p>
