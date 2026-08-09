@@ -27,7 +27,8 @@ export default function PlayerCountStep({ onSelect, lang = 'tr' }) {
             className="btn btn-primary btn-count-step"
             onClick={() => onSelect(count)}
           >
-            {count} {t.player}
+            <span className="btn-num">{count}</span>
+            <span className="btn-text-sub">{t.player}</span>
           </button>
         ))}
       </div>
