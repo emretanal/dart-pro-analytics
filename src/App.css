@@ -446,6 +446,17 @@ html, body {
   letter-spacing: 1.5px;
 }
 
+/* CHECKOUT BİTİŞ KUTUSU RENKLENDİRMELERİ */
+.checkout-part-bull {
+  color: #28a745; /* Yeşil Bull */
+  font-weight: 800;
+}
+
+.checkout-part-dbull {
+  color: #ff5252; /* Kırmızı Double Bull */
+  font-weight: 800;
+}
+
 /* YENİ X01 KEYPAD VE DART GÖSTERGESİ */
 .x01-turn-display {
   display: flex;

@@ -641,6 +641,29 @@ export default function App() {
     return avg.toFixed(1);
   };
 
+  // CHECKOUT ROTASINDA BULL (YEŞİL) VE D-BULL (KIRMIZI) BİLEŞENLERİNİ RENKLENDİRME
+  const renderCheckoutRoute = (routeString) => {
+    if (!routeString) return null;
+    const parts = routeString.split(' ');
+    return parts.map((part, idx) => {
+      if (part === 'BULL') {
+        return (
+          <span key={idx} className="checkout-part-bull">
+            {part}{' '}
+          </span>
+        );
+      }
+      if (part === 'D-BULL') {
+        return (
+          <span key={idx} className="checkout-part-dbull">
+            {part}{' '}
+          </span>
+        );
+      }
+      return <span key={idx}>{part} </span>;
+    });
+  };
+
   const isStartOfTurn = currentTurnDarts.length === 0;
   const currentActiveRemaining = x01Scores[activePlayerIndex];
   const checkoutSuggestion = isStartOfTurn ? getCheckoutSuggestion(currentActiveRemaining) : null;
@@ -784,7 +807,7 @@ export default function App() {
             {checkoutSuggestion && (
               <div className="checkout-badge-box">
                 <span className="checkout-label">🎯 {t.checkoutRoute}:</span>
-                <span className="checkout-value">{checkoutSuggestion}</span>
+                <span className="checkout-value">{renderCheckoutRoute(checkoutSuggestion)}</span>
               </div>
             )}
 
