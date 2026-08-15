@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function GameSelectStep({ onSelect, onBack, lang = 'tr' }) {
+export default function GameSelectStep({ onSelect, onBack, isFirstStep = false, lang = 'tr' }) {
   const [selectedGame, setSelectedGame] = useState(null);
 
   const t = {
@@ -89,7 +89,7 @@ export default function GameSelectStep({ onSelect, onBack, lang = 'tr' }) {
   };
 
   return (
-    <div className="setup-card hero-card">
+    <div className="hero-card">
       <div className="setup-header-icon">🕹️</div>
       <h2 className="setup-title">{t.title}</h2>
       <p className="setup-subtitle">{t.subtitle}</p>
@@ -110,7 +110,7 @@ export default function GameSelectStep({ onSelect, onBack, lang = 'tr' }) {
         </div>
       ) : (
         <div className="game-select-list">
-          <div style={{ color: '#4da6ff', fontWeight: 'bold', marginBottom: '8px', fontSize: '1.1rem' }}>
+          <div style={{ color: '#4da6ff', fontWeight: 'bold', marginBottom: '8px', fontSize: '1.1rem', textAlign: 'center' }}>
             {t.submodeSelect}
           </div>
           {games.find(g => g.id === selectedGame)?.submodes.map((sub) => (
@@ -126,15 +126,17 @@ export default function GameSelectStep({ onSelect, onBack, lang = 'tr' }) {
         </div>
       )}
 
-      <div className="setup-action-row" style={{ marginTop: '20px' }}>
-        <button 
-          type="button" 
-          className="btn-setup-back" 
-          onClick={() => selectedGame ? setSelectedGame(null) : onBack()}
-        >
-          {t.back}
-        </button>
-      </div>
+      {(!isFirstStep || selectedGame) && (
+        <div className="setup-action-row" style={{ marginTop: '16px' }}>
+          <button 
+            type="button" 
+            className="btn-setup-back" 
+            onClick={() => selectedGame ? setSelectedGame(null) : onBack()}
+          >
+            {t.back}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

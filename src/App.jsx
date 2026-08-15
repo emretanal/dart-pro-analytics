@@ -3,6 +3,7 @@ import PlayerCountStep from './components/Setup/PlayerCountStep';
 import PlayerNamesStep from './components/Setup/PlayerNamesStep';
 import GameSelectStep from './components/Setup/GameSelectStep';
 import LegTargetStep from './components/Setup/LegTargetStep';
+import { getCheckoutSuggestion } from './utils/checkoutTable';
 import './App.css';
 
 const DEFAULT_CRICKET_TARGETS = [
@@ -58,7 +59,10 @@ const TRANSLATIONS = {
     enteredScore: 'Girilen Skor:',
     penalty: 'Ceza',
     darts: 'Dart',
-    rounds: 'Tur'
+    rounds: 'Tur',
+    checkoutRoute: 'Bitiş Rotası',
+    welcomeTitle: 'DART PRO ANALYTICS',
+    welcomeSub: 'Skor Takip & İstatistik Sistemi'
   },
   en: {
     targetCol: 'Target',
@@ -81,7 +85,10 @@ const TRANSLATIONS = {
     enteredScore: 'Entered Score:',
     penalty: 'Penalty',
     darts: 'Darts',
-    rounds: 'Rounds'
+    rounds: 'Rounds',
+    checkoutRoute: 'Checkout Route',
+    welcomeTitle: 'DART PRO ANALYTICS',
+    welcomeSub: 'Scorekeeper & Analytics'
   }
 };
 
@@ -89,14 +96,21 @@ export default function App() {
   const [lang, setLang] = useState(() => localStorage.getItem('dart_lang') || 'tr');
   const t = TRANSLATIONS[lang];
 
+  // BASLANGIC SPLASH EKRANI (3 SANİYE)
+  const [showSplash, setShowSplash] = useState(() => {
+    const isMidGame = localStorage.getItem('dart_step') === '5';
+    return !isMidGame; // Eğer aktif maç varsa splash göstermeden maça dön
+  });
+
+  // AKIS SIRASI: 1: Oyun Seçimi, 2: Oyuncu Sayısı, 3: Oyuncu İsimleri, 4: Leg Hedefi, 5: Oyun Ekranı
   const [step, setStep] = useState(() => parseInt(localStorage.getItem('dart_step')) || 1);
+  const [selectedGame, setSelectedGame] = useState(() => localStorage.getItem('dart_selectedGame') || null);
+  const [gameMode, setGameMode] = useState(() => localStorage.getItem('dart_gameMode') || 'standard');
   const [playerCount, setPlayerCount] = useState(() => parseInt(localStorage.getItem('dart_playerCount')) || 1);
   const [players, setPlayers] = useState(() => {
     const saved = localStorage.getItem('dart_players');
     return saved ? JSON.parse(saved) : [];
   });
-  const [selectedGame, setSelectedGame] = useState(() => localStorage.getItem('dart_selectedGame') || null);
-  const [gameMode, setGameMode] = useState(() => localStorage.getItem('dart_gameMode') || 'standard');
   const [targetLegs, setTargetLegs] = useState(() => parseInt(localStorage.getItem('dart_targetLegs')) || 3);
   const [winner, setWinner] = useState(() => localStorage.getItem('dart_winner') || null);
 
@@ -141,6 +155,16 @@ export default function App() {
     return saved ? JSON.parse(saved) : [];
   });
   const [showHistoryModal, setShowHistoryModal] = useState(false);
+
+  // 3 SANİYELİK SPLASH TIMER
+  useEffect(() => {
+    if (showSplash) {
+      const timer = setTimeout(() => {
+        setShowSplash(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSplash]);
 
   useEffect(() => {
     localStorage.setItem('dart_lang', lang);
@@ -217,22 +241,26 @@ export default function App() {
     return targets;
   };
 
-  const handlePlayerCountSelect = (count) => {
-    setPlayerCount(count);
-    setStep(2);
-  };
-
-  const handlePlayerNamesSubmit = (namesList) => {
-    setPlayers(namesList);
-    setStep(3);
-  };
-
+  // 1. ADIM: OYUN SEÇİMİ -> 2. ADIM: OYUNCI SAYISI
   const handleGameSelect = (gameId, mode = 'standard') => {
     setSelectedGame(gameId);
     setGameMode(mode);
+    setStep(2);
+  };
+
+  // 2. ADIM: OYUNCU SAYISI SEÇİMİ -> 3. ADIM: OYUNCU İSİMLERİ
+  const handlePlayerCountSelect = (count) => {
+    setPlayerCount(count);
+    setStep(3);
+  };
+
+  // 3. ADIM: OYUNCU İSİMLERİ -> 4. ADIM: LEG HEDEFİ
+  const handlePlayerNamesSubmit = (namesList) => {
+    setPlayers(namesList);
     setStep(4);
   };
 
+  // 4. ADIM: LEG HEDEFİ -> 5. ADIM: OYUN EKRANI
   const handleLegTargetSelect = (legs) => {
     setTargetLegs(legs);
     resetBoard(players, selectedGame, gameMode);
@@ -555,9 +583,26 @@ export default function App() {
     return avg.toFixed(1);
   };
 
+  const activeRemainingScore = x01Scores[activePlayerIndex] - (parseInt(numpadInput) || 0);
+  const checkoutSuggestion = getCheckoutSuggestion(activeRemainingScore);
+
+  // 1) SPLASH EKRANI (3 SANİYE)
+  if (showSplash) {
+    return (
+      <div className="splash-screen">
+        <div className="splash-content">
+          <div className="splash-logo">🎯</div>
+          <h1 className="splash-title">{t.welcomeTitle}</h1>
+          <p className="splash-subtitle">{t.welcomeSub}</p>
+          <div className="splash-loader"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="app-container">
-      {/* ÜST BAR: DİL DEĞİŞTİRİCİ VE GEÇMİŞ MAÇLAR */}
+      {/* ÜST BAR */}
       <div className="top-header-bar">
         <button className="btn-lang-toggle" onClick={() => setLang(lang === 'tr' ? 'en' : 'tr')}>
           🌐 {lang.toUpperCase()}
@@ -570,9 +615,10 @@ export default function App() {
       </div>
 
       <main className="app-content">
-        {step === 1 && <PlayerCountStep onSelect={handlePlayerCountSelect} lang={lang} />}
-        {step === 2 && <PlayerNamesStep playerCount={playerCount} onSubmit={handlePlayerNamesSubmit} onBack={() => setStep(1)} lang={lang} />}
-        {step === 3 && <GameSelectStep onSelect={handleGameSelect} onBack={() => setStep(2)} lang={lang} />}
+        {/* AKIS: 1: Oyun Seçimi -> 2: Oyuncu Sayısı -> 3: Oyuncu İsimleri -> 4: Leg Hedefi */}
+        {step === 1 && <GameSelectStep onSelect={handleGameSelect} onBack={() => {}} isFirstStep={true} lang={lang} />}
+        {step === 2 && <PlayerCountStep onSelect={handlePlayerCountSelect} onBack={() => setStep(1)} lang={lang} />}
+        {step === 3 && <PlayerNamesStep playerCount={playerCount} onSubmit={handlePlayerNamesSubmit} onBack={() => setStep(2)} lang={lang} />}
         {step === 4 && <LegTargetStep onSelect={handleLegTargetSelect} onBack={() => setStep(3)} lang={lang} />}
 
         {/* CRICKET EKRANI */}
@@ -666,6 +712,13 @@ export default function App() {
                 </div>
               ))}
             </div>
+
+            {checkoutSuggestion && (
+              <div className="checkout-badge-box">
+                <span className="checkout-label">🎯 {t.checkoutRoute}:</span>
+                <span className="checkout-value">{checkoutSuggestion}</span>
+              </div>
+            )}
 
             <div className="numpad-container">
               <div className="numpad-display">
