@@ -85,7 +85,7 @@ html, body {
   50% { transform: translateY(-8px); }
 }
 
-/* ANA KONTEYNER */
+/* ANA KONTEYNER - EKRAA TAM OTURAN MOBİL YAPI */
 .app-container {
   display: flex;
   flex-direction: column;
@@ -118,8 +118,8 @@ html, body {
   background: #2b2c3a;
   border: 1px solid #3d3e52;
   color: #ffffff;
-  height: 36px;
-  padding: 0 12px;
+  height: 38px;
+  padding: 0 14px;
   border-radius: 8px;
   font-size: 0.85rem;
   font-weight: 600;
@@ -133,7 +133,7 @@ html, body {
   color: #4da6ff;
 }
 
-/* HERO KART (SABİT YÜKSEKLİKLİ KURULUM ADIMLARI) */
+/* HERO KART (SABİT / DÜZGÜN YÜKSEKLİKLİ KURULUM ADIMLARI) */
 .hero-card {
   background: #222330 !important;
   border: 1px solid #333446 !important;
@@ -178,7 +178,7 @@ html, body {
 }
 
 .btn-count-step {
-  height: 56px !important;
+  height: 58px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -236,7 +236,7 @@ html, body {
   border: 1px solid #3d3e52;
   border-radius: 10px;
   padding: 0 12px;
-  height: 48px;
+  height: 50px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -246,14 +246,14 @@ html, body {
 }
 
 .player-badge {
-  width: 26px;
-  height: 26px;
-  min-width: 26px;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
   border-radius: 50%;
   background: #2b2c3a;
   color: #4da6ff;
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -265,7 +265,7 @@ html, body {
   border: none;
   outline: none;
   color: #ffffff;
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 500;
   width: 100%;
 }
@@ -282,7 +282,7 @@ html, body {
   background: #1a1b23;
   border: 1px solid #3d3e52;
   border-radius: 12px;
-  padding: 14px;
+  padding: 16px;
   text-align: left;
   cursor: pointer;
   width: 100%;
@@ -294,14 +294,14 @@ html, body {
 }
 
 .game-card-title {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: #ffffff;
   margin-bottom: 2px;
 }
 
 .game-card-desc {
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   color: #8a8b9e;
 }
 
@@ -320,7 +320,7 @@ html, body {
   background: #1a1b23;
   border: 1px solid #3d3e52;
   border-radius: 12px;
-  padding: 12px;
+  padding: 14px;
   cursor: pointer;
   transition: border-color 0.2s;
   width: 100%;
@@ -332,8 +332,8 @@ html, body {
 }
 
 .toggle-rule-card input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   margin-top: 2px;
   accent-color: #4da6ff;
   cursor: pointer;
@@ -351,7 +351,7 @@ html, body {
 }
 
 .toggle-rule-desc {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   color: #8a8b9e;
   margin-top: 2px;
 }
@@ -368,7 +368,7 @@ html, body {
   background: #1a1b23;
   border: 1px solid #3d3e52;
   border-radius: 10px;
-  height: 54px;
+  height: 56px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -384,13 +384,13 @@ html, body {
 }
 
 .leg-count-num {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: #ffffff;
 }
 
 .leg-count-sub {
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   color: #8a8b9e;
 }
 
@@ -409,7 +409,7 @@ html, body {
   border: 1px solid #3d3e52;
   border-radius: 10px;
   width: 90px;
-  height: 48px;
+  height: 50px;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
@@ -425,8 +425,8 @@ html, body {
   color: #ffffff;
   border: none;
   border-radius: 10px;
-  height: 48px;
-  font-size: 1rem;
+  height: 50px;
+  font-size: 1.05rem;
   font-weight: 700;
   cursor: pointer;
   display: flex;
@@ -434,7 +434,7 @@ html, body {
   justify-content: center;
 }
 
-/* OYUN TEMALARI VE EKRANA TAM OTURMA */
+/* OYUN TEMASI (DİKEYDE USER-FRIENDLY MÜKEMMEL DOLDURMA) */
 .darts-score-theme {
   display: flex;
   flex-direction: column;
@@ -444,12 +444,12 @@ html, body {
   min-height: 0;
 }
 
-/* CHECKOUT BİTİŞ REHBERİ STİLİ */
+/* CHECKOUT BİTİŞ REHBERİ */
 .checkout-badge-box {
   background: linear-gradient(135deg, rgba(40, 167, 69, 0.15), rgba(77, 166, 255, 0.15));
   border: 1px solid #28a745;
   border-radius: 10px;
-  padding: 6px 12px;
+  padding: 8px 12px;
   margin: 4px 0;
   display: flex;
   justify-content: space-between;
@@ -471,17 +471,7 @@ html, body {
   letter-spacing: 1.5px;
 }
 
-.checkout-part-bull {
-  color: #28a745;
-  font-weight: 800;
-}
-
-.checkout-part-dbull {
-  color: #ff5252;
-  font-weight: 800;
-}
-
-/* X01 KEYPAD VE DART GÖSTERGESİ */
+/* X01 KEYPAD VE GÖSTERGE */
 .x01-turn-display {
   display: flex;
   justify-content: space-between;
@@ -489,7 +479,7 @@ html, body {
   background: #1a1b23;
   border: 1px solid #3d3e52;
   border-radius: 10px;
-  padding: 6px 14px;
+  padding: 8px 14px;
   margin: 4px 0;
   flex-shrink: 0;
 }
@@ -532,8 +522,8 @@ html, body {
   border: 1px solid #3d3e52;
   color: #ffffff;
   font-weight: 800;
-  font-size: 0.9rem;
-  height: 38px;
+  font-size: 0.95rem;
+  height: 42px;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s;
@@ -554,7 +544,7 @@ html, body {
 .x01-board-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 5px;
+  gap: 6px;
   flex: 1;
 }
 
@@ -563,7 +553,8 @@ html, body {
   border: 1px solid #3d3e52;
   border-radius: 8px;
   height: 100%;
-  font-size: 1.05rem;
+  min-height: 44px;
+  font-size: 1.15rem;
   font-weight: 700;
   color: #ffffff;
   cursor: pointer;
@@ -591,7 +582,7 @@ html, body {
   color: #ff5252;
 }
 
-/* CRICKET TABLOSUNU MOBİL DİKEY EKRANA TAM ESNETME */
+/* CRICKET TABLOSU - ERGONOMİK DİKEY ESNETME (TOUCH-FRIENDLY) */
 .board-scroll-wrapper {
   overflow-x: auto;
   overflow-y: hidden;
@@ -606,7 +597,7 @@ html, body {
   width: 100%;
   height: 100%;
   border-collapse: separate;
-  border-spacing: 3px;
+  border-spacing: 4px;
   table-layout: fixed;
   display: flex;
   flex-direction: column;
@@ -635,13 +626,13 @@ html, body {
 }
 
 .num-col {
-  width: 40px;
+  width: 44px;
   color: #888;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
 }
 
 .player-col-header {
-  padding: 2px 2px;
+  padding: 4px 2px;
   opacity: 0.35;
   transition: all 0.2s ease-in-out;
 }
@@ -653,13 +644,13 @@ html, body {
 }
 
 .rounds-label {
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   color: #aaa;
   font-weight: normal;
 }
 
 .p-name {
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 400;
   margin: 1px 0;
   white-space: nowrap;
@@ -670,12 +661,12 @@ html, body {
 
 .player-col-header.active .p-name {
   font-weight: 800 !important;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   color: #ffffff !important;
 }
 
 .p-score {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   font-weight: 300;
   line-height: 1;
   color: #aaa;
@@ -690,7 +681,7 @@ html, body {
   margin-top: 2px;
   padding-top: 2px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   color: #bbb;
   display: flex;
   flex-direction: column;
@@ -699,7 +690,7 @@ html, body {
 
 .analytics-label {
   color: #777;
-  font-size: 0.6rem;
+  font-size: 0.62rem;
 }
 
 .player-col-header.active .analytics-box {
@@ -714,32 +705,35 @@ html, body {
 
 .penalty-label {
   color: #ff8a8a;
-  font-size: 0.6rem;
+  font-size: 0.62rem;
 }
 
 .target-num-cell {
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: 1.25rem;
+  font-weight: 700;
   color: #e6e6e6;
   text-align: center;
   padding: 0;
+  vertical-align: middle;
 }
 
 .mark-cell-td {
   text-align: center;
   height: 100%;
   padding: 1px;
+  vertical-align: middle;
 }
 
+/* BUTONLAR DİKEYDE OTOMATİK ESNEYEREK TIKLAMAYI MÜKEMMEL KOLAYLAŞTIRIR */
 .board-mark-btn {
   width: 100%;
   height: 100%;
-  min-height: 24px;
+  min-height: 38px;
   border: 1px solid #3d3e52;
   border-radius: 8px;
   background: #1a1b23;
   color: #fff;
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   font-weight: bold;
   cursor: pointer;
   display: flex;
@@ -747,6 +741,7 @@ html, body {
   justify-content: center;
   outline: none;
   padding: 0;
+  transition: background 0.15s, border-color 0.15s;
 }
 
 .board-mark-btn.active-turn {
@@ -754,9 +749,14 @@ html, body {
   background: #222330;
 }
 
+.board-mark-btn:active {
+  background: #0066cc;
+  border-color: #0066cc;
+}
+
 .multiplier-group {
   display: flex;
-  gap: 6px;
+  gap: 8px;
 }
 
 .btn-mult {
@@ -764,9 +764,9 @@ html, body {
   border: 1px solid #3d3e52;
   color: #ffffff;
   font-weight: bold;
-  font-size: 0.95rem;
-  width: 38px;
-  height: 38px;
+  font-size: 1rem;
+  width: 44px;
+  height: 44px;
   border-radius: 8px;
   cursor: pointer;
 }
@@ -792,7 +792,7 @@ html, body {
   background: #222330;
   border: 1px solid #3d3e52;
   border-radius: 12px;
-  padding: 6px 8px;
+  padding: 8px;
   opacity: 0.4;
 }
 
@@ -802,7 +802,7 @@ html, body {
 }
 
 .x01-big-score {
-  font-size: 2rem;
+  font-size: 2.1rem;
   font-weight: 800;
   color: #ffffff;
   margin: 1px 0;
@@ -813,7 +813,7 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 4px;
+  padding-top: 6px;
   flex-shrink: 0;
 }
 
@@ -821,19 +821,19 @@ html, body {
   background: none;
   border: none;
   color: #8a8b9e;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   cursor: pointer;
-  padding: 6px 10px;
+  padding: 8px 12px;
 }
 
 .btn-next {
   background: #2b2c3a;
   border: 1px solid #3d3e52;
   color: #fff;
-  padding: 10px 18px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  border-radius: 8px;
+  padding: 12px 22px;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 10px;
   cursor: pointer;
 }
 
