@@ -630,9 +630,10 @@ export default function App() {
     return avg.toFixed(1);
   };
 
-  // 170 VE ALTINA DÜŞÜLDÜĞÜNDEKİ ANLIK KALAN SKOR (TUR İÇİ DARTLAR DAHİL)
+  // CHECKOUT ÖNERİSİ SADECE OYUNCUNUN TUR BAŞINDA (0 DART ATILMIŞKEN) HESAPLANIR
+  const isStartOfTurn = currentTurnDarts.length === 0;
   const currentActiveRemaining = x01Scores[activePlayerIndex];
-  const checkoutSuggestion = getCheckoutSuggestion(currentActiveRemaining);
+  const checkoutSuggestion = isStartOfTurn ? getCheckoutSuggestion(currentActiveRemaining) : null;
 
   if (showSplash) {
     return (
@@ -772,7 +773,7 @@ export default function App() {
               ))}
             </div>
 
-            {/* 170 VE ALTINA DÜŞÜLDÜĞÜ ANDA İLK ATISTAKİ SKOR ÖNERİ KUTUSU */}
+            {/* SADECE TUR BAŞINDA KONTROL EDİLEN 3-DART CHECKOUT ÖNERİSİ */}
             {checkoutSuggestion && (
               <div className="checkout-badge-box">
                 <span className="checkout-label">🎯 {t.checkoutRoute}:</span>
