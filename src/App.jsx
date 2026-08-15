@@ -457,15 +457,16 @@ export default function App() {
     let points = baseValue;
     let label = baseValue.toString();
 
-    if (baseValue === 25) {
+    if (baseValue === 25) { // Bull Vuruşu
       if (isDouble || isTriple) {
         points = 50;
         label = 'D-BULL';
         isDouble = true;
       } else {
+        points = 25;
         label = 'BULL';
       }
-    } else if (baseValue === 0) {
+    } else if (baseValue === 0) { // Miss
       points = 0;
       label = 'MISS';
       isDouble = false;
