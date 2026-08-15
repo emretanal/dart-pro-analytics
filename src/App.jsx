@@ -96,13 +96,13 @@ export default function App() {
   const [lang, setLang] = useState(() => localStorage.getItem('dart_lang') || 'tr');
   const t = TRANSLATIONS[lang];
 
-  // BASLANGIC SPLASH EKRANI (3 SANİYE)
+  // 3 SANİYELİK SPLASH EKRANI
   const [showSplash, setShowSplash] = useState(() => {
     const isMidGame = localStorage.getItem('dart_step') === '5';
-    return !isMidGame; // Eğer aktif maç varsa splash göstermeden maça dön
+    return !isMidGame;
   });
 
-  // AKIS SIRASI: 1: Oyun Seçimi, 2: Oyuncu Sayısı, 3: Oyuncu İsimleri, 4: Leg Hedefi, 5: Oyun Ekranı
+  // AKIŞ SIRASI: 1: Oyun Seçimi, 2: Oyuncu Sayısı, 3: Oyuncu İsimleri, 4: Leg Hedefi, 5: Oyun Ekranı
   const [step, setStep] = useState(() => parseInt(localStorage.getItem('dart_step')) || 1);
   const [selectedGame, setSelectedGame] = useState(() => localStorage.getItem('dart_selectedGame') || null);
   const [gameMode, setGameMode] = useState(() => localStorage.getItem('dart_gameMode') || 'standard');
@@ -156,7 +156,6 @@ export default function App() {
   });
   const [showHistoryModal, setShowHistoryModal] = useState(false);
 
-  // 3 SANİYELİK SPLASH TIMER
   useEffect(() => {
     if (showSplash) {
       const timer = setTimeout(() => {
@@ -241,26 +240,22 @@ export default function App() {
     return targets;
   };
 
-  // 1. ADIM: OYUN SEÇİMİ -> 2. ADIM: OYUNCI SAYISI
   const handleGameSelect = (gameId, mode = 'standard') => {
     setSelectedGame(gameId);
     setGameMode(mode);
     setStep(2);
   };
 
-  // 2. ADIM: OYUNCU SAYISI SEÇİMİ -> 3. ADIM: OYUNCU İSİMLERİ
   const handlePlayerCountSelect = (count) => {
     setPlayerCount(count);
     setStep(3);
   };
 
-  // 3. ADIM: OYUNCU İSİMLERİ -> 4. ADIM: LEG HEDEFİ
   const handlePlayerNamesSubmit = (namesList) => {
     setPlayers(namesList);
     setStep(4);
   };
 
-  // 4. ADIM: LEG HEDEFİ -> 5. ADIM: OYUN EKRANI
   const handleLegTargetSelect = (legs) => {
     setTargetLegs(legs);
     resetBoard(players, selectedGame, gameMode);
@@ -586,7 +581,6 @@ export default function App() {
   const activeRemainingScore = x01Scores[activePlayerIndex] - (parseInt(numpadInput) || 0);
   const checkoutSuggestion = getCheckoutSuggestion(activeRemainingScore);
 
-  // 1) SPLASH EKRANI (3 SANİYE)
   if (showSplash) {
     return (
       <div className="splash-screen">
@@ -602,7 +596,6 @@ export default function App() {
 
   return (
     <div className="app-container">
-      {/* ÜST BAR */}
       <div className="top-header-bar">
         <button className="btn-lang-toggle" onClick={() => setLang(lang === 'tr' ? 'en' : 'tr')}>
           🌐 {lang.toUpperCase()}
@@ -615,13 +608,11 @@ export default function App() {
       </div>
 
       <main className="app-content">
-        {/* AKIS: 1: Oyun Seçimi -> 2: Oyuncu Sayısı -> 3: Oyuncu İsimleri -> 4: Leg Hedefi */}
         {step === 1 && <GameSelectStep onSelect={handleGameSelect} onBack={() => {}} isFirstStep={true} lang={lang} />}
         {step === 2 && <PlayerCountStep onSelect={handlePlayerCountSelect} onBack={() => setStep(1)} lang={lang} />}
         {step === 3 && <PlayerNamesStep playerCount={playerCount} onSubmit={handlePlayerNamesSubmit} onBack={() => setStep(2)} lang={lang} />}
         {step === 4 && <LegTargetStep onSelect={handleLegTargetSelect} onBack={() => setStep(3)} lang={lang} />}
 
-        {/* CRICKET EKRANI */}
         {step === 5 && selectedGame === 'cricket' && (
           <div className={`darts-score-theme ${gameMode === 'extended' ? 'compact-extended' : ''}`}>
             <div className="board-scroll-wrapper">
@@ -696,7 +687,6 @@ export default function App() {
           </div>
         )}
 
-        {/* X01 EKRANI */}
         {step === 5 && selectedGame === 'x01' && (
           <div className="darts-score-theme x01-theme">
             <div className="x01-header-grid" style={{ gridTemplateColumns: `repeat(${players.length}, 1fr)` }}>
@@ -747,7 +737,6 @@ export default function App() {
           </div>
         )}
 
-        {/* FULLSCREEN WINNER POPUP */}
         {winner && (
           <div className="winner-overlay">
             <div className="winner-modal">
@@ -762,7 +751,6 @@ export default function App() {
           </div>
         )}
 
-        {/* GEÇMİŞ MAÇLAR MODAL */}
         {showHistoryModal && (
           <div className="winner-overlay">
             <div className="history-modal">

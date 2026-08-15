@@ -14,7 +14,6 @@ export default function PlayerCountStep({ onSelect, onBack, lang = 'tr' }) {
     }
   }[lang];
 
-  // MAKSİMUM 4 OYUNCU SINIRI
   const counts = [1, 2, 3, 4];
 
   return (
