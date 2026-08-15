@@ -2,6 +2,9 @@ import { useState } from 'react';
 
 export default function GameSelectStep({ onSelect, onBack, isFirstStep = false, lang = 'tr' }) {
   const [selectedGame, setSelectedGame] = useState(null);
+  const [subMode, setSubMode] = useState(null); // '501', '301', '701'
+  const [doubleIn, setDoubleIn] = useState(false);
+  const [doubleOut, setDoubleOut] = useState(true);
 
   const t = {
     tr: {
@@ -9,6 +12,7 @@ export default function GameSelectStep({ onSelect, onBack, isFirstStep = false, 
       subtitle: 'Oynamak istediğiniz dart oyununu belirleyin',
       submodeSelect: 'Oyun Modu Seçin:',
       back: 'Geri',
+      continue: 'Devam Et ➔',
       cricketTitle: 'Cricket Oyunları',
       cricketDesc: '15-20, Extended, Cut-Throat ve Wild-Card Cricket modları',
       cStandard: 'Standart Cricket (15-20 & Bull)',
@@ -25,13 +29,19 @@ export default function GameSelectStep({ onSelect, onBack, isFirstStep = false, 
       x01Desc: '301, 501 ve 701 eksiltme oyunları',
       x501Desc: 'Standart profesyonel eksiltme oyunu',
       x301Desc: 'Hızlı ve kısa eksiltme oyunu',
-      x701Desc: 'Uzun maraton eksiltme oyunu'
+      x701Desc: 'Uzun maraton eksiltme oyunu',
+      x01RulesTitle: 'X01 Kurallarını Belirleyin:',
+      doubleInLabel: 'Double In (Çiftli Başlangıç)',
+      doubleInDesc: 'Puan eksiltmeye başlamak için ilk vuruşun Double olması gerekir.',
+      doubleOutLabel: 'Double Out (Çiftli Bitiriş)',
+      doubleOutDesc: 'Leg\'i bitirmek için son vuruşun Double olması gerekir.'
     },
     en: {
       title: 'Select Game Type',
       subtitle: 'Choose the dart game you want to play',
       submodeSelect: 'Select Game Mode:',
       back: 'Back',
+      continue: 'Continue ➔',
       cricketTitle: 'Cricket Games',
       cricketDesc: '15-20, Extended, Cut-Throat and Wild-Card modes',
       cStandard: 'Standard Cricket (15-20 & Bull)',
@@ -48,7 +58,12 @@ export default function GameSelectStep({ onSelect, onBack, isFirstStep = false, 
       x01Desc: '301, 501 and 701 countdown games',
       x501Desc: 'Standard professional countdown game',
       x301Desc: 'Fast and short countdown game',
-      x701Desc: 'Long marathon countdown game'
+      x701Desc: 'Long marathon countdown game',
+      x01RulesTitle: 'Set X01 Rules:',
+      doubleInLabel: 'Double In',
+      doubleInDesc: 'Must hit a double before scoring points.',
+      doubleOutLabel: 'Double Out',
+      doubleOutDesc: 'Must finish on a double to win the leg.'
     }
   }[lang];
 
@@ -84,8 +99,20 @@ export default function GameSelectStep({ onSelect, onBack, isFirstStep = false, 
     if (game.hasSubmodes) {
       setSelectedGame(game.id);
     } else {
-      onSelect(game.id, 'standard');
+      onSelect(game.id, 'standard', { doubleIn: false, doubleOut: true });
     }
+  };
+
+  const handleSubModeClick = (selectedSub) => {
+    if (selectedGame === 'x01') {
+      setSubMode(selectedSub);
+    } else {
+      onSelect(selectedGame, selectedSub, { doubleIn: false, doubleOut: true });
+    }
+  };
+
+  const handleX01Confirm = () => {
+    onSelect('x01', subMode, { doubleIn, doubleOut });
   };
 
   return (
@@ -108,7 +135,7 @@ export default function GameSelectStep({ onSelect, onBack, isFirstStep = false, 
             </button>
           ))}
         </div>
-      ) : (
+      ) : !subMode ? (
         <div className="game-select-list">
           <div style={{ color: '#4da6ff', fontWeight: 'bold', marginBottom: '8px', fontSize: '1.1rem', textAlign: 'center' }}>
             {t.submodeSelect}
@@ -117,12 +144,51 @@ export default function GameSelectStep({ onSelect, onBack, isFirstStep = false, 
             <button
               key={sub.id}
               className="btn-game-card"
-              onClick={() => onSelect(selectedGame, sub.id)}
+              onClick={() => handleSubModeClick(sub.id)}
             >
               <div className="game-card-title">{sub.name}</div>
               <div className="game-card-desc">{sub.desc}</div>
             </button>
           ))}
+        </div>
+      ) : (
+        /* X01 DOUBLE IN / OUT SEÇİM ALANI */
+        <div className="x01-rules-container" style={{ width: '100%', textAlign: 'left' }}>
+          <div style={{ color: '#4da6ff', fontWeight: 'bold', marginBottom: '12px', fontSize: '1.05rem', textAlign: 'center' }}>
+            {t.x01RulesTitle}
+          </div>
+
+          <label className="toggle-rule-card">
+            <input 
+              type="checkbox" 
+              checked={doubleIn} 
+              onChange={(e) => setDoubleIn(e.target.checked)} 
+            />
+            <div className="toggle-rule-info">
+              <div className="toggle-rule-title">{t.doubleInLabel}</div>
+              <div className="toggle-rule-desc">{t.doubleInDesc}</div>
+            </div>
+          </label>
+
+          <label className="toggle-rule-card" style={{ marginTop: '10px' }}>
+            <input 
+              type="checkbox" 
+              checked={doubleOut} 
+              onChange={(e) => setDoubleOut(e.target.checked)} 
+            />
+            <div className="toggle-rule-info">
+              <div className="toggle-rule-title">{t.doubleOutLabel}</div>
+              <div className="toggle-rule-desc">{t.doubleOutDesc}</div>
+            </div>
+          </label>
+
+          <button 
+            className="btn-setup-submit" 
+            onClick={handleX01Confirm}
+            style={{ marginTop: '20px', width: '100%' }}
+          >
+            {t.continue}
+          </button>
         </div>
       )}
 
@@ -131,7 +197,11 @@ export default function GameSelectStep({ onSelect, onBack, isFirstStep = false, 
           <button 
             type="button" 
             className="btn-setup-back" 
-            onClick={() => selectedGame ? setSelectedGame(null) : onBack()}
+            onClick={() => {
+              if (subMode) setSubMode(null);
+              else if (selectedGame) setSelectedGame(null);
+              else onBack();
+            }}
           >
             {t.back}
           </button>

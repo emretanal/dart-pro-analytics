@@ -62,7 +62,9 @@ const TRANSLATIONS = {
     rounds: 'Tur',
     checkoutRoute: 'Bitiş Rotası',
     welcomeTitle: 'DART PRO ANALYTICS',
-    welcomeSub: 'Skor Takip & İstatistik Sistemi'
+    welcomeSub: 'Skor Takip & İstatistik Sistemi',
+    doubleInErr: 'Double In kuralı aktif! Oyuna girmek için ilk skorun bir Double olması gerekir.',
+    doubleOutErr: 'Double Out kuralı aktif! Bitiş vuruşu Double olmak zorundadır.'
   },
   en: {
     targetCol: 'Target',
@@ -88,7 +90,9 @@ const TRANSLATIONS = {
     rounds: 'Rounds',
     checkoutRoute: 'Checkout Route',
     welcomeTitle: 'DART PRO ANALYTICS',
-    welcomeSub: 'Scorekeeper & Analytics'
+    welcomeSub: 'Scorekeeper & Analytics',
+    doubleInErr: 'Double In is active! You must hit a double to start scoring.',
+    doubleOutErr: 'Double Out is active! You must finish on a double.'
   }
 };
 
@@ -96,16 +100,19 @@ export default function App() {
   const [lang, setLang] = useState(() => localStorage.getItem('dart_lang') || 'tr');
   const t = TRANSLATIONS[lang];
 
-  // 3 SANİYELİK SPLASH EKRANI
   const [showSplash, setShowSplash] = useState(() => {
     const isMidGame = localStorage.getItem('dart_step') === '5';
     return !isMidGame;
   });
 
-  // AKIŞ SIRASI: 1: Oyun Seçimi, 2: Oyuncu Sayısı, 3: Oyuncu İsimleri, 4: Leg Hedefi, 5: Oyun Ekranı
   const [step, setStep] = useState(() => parseInt(localStorage.getItem('dart_step')) || 1);
   const [selectedGame, setSelectedGame] = useState(() => localStorage.getItem('dart_selectedGame') || null);
   const [gameMode, setGameMode] = useState(() => localStorage.getItem('dart_gameMode') || 'standard');
+  const [x01Rules, setX01Rules] = useState(() => {
+    const saved = localStorage.getItem('dart_x01Rules');
+    return saved ? JSON.parse(saved) : { doubleIn: false, doubleOut: true };
+  });
+
   const [playerCount, setPlayerCount] = useState(() => parseInt(localStorage.getItem('dart_playerCount')) || 1);
   const [players, setPlayers] = useState(() => {
     const saved = localStorage.getItem('dart_players');
@@ -135,6 +142,12 @@ export default function App() {
     const saved = localStorage.getItem('dart_x01Scores');
     return saved ? JSON.parse(saved) : {};
   });
+  // Oyuncuların oyuna girip girmediği (Double In durumları)
+  const [x01InStatus, setX01InStatus] = useState(() => {
+    const saved = localStorage.getItem('dart_x01InStatus');
+    return saved ? JSON.parse(saved) : {};
+  });
+
   const [numpadInput, setNumpadInput] = useState('');
 
   const [roundsWon, setRoundsWon] = useState(() => {
@@ -172,6 +185,7 @@ export default function App() {
     localStorage.setItem('dart_players', JSON.stringify(players));
     if (selectedGame) localStorage.setItem('dart_selectedGame', selectedGame);
     localStorage.setItem('dart_gameMode', gameMode);
+    localStorage.setItem('dart_x01Rules', JSON.stringify(x01Rules));
     localStorage.setItem('dart_targetLegs', targetLegs);
     if (winner) localStorage.setItem('dart_winner', winner); else localStorage.removeItem('dart_winner');
     localStorage.setItem('dart_activePlayerIndex', activePlayerIndex);
@@ -180,14 +194,15 @@ export default function App() {
     localStorage.setItem('dart_penaltyPoints', JSON.stringify(penaltyPoints));
     localStorage.setItem('dart_turnDartsCount', turnDartsCount);
     localStorage.setItem('dart_x01Scores', JSON.stringify(x01Scores));
+    localStorage.setItem('dart_x01InStatus', JSON.stringify(x01InStatus));
     localStorage.setItem('dart_roundsWon', JSON.stringify(roundsWon));
     localStorage.setItem('dart_playerRoundsCount', JSON.stringify(playerRoundsCount));
     localStorage.setItem('dart_gameHistory', JSON.stringify(gameHistory));
     localStorage.setItem('dart_match_logs', JSON.stringify(matchLogs));
   }, [
-    lang, step, playerCount, players, selectedGame, gameMode, targetLegs, winner,
+    lang, step, playerCount, players, selectedGame, gameMode, x01Rules, targetLegs, winner,
     activePlayerIndex, currentTargets, scores, penaltyPoints, turnDartsCount,
-    x01Scores, roundsWon, playerRoundsCount, gameHistory, matchLogs
+    x01Scores, x01InStatus, roundsWon, playerRoundsCount, gameHistory, matchLogs
   ]);
 
   useEffect(() => {
@@ -205,6 +220,12 @@ export default function App() {
     const now = new Date();
     const formattedDate = `${now.toLocaleDateString(lang === 'tr' ? 'tr-TR' : 'en-US')} - ${now.toLocaleTimeString(lang === 'tr' ? 'tr-TR' : 'en-US', { hour: '2-digit', minute: '2-digit' })}`;
 
+    let gameTypeLabel = selectedGame === 'cricket' ? `Cricket (${gameMode})` : `X01 (${gameMode})`;
+    if (selectedGame === 'x01') {
+      const rulesStr = [x01Rules.doubleIn ? 'DI' : 'SI', x01Rules.doubleOut ? 'DO' : 'SO'].join('/');
+      gameTypeLabel += ` [${rulesStr}]`;
+    }
+
     const playerStats = players.map((name, idx) => ({
       name,
       roundsWon: finalRoundsWon[idx] || 0,
@@ -216,7 +237,7 @@ export default function App() {
     const newMatchRecord = {
       id: Date.now(),
       date: formattedDate,
-      gameType: selectedGame === 'cricket' ? `Cricket (${gameMode})` : `X01 (${gameMode})`,
+      gameType: gameTypeLabel,
       targetLegs,
       winner: winnerName,
       playerStats
@@ -240,9 +261,10 @@ export default function App() {
     return targets;
   };
 
-  const handleGameSelect = (gameId, mode = 'standard') => {
+  const handleGameSelect = (gameId, mode = 'standard', options = { doubleIn: false, doubleOut: true }) => {
     setSelectedGame(gameId);
     setGameMode(mode);
+    setX01Rules(options);
     setStep(2);
   };
 
@@ -268,6 +290,7 @@ export default function App() {
     const initialScores = {};
     const initialPenalties = {};
     const initialX01 = {};
+    const initialInStatus = {};
     const startScore = parseInt(mode) || 501;
 
     playerList.forEach((_, idx) => {
@@ -275,6 +298,7 @@ export default function App() {
       initialPlayerRounds[idx] = 0;
       initialPenalties[idx] = 0;
       initialX01[idx] = startScore;
+      initialInStatus[idx] = !x01Rules.doubleIn; // Double in kapalıysa hepsi içeride başlar
       initialScores[idx] = {};
       const activeTargets = getTargetsForMode(mode);
       activeTargets.forEach(target => {
@@ -289,6 +313,7 @@ export default function App() {
     setScores(initialScores);
     setPenaltyPoints(initialPenalties);
     setX01Scores(initialX01);
+    setX01InStatus(initialInStatus);
     setRoundsWon(initialRounds);
     setPlayerRoundsCount(initialPlayerRounds);
     setActivePlayerIndex(0);
@@ -320,6 +345,7 @@ export default function App() {
     const newPlayerRounds = {};
     const newPenalties = {};
     const newX01 = {};
+    const newInStatus = {};
 
     const activeTargets = getTargetsForMode(gameMode);
     if (selectedGame === 'cricket') {
@@ -331,6 +357,7 @@ export default function App() {
       newPlayerRounds[idx] = 0;
       newPenalties[idx] = 0;
       newX01[idx] = startScore;
+      newInStatus[idx] = !x01Rules.doubleIn;
       activeTargets.forEach((target) => {
         newScores[idx][target.id] = 0;
       });
@@ -339,6 +366,7 @@ export default function App() {
     setScores(newScores);
     setPenaltyPoints(newPenalties);
     setX01Scores(newX01);
+    setX01InStatus(newInStatus);
     setPlayerRoundsCount(newPlayerRounds);
     setActivePlayerIndex(0);
     setTurnDartsCount(0);
@@ -353,6 +381,7 @@ export default function App() {
       {
         scores: JSON.parse(JSON.stringify(scores)),
         x01Scores: { ...x01Scores },
+        x01InStatus: { ...x01InStatus },
         penaltyPoints: { ...penaltyPoints },
         playerRoundsCount: { ...playerRoundsCount },
         activePlayerIndex,
@@ -466,12 +495,36 @@ export default function App() {
       return;
     }
 
+    // Double In Kontrolü
+    const isIn = x01InStatus[activePlayerIndex];
+    if (x01Rules.doubleIn && !isIn) {
+      // Eğer Double In gerekiyorsa ve oyuncu henüz girmemişse
+      const isDoubleScore = enteredScore > 0 && (enteredScore % 2 === 0 || enteredScore === 50);
+      if (!isDoubleScore) {
+        alert(t.doubleInErr);
+        setNumpadInput('');
+        return;
+      } else {
+        setX01InStatus((prev) => ({ ...prev, [activePlayerIndex]: true }));
+      }
+    }
+
     saveStateToHistory();
 
     const currentScore = x01Scores[activePlayerIndex];
     const remaining = currentScore - enteredScore;
 
-    if (remaining < 0 || remaining === 1) {
+    // Double Out Kuralı Kontrolü
+    if (x01Rules.doubleOut && remaining === 0) {
+      const isDoubleFinish = enteredScore > 0 && (enteredScore % 2 === 0 || enteredScore === 50);
+      if (!isDoubleFinish) {
+        alert(`BUST! ${t.doubleOutErr}`);
+        setNumpadInput('');
+        return;
+      }
+    }
+
+    if (remaining < 0 || (x01Rules.doubleOut && remaining === 1)) {
       alert(`BUST! (${enteredScore})`);
     } else if (remaining === 0) {
       setX01Scores((prev) => ({ ...prev, [activePlayerIndex]: 0 }));
@@ -511,6 +564,7 @@ export default function App() {
 
     setScores(lastState.scores);
     setX01Scores(lastState.x01Scores || {});
+    setX01InStatus(lastState.x01InStatus || {});
     setPenaltyPoints(lastState.penaltyPoints || {});
     setPlayerRoundsCount(lastState.playerRoundsCount);
     setActivePlayerIndex(lastState.activePlayerIndex);
@@ -528,6 +582,7 @@ export default function App() {
       setGameMode('standard');
       setScores({});
       setX01Scores({});
+      setX01InStatus({});
       setPenaltyPoints({});
       setRoundsWon({});
       setPlayerRoundsCount({});
@@ -692,7 +747,14 @@ export default function App() {
             <div className="x01-header-grid" style={{ gridTemplateColumns: `repeat(${players.length}, 1fr)` }}>
               {players.map((name, idx) => (
                 <div key={idx} className={`x01-player-card ${idx === activePlayerIndex ? 'active' : ''}`}>
-                  <div className="rounds-label">Legs: {roundsWon[idx] || 0} / {targetLegs}</div>
+                  <div className="rounds-label">
+                    Legs: {roundsWon[idx] || 0} / {targetLegs}
+                    {x01Rules.doubleIn && (
+                      <span style={{ marginLeft: '4px', color: x01InStatus[idx] ? '#28a745' : '#ff5252' }}>
+                        [{x01InStatus[idx] ? 'IN' : 'NEED D-IN'}]
+                      </span>
+                    )}
+                  </div>
                   <div className="p-name">{name}</div>
                   <div className="x01-big-score">{x01Scores[idx]}</div>
                   <div className="analytics-box">
