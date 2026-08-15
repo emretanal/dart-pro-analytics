@@ -140,7 +140,6 @@ export default function App() {
     return saved ? JSON.parse(saved) : {};
   });
 
-  // Aktif Turda Atılan Dartların Listesi
   const [currentTurnDarts, setCurrentTurnDarts] = useState([]);
 
   const [roundsWon, setRoundsWon] = useState(() => {
@@ -374,7 +373,6 @@ export default function App() {
     ]);
   };
 
-  // CRICKET HÜCRE TIKLAMA
   const handleCellClick = (playerIdx, targetId) => {
     if (playerIdx !== activePlayerIndex || winner) return;
 
@@ -632,8 +630,9 @@ export default function App() {
     return avg.toFixed(1);
   };
 
-  const activeRemainingScore = x01Scores[activePlayerIndex];
-  const checkoutSuggestion = getCheckoutSuggestion(activeRemainingScore);
+  // 170 VE ALTINA DÜŞÜLDÜĞÜNDEKİ ANLIK KALAN SKOR (TUR İÇİ DARTLAR DAHİL)
+  const currentActiveRemaining = x01Scores[activePlayerIndex];
+  const checkoutSuggestion = getCheckoutSuggestion(currentActiveRemaining);
 
   if (showSplash) {
     return (
@@ -749,7 +748,7 @@ export default function App() {
           </div>
         )}
 
-        {/* YENİ X01 EKRANI - CRICKET TARZI TUŞ TAKIMI */}
+        {/* X01 EKRANI */}
         {step === 5 && selectedGame === 'x01' && (
           <div className="darts-score-theme x01-theme">
             <div className="x01-header-grid" style={{ gridTemplateColumns: `repeat(${players.length}, 1fr)` }}>
@@ -773,6 +772,7 @@ export default function App() {
               ))}
             </div>
 
+            {/* 170 VE ALTINA DÜŞÜLDÜĞÜ ANDA İLK ATISTAKİ SKOR ÖNERİ KUTUSU */}
             {checkoutSuggestion && (
               <div className="checkout-badge-box">
                 <span className="checkout-label">🎯 {t.checkoutRoute}:</span>
