@@ -5,22 +5,21 @@ export default function PlayerNamesStep({ playerCount, onSubmit, onBack, lang = 
     tr: {
       title: 'Oyuncu İsimleri',
       subtitle: 'Oyuncuların isimlerini girin',
-      defaultName: 'Oyuncu',
-      back: 'Geri',
-      start: 'Maça Başla 🎯'
+      playerDefault: 'Oyuncu',
+      start: 'Oyunu Başlat ➔',
+      back: 'Geri'
     },
     en: {
       title: 'Player Names',
-      subtitle: 'Enter player names',
-      defaultName: 'Player',
-      back: 'Back',
-      start: 'Start Match 🎯'
+      subtitle: 'Enter the names of the players',
+      playerDefault: 'Player',
+      start: 'Start Game ➔',
+      back: 'Back'
     }
   }[lang];
 
-  const [names, setNames] = useState(
-    Array.from({ length: playerCount }, (_, i) => `${t.defaultName} ${i + 1}`)
-  );
+  // Başlangıçta input değerlerini boş string ('') olarak tutuyoruz
+  const [names, setNames] = useState(() => Array(playerCount).fill(''));
 
   const handleNameChange = (index, value) => {
     const updated = [...names];
@@ -30,8 +29,11 @@ export default function PlayerNamesStep({ playerCount, onSubmit, onBack, lang = 
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const finalNames = names.map((n, i) => n.trim() || `${t.defaultName} ${i + 1}`);
-    onSubmit(finalNames);
+    // Eğer oyuncu isim alanını boş bıraktıysa varsayılan "Oyuncu 1", "Oyuncu 2" ismini ata
+    const finalizedNames = names.map((name, i) => 
+      name.trim() !== '' ? name.trim() : `${t.playerDefault} ${i + 1}`
+    );
+    onSubmit(finalizedNames);
   };
 
   return (
@@ -42,22 +44,22 @@ export default function PlayerNamesStep({ playerCount, onSubmit, onBack, lang = 
 
       <form onSubmit={handleSubmit} className="names-form">
         <div className="names-input-list">
-          {names.map((name, index) => (
+          {Array.from({ length: playerCount }).map((_, index) => (
             <div key={index} className="name-input-group">
-              <span className="player-badge">{index + 1}</span>
+              <span className="player-badge">P{index + 1}</span>
               <input
                 type="text"
                 className="name-input-field"
-                value={name}
+                value={names[index]}
+                placeholder={`${t.playerDefault} ${index + 1}`}
                 onChange={(e) => handleNameChange(index, e.target.value)}
-                placeholder={`${t.defaultName} ${index + 1}`}
                 maxLength={15}
               />
             </div>
           ))}
         </div>
 
-        <div className="setup-action-row">
+        <div className="setup-action-row" style={{ marginTop: '16px' }}>
           <button type="button" className="btn-setup-back" onClick={onBack}>
             {t.back}
           </button>
