@@ -153,8 +153,8 @@ export default function GameSelectStep({ onSelect, onBack, isFirstStep = false, 
         </div>
       ) : (
         /* X01 DOUBLE IN / OUT SEÇİM ALANI */
-        <div className="x01-rules-container" style={{ width: '100%', textAlign: 'left' }}>
-          <div style={{ color: '#4da6ff', fontWeight: 'bold', marginBottom: '12px', fontSize: '1.05rem', textAlign: 'center' }}>
+        <div className="x01-rules-container">
+          <div style={{ color: '#4da6ff', fontWeight: 'bold', marginBottom: '8px', fontSize: '1.05rem', textAlign: 'center' }}>
             {t.x01RulesTitle}
           </div>
 
@@ -170,7 +170,7 @@ export default function GameSelectStep({ onSelect, onBack, isFirstStep = false, 
             </div>
           </label>
 
-          <label className="toggle-rule-card" style={{ marginTop: '10px' }}>
+          <label className="toggle-rule-card">
             <input 
               type="checkbox" 
               checked={doubleOut} 
@@ -181,19 +181,12 @@ export default function GameSelectStep({ onSelect, onBack, isFirstStep = false, 
               <div className="toggle-rule-desc">{t.doubleOutDesc}</div>
             </div>
           </label>
-
-          <button 
-            className="btn-setup-submit" 
-            onClick={handleX01Confirm}
-            style={{ marginTop: '20px', width: '100%' }}
-          >
-            {t.continue}
-          </button>
         </div>
       )}
 
-      {(!isFirstStep || selectedGame) && (
-        <div className="setup-action-row" style={{ marginTop: '16px' }}>
+      {/* AKSİYON SATIRI */}
+      <div className="setup-action-row" style={{ marginTop: '16px' }}>
+        {(!isFirstStep || selectedGame) && (
           <button 
             type="button" 
             className="btn-setup-back" 
@@ -205,8 +198,18 @@ export default function GameSelectStep({ onSelect, onBack, isFirstStep = false, 
           >
             {t.back}
           </button>
-        </div>
-      )}
+        )}
+
+        {subMode && (
+          <button 
+            type="button"
+            className="btn-setup-submit" 
+            onClick={handleX01Confirm}
+          >
+            {t.continue}
+          </button>
+        )}
+      </div>
     </div>
   );
 }
