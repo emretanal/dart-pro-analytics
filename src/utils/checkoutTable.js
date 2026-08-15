@@ -163,7 +163,40 @@ export const CHECKOUT_TABLE = {
   2: 'D1'
 };
 
-export const getCheckoutSuggestion = (remainingScore) => {
-  if (remainingScore > 170 || remainingScore <= 1) return null;
-  return CHECKOUT_TABLE[remainingScore] || 'No Checkout';
+export const getCheckoutSuggestion = (remainingScore, dartsLeft = 3) => {
+  if (remainingScore > 170 || remainingScore <= 1 || dartsLeft <= 0) return null;
+
+  // 1 Dart hakkı kalmışsa: Sadece çiftli sayılar (D1-D20) ve D-BULL bitirilebilir
+  if (dartsLeft === 1) {
+    if (remainingScore === 50) return 'D-BULL';
+    if (remainingScore <= 40 && remainingScore % 2 === 0) {
+      return `D${remainingScore / 2}`;
+    }
+    return null; // Tek dartla bitirilemeyen sayı için öneri yok
+  }
+
+  // 2 Dart hakkı kalmışsa: Maksimum 110 sayı 2 dartla bitirilebilir
+  if (dartsLeft === 2) {
+    const rawSuggestion = CHECKOUT_TABLE[remainingScore];
+    if (!rawSuggestion) return null;
+
+    const parts = rawSuggestion.split(' ');
+    // Eğer 3 dartlık bir kombinasyonsa tur ortasında otomatik 2-dartlık alternatif üret
+    if (parts.length === 3) {
+      if (remainingScore <= 100) {
+        if (remainingScore % 2 === 0 && remainingScore <= 40) {
+          return `D${remainingScore / 2}`;
+        }
+        if (remainingScore > 40 && remainingScore <= 60) {
+          const singlePart = remainingScore - 40;
+          return `${singlePart} D20`;
+        }
+      }
+      return null; // 2 dartla bitmesi imkansızsa önermeyi bırak
+    }
+    return rawSuggestion;
+  }
+
+  // 3 Dart hakkı varken tam tablo önerisi verilir
+  return CHECKOUT_TABLE[remainingScore] || null;
 };

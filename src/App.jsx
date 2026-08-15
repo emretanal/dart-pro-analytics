@@ -641,7 +641,6 @@ export default function App() {
     return avg.toFixed(1);
   };
 
-  // CHECKOUT ROTASINDA BULL (YEŞİL) VE D-BULL (KIRMIZI) BİLEŞENLERİNİ RENKLENDİRME
   const renderCheckoutRoute = (routeString) => {
     if (!routeString) return null;
     const parts = routeString.split(' ');
@@ -664,9 +663,10 @@ export default function App() {
     });
   };
 
-  const isStartOfTurn = currentTurnDarts.length === 0;
+  // ANLIK KALAN DART SAYISINA GÖRE DİNAMİK BİTİŞ KONTROLÜ
+  const dartsLeftInTurn = 3 - currentTurnDarts.length;
   const currentActiveRemaining = x01Scores[activePlayerIndex];
-  const checkoutSuggestion = isStartOfTurn ? getCheckoutSuggestion(currentActiveRemaining) : null;
+  const checkoutSuggestion = getCheckoutSuggestion(currentActiveRemaining, dartsLeftInTurn);
 
   if (showSplash) {
     return (
