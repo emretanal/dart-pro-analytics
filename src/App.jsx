@@ -35,7 +35,6 @@ const EXTENDED_CRICKET_TARGETS = [
 ];
 
 const MARK_SYMBOLS = ['', '/', 'X', '⭕'];
-const IMPOSSIBLE_X01_SCORES = [163, 166, 169, 172, 173, 175, 176, 178, 179];
 
 const TRANSLATIONS = {
   tr: {
@@ -45,9 +44,7 @@ const TRANSLATIONS = {
     clearLogs: 'Tüm Maç Geçmişini Temizle',
     clearLogsConfirm: 'Tüm maç geçmişini silmek istediğinize emin misiniz?',
     resetConfirm: 'Yeni oyun başlatmak istediğinize emin misiniz? Akıştaki maç sıfırlanacak.',
-    maxScoreErr: 'Bir turda maksimum 180 puan atılabilir!',
-    impossibleScoreErr: 'skoru 3 dart ile atılması imkansız bir skordur! Lütfen doğru puanı girin.',
-    turnLimitErr: 'Bu turda 3 dart hakkınızı kullandınız! END TURN butonuna basarak sırayı devredin.',
+    turnLimitErr: 'Bu turda 3 dart hakkınızı kullandınız! TURU BİTİR butonuna basın.',
     close: '✕ Kapat',
     winner: 'Kazanan',
     congrats: 'TEBRİKLER!',
@@ -56,14 +53,13 @@ const TRANSLATIONS = {
     exit: 'Çıkış',
     endTurn: 'TURU BİTİR',
     undo: 'Geri Al',
-    enteredScore: 'Girilen Skor:',
     penalty: 'Ceza',
     darts: 'Dart',
     rounds: 'Tur',
     checkoutRoute: 'Bitiş Rotası',
     welcomeTitle: 'DART PRO ANALYTICS',
     welcomeSub: 'Skor Takip & İstatistik Sistemi',
-    doubleInErr: 'Double In kuralı aktif! Oyuna girmek için ilk skorun bir Double olması gerekir.',
+    doubleInErr: 'Double In kuralı aktif! Oyuna girmek için ilk vuruşunuzun Double olması gerekir.',
     doubleOutErr: 'Double Out kuralı aktif! Bitiş vuruşu Double olmak zorundadır.'
   },
   en: {
@@ -73,9 +69,7 @@ const TRANSLATIONS = {
     clearLogs: 'Clear All Match Logs',
     clearLogsConfirm: 'Are you sure you want to clear all match history?',
     resetConfirm: 'Are you sure you want to start a new game? Current match will be reset.',
-    maxScoreErr: 'Maximum 180 points can be scored in one turn!',
-    impossibleScoreErr: 'is an impossible score with 3 darts! Please enter correct score.',
-    turnLimitErr: 'You used all 3 darts for this turn! Press END TURN to switch player.',
+    turnLimitErr: 'You used all 3 darts for this turn! Press END TURN.',
     close: '✕ Close',
     winner: 'Winner',
     congrats: 'CONGRATULATIONS!',
@@ -84,15 +78,14 @@ const TRANSLATIONS = {
     exit: 'Exit',
     endTurn: 'END TURN',
     undo: 'Undo',
-    enteredScore: 'Entered Score:',
     penalty: 'Penalty',
     darts: 'Darts',
     rounds: 'Rounds',
     checkoutRoute: 'Checkout Route',
     welcomeTitle: 'DART PRO ANALYTICS',
     welcomeSub: 'Scorekeeper & Analytics',
-    doubleInErr: 'Double In is active! You must hit a double to start scoring.',
-    doubleOutErr: 'Double Out is active! You must finish on a double.'
+    doubleInErr: 'Double In active! You must hit a double to start scoring.',
+    doubleOutErr: 'Double Out active! You must finish on a double.'
   }
 };
 
@@ -142,13 +135,13 @@ export default function App() {
     const saved = localStorage.getItem('dart_x01Scores');
     return saved ? JSON.parse(saved) : {};
   });
-  // Oyuncuların oyuna girip girmediği (Double In durumları)
   const [x01InStatus, setX01InStatus] = useState(() => {
     const saved = localStorage.getItem('dart_x01InStatus');
     return saved ? JSON.parse(saved) : {};
   });
 
-  const [numpadInput, setNumpadInput] = useState('');
+  // Aktif Turda Atılan Dartların Listesi
+  const [currentTurnDarts, setCurrentTurnDarts] = useState([]);
 
   const [roundsWon, setRoundsWon] = useState(() => {
     const saved = localStorage.getItem('dart_roundsWon');
@@ -204,17 +197,6 @@ export default function App() {
     activePlayerIndex, currentTargets, scores, penaltyPoints, turnDartsCount,
     x01Scores, x01InStatus, roundsWon, playerRoundsCount, gameHistory, matchLogs
   ]);
-
-  useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      if (step === 5 && !winner) {
-        e.preventDefault();
-        e.returnValue = '';
-      }
-    };
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [step, winner]);
 
   const saveMatchToLogs = (winnerName, finalRoundsWon) => {
     const now = new Date();
@@ -298,7 +280,7 @@ export default function App() {
       initialPlayerRounds[idx] = 0;
       initialPenalties[idx] = 0;
       initialX01[idx] = startScore;
-      initialInStatus[idx] = !x01Rules.doubleIn; // Double in kapalıysa hepsi içeride başlar
+      initialInStatus[idx] = !x01Rules.doubleIn;
       initialScores[idx] = {};
       const activeTargets = getTargetsForMode(mode);
       activeTargets.forEach(target => {
@@ -319,7 +301,7 @@ export default function App() {
     setActivePlayerIndex(0);
     setTurnDartsCount(0);
     setMultiplier('single');
-    setNumpadInput('');
+    setCurrentTurnDarts([]);
     setWinner(null);
     setGameHistory([]);
   };
@@ -371,7 +353,7 @@ export default function App() {
     setActivePlayerIndex(0);
     setTurnDartsCount(0);
     setMultiplier('single');
-    setNumpadInput('');
+    setCurrentTurnDarts([]);
     setGameHistory([]);
   };
 
@@ -386,11 +368,13 @@ export default function App() {
         playerRoundsCount: { ...playerRoundsCount },
         activePlayerIndex,
         turnDartsCount,
+        currentTurnDarts: [...currentTurnDarts],
         currentTargets: [...currentTargets]
       },
     ]);
   };
 
+  // CRICKET HÜCRE TIKLAMA
   const handleCellClick = (playerIdx, targetId) => {
     if (playerIdx !== activePlayerIndex || winner) return;
 
@@ -460,87 +444,100 @@ export default function App() {
     }
   };
 
-  const toggleMultiplier = (type) => {
-    if (multiplier === type) {
-      setMultiplier('single');
-    } else {
-      setMultiplier(type);
-    }
-  };
+  // X01 DART VURUŞU (D1-D20, T1-T20, 1-20, Bull, Miss)
+  const handleX01DartHit = (baseValue) => {
+    if (winner) return;
 
-  const handleNumpadPress = (val) => {
-    if (val === 'DEL') {
-      setNumpadInput((prev) => prev.slice(0, -1));
-    } else if (val === 'ENTER') {
-      submitX01Score();
-    } else {
-      if (numpadInput.length < 3) {
-        setNumpadInput((prev) => prev + val);
+    if (currentTurnDarts.length >= 3) {
+      alert(t.turnLimitErr);
+      return;
+    }
+
+    saveStateToHistory();
+
+    let isDouble = multiplier === 'double';
+    let isTriple = multiplier === 'triple';
+    let points = baseValue;
+    let label = baseValue.toString();
+
+    if (baseValue === 25) { // Bull
+      if (isDouble || isTriple) {
+        points = 50;
+        label = 'D-BULL';
+        isDouble = true;
+      } else {
+        label = 'BULL';
       }
-    }
-  };
-
-  const submitX01Score = () => {
-    const enteredScore = parseInt(numpadInput) || 0;
-
-    if (enteredScore > 180) {
-      alert(t.maxScoreErr);
-      setNumpadInput('');
-      return;
-    }
-
-    if (IMPOSSIBLE_X01_SCORES.includes(enteredScore)) {
-      alert(`${enteredScore} ${t.impossibleScoreErr}`);
-      setNumpadInput('');
-      return;
+    } else if (baseValue === 0) { // Miss
+      points = 0;
+      label = 'MISS';
+      isDouble = false;
+      isTriple = false;
+    } else {
+      if (isDouble) {
+        points = baseValue * 2;
+        label = `D${baseValue}`;
+      } else if (isTriple) {
+        points = baseValue * 3;
+        label = `T${baseValue}`;
+      }
     }
 
     // Double In Kontrolü
     const isIn = x01InStatus[activePlayerIndex];
     if (x01Rules.doubleIn && !isIn) {
-      // Eğer Double In gerekiyorsa ve oyuncu henüz girmemişse
-      const isDoubleScore = enteredScore > 0 && (enteredScore % 2 === 0 || enteredScore === 50);
-      if (!isDoubleScore) {
+      if (!isDouble) {
         alert(t.doubleInErr);
-        setNumpadInput('');
+        setMultiplier('single');
         return;
       } else {
         setX01InStatus((prev) => ({ ...prev, [activePlayerIndex]: true }));
       }
     }
 
-    saveStateToHistory();
-
     const currentScore = x01Scores[activePlayerIndex];
-    const remaining = currentScore - enteredScore;
+    const remaining = currentScore - points;
 
-    // Double Out Kuralı Kontrolü
-    if (x01Rules.doubleOut && remaining === 0) {
-      const isDoubleFinish = enteredScore > 0 && (enteredScore % 2 === 0 || enteredScore === 50);
-      if (!isDoubleFinish) {
-        alert(`BUST! ${t.doubleOutErr}`);
-        setNumpadInput('');
-        return;
-      }
+    // BUST & FINISH KONTROLLERİ
+    if (x01Rules.doubleOut && remaining === 0 && !isDouble) {
+      alert(`BUST! ${t.doubleOutErr}`);
+      setCurrentTurnDarts((prev) => [...prev, { label: `${label} (BUST)`, points: 0 }]);
+      setMultiplier('single');
+      setTimeout(() => handleNextTurn(), 300);
+      return;
     }
 
     if (remaining < 0 || (x01Rules.doubleOut && remaining === 1)) {
-      alert(`BUST! (${enteredScore})`);
-    } else if (remaining === 0) {
-      setX01Scores((prev) => ({ ...prev, [activePlayerIndex]: 0 }));
-      setTimeout(() => startNextLeg(activePlayerIndex), 50);
+      alert(`BUST!`);
+      setCurrentTurnDarts((prev) => [...prev, { label: `${label} (BUST)`, points: 0 }]);
+      setMultiplier('single');
+      setTimeout(() => handleNextTurn(), 300);
       return;
-    } else {
-      setX01Scores((prev) => ({ ...prev, [activePlayerIndex]: remaining }));
     }
 
-    setPlayerRoundsCount((prev) => ({
-      ...prev,
-      [activePlayerIndex]: (prev[activePlayerIndex] || 0) + 1,
-    }));
+    // Geçerli Atış Kaydı
+    setX01Scores((prev) => ({ ...prev, [activePlayerIndex]: remaining }));
+    const newTurnDarts = [...currentTurnDarts, { label, points }];
+    setCurrentTurnDarts(newTurnDarts);
+    setMultiplier('single');
 
-    setActivePlayerIndex((prev) => (prev + 1) % players.length);
-    setNumpadInput('');
+    if (remaining === 0) {
+      setTimeout(() => startNextLeg(activePlayerIndex), 100);
+      return;
+    }
+
+    // 3 Dart dolduysa otomatik sıra devri
+    if (newTurnDarts.length === 3) {
+      setTimeout(() => handleNextTurn(), 200);
+    }
+  };
+
+  const toggleMultiplier = (type) => {
+    if (multiplier === type) {
+      setMultiplier('single');
+    } else {
+      setMultiplier(type);
+    }
   };
 
   const handleNextTurn = () => {
@@ -554,6 +551,7 @@ export default function App() {
 
     setActivePlayerIndex((prev) => (prev + 1) % players.length);
     setTurnDartsCount(0);
+    setCurrentTurnDarts([]);
     setMultiplier('single');
   };
 
@@ -569,6 +567,7 @@ export default function App() {
     setPlayerRoundsCount(lastState.playerRoundsCount);
     setActivePlayerIndex(lastState.activePlayerIndex);
     setTurnDartsCount(lastState.turnDartsCount);
+    setCurrentTurnDarts(lastState.currentTurnDarts || []);
     if (lastState.currentTargets) setCurrentTargets(lastState.currentTargets);
     setGameHistory((prev) => prev.slice(0, -1));
     setMultiplier('single');
@@ -605,8 +604,8 @@ export default function App() {
 
   const getTotalDarts = (playerIdx) => {
     const completedRounds = playerRoundsCount[playerIdx] || 0;
-    const currentTurnDarts = playerIdx === activePlayerIndex ? turnDartsCount : 0;
-    return (completedRounds * 3) + currentTurnDarts;
+    const currentTurnDartsCount = playerIdx === activePlayerIndex ? currentTurnDarts.length : 0;
+    return (completedRounds * 3) + currentTurnDartsCount;
   };
 
   const calculateMPR = (playerIdx) => {
@@ -633,7 +632,7 @@ export default function App() {
     return avg.toFixed(1);
   };
 
-  const activeRemainingScore = x01Scores[activePlayerIndex] - (parseInt(numpadInput) || 0);
+  const activeRemainingScore = x01Scores[activePlayerIndex];
   const checkoutSuggestion = getCheckoutSuggestion(activeRemainingScore);
 
   if (showSplash) {
@@ -648,6 +647,13 @@ export default function App() {
       </div>
     );
   }
+
+  const x01NumbersList = [
+    20, 19, 18, 17, 16,
+    15, 14, 13, 12, 11,
+    10, 9, 8, 7, 6,
+    5, 4, 3, 2, 1
+  ];
 
   return (
     <div className="app-container">
@@ -668,6 +674,7 @@ export default function App() {
         {step === 3 && <PlayerNamesStep playerCount={playerCount} onSubmit={handlePlayerNamesSubmit} onBack={() => setStep(2)} lang={lang} />}
         {step === 4 && <LegTargetStep onSelect={handleLegTargetSelect} onBack={() => setStep(3)} lang={lang} />}
 
+        {/* CRICKET EKRANI */}
         {step === 5 && selectedGame === 'cricket' && (
           <div className={`darts-score-theme ${gameMode === 'extended' ? 'compact-extended' : ''}`}>
             <div className="board-scroll-wrapper">
@@ -742,6 +749,7 @@ export default function App() {
           </div>
         )}
 
+        {/* YENİ X01 EKRANI - CRICKET TARZI TUŞ TAKIMI */}
         {step === 5 && selectedGame === 'x01' && (
           <div className="darts-score-theme x01-theme">
             <div className="x01-header-grid" style={{ gridTemplateColumns: `repeat(${players.length}, 1fr)` }}>
@@ -759,7 +767,7 @@ export default function App() {
                   <div className="x01-big-score">{x01Scores[idx]}</div>
                   <div className="analytics-box">
                     <div><span className="analytics-label">3-Dart Avg:</span> {calculateX01Avg(idx)}</div>
-                    <div><span className="analytics-label">{t.darts}:</span> {(playerRoundsCount[idx] || 0) * 3}</div>
+                    <div><span className="analytics-label">{t.darts}:</span> {getTotalDarts(idx)}</div>
                   </div>
                 </div>
               ))}
@@ -772,26 +780,57 @@ export default function App() {
               </div>
             )}
 
-            <div className="numpad-container">
-              <div className="numpad-display">
-                <span className="numpad-label">{t.enteredScore}</span>
-                <span className="numpad-value">{numpadInput || '0'}</span>
+            {/* AKTİF TUR DARTLARI GÖSTERGESİ */}
+            <div className="x01-turn-display">
+              <span className="turn-dart-item">{currentTurnDarts[0]?.label || '-'}</span>
+              <span className="turn-dart-item">{currentTurnDarts[1]?.label || '-'}</span>
+              <span className="turn-dart-item">{currentTurnDarts[2]?.label || '-'}</span>
+              <span className="turn-total-sum">
+                Total: {currentTurnDarts.reduce((a, b) => a + b.points, 0)}
+              </span>
+            </div>
+
+            {/* D/T MULTIPLIER VE DART TUŞ TAKIMI */}
+            <div className="x01-keypad-container">
+              <div className="x01-multiplier-row">
+                <button 
+                  className={`btn-x01-mult ${multiplier === 'double' ? 'active-double' : ''}`}
+                  onClick={() => toggleMultiplier('double')}
+                >
+                  DOUBLE (D)
+                </button>
+                <button 
+                  className={`btn-x01-mult ${multiplier === 'triple' ? 'active-triple' : ''}`}
+                  onClick={() => toggleMultiplier('triple')}
+                >
+                  TRIPLE (T)
+                </button>
               </div>
-              <div className="numpad-grid">
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 'DEL', 0, 'ENTER'].map((btn) => (
+
+              <div className="x01-board-grid">
+                {x01NumbersList.map((num) => (
                   <button
-                    key={btn}
-                    className={`numpad-btn ${btn === 'ENTER' ? 'btn-enter' : btn === 'DEL' ? 'btn-del' : ''}`}
-                    onClick={() => handleNumpadPress(btn.toString())}
+                    key={num}
+                    className="x01-num-btn"
+                    onClick={() => handleX01DartHit(num)}
                   >
-                    {btn}
+                    {num}
                   </button>
                 ))}
+                <button className="x01-num-btn btn-bull" onClick={() => handleX01DartHit(25)}>
+                  BULL
+                </button>
+                <button className="x01-num-btn btn-miss" onClick={() => handleX01DartHit(0)}>
+                  MISS (0)
+                </button>
               </div>
             </div>
 
             <div className="action-bar">
               <button className="btn-text" onClick={handleResetGame}>{t.exit}</button>
+              <button className="btn-next" onClick={handleNextTurn}>
+                {t.endTurn} ({currentTurnDarts.length}/3)
+              </button>
               <button className="btn-text" onClick={handleUndo} style={{ opacity: gameHistory.length === 0 ? 0.3 : 1 }} disabled={gameHistory.length === 0}>
                 {t.undo}
               </button>
