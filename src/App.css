@@ -85,25 +85,22 @@ html, body {
   50% { transform: translateY(-8px); }
 }
 
-/* ANA KONTEYNER - MOBİL EKRANA DİKEYDE BİREBİR OTURMA */
+/* ANA KONTEYNER */
 .app-container {
   display: flex;
   flex-direction: column;
-  height: 100dvh;
+  min-height: 100dvh;
   max-width: 600px;
   margin: 0 auto;
-  padding: 12px 12px calc(12px + env(safe-area-inset-bottom)) 12px;
+  padding: 12px;
   box-sizing: border-box;
 }
 
 .app-content {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   width: 100%;
-  height: 100%;
-  min-height: 0;
+  flex: 1;
 }
 
 /* ÜST BAR */
@@ -111,9 +108,8 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
   width: 100%;
-  flex-shrink: 0;
 }
 
 .btn-lang-toggle, .btn-logs-toggle {
@@ -135,7 +131,7 @@ html, body {
   color: #4da6ff;
 }
 
-/* HERO KART (KURULUM ADIMLARI) */
+/* HERO KART (SABİT YÜKSEKLİKLİ KURULUM ADIMLARI) */
 .hero-card {
   background: #222330 !important;
   border: 1px solid #333446 !important;
@@ -148,8 +144,6 @@ html, body {
   flex-direction: column !important;
   align-items: center !important;
   margin-top: 5px !important;
-  flex: 1;
-  justify-content: center;
 }
 
 .setup-header-icon {
@@ -403,7 +397,7 @@ html, body {
   display: flex;
   gap: 10px;
   width: 100%;
-  margin-top: 10px;
+  margin-top: 14px;
   box-sizing: border-box;
 }
 
@@ -438,15 +432,13 @@ html, body {
   justify-content: center;
 }
 
-/* OYUN TEMALARI VE EKRANA TAM DİKEY YAYILMA */
+/* YALNIZCA OYUN BAŞLADIĞINDA OYUN EKRANI EKRANA YAYILSIN */
 .darts-score-theme {
   display: flex;
   flex-direction: column;
   flex: 1;
   justify-content: space-between;
   width: 100%;
-  height: 100%;
-  min-height: 0;
 }
 
 /* CHECKOUT BİTİŞ REHBERİ STİLİ */
@@ -460,7 +452,6 @@ html, body {
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  flex-shrink: 0;
 }
 
 .checkout-label {
@@ -496,7 +487,6 @@ html, body {
   border-radius: 10px;
   padding: 8px 14px;
   margin: 4px 0;
-  flex-shrink: 0;
 }
 
 .turn-dart-item {
@@ -521,16 +511,12 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  flex: 1;
-  justify-content: space-evenly;
-  min-height: 0;
 }
 
 .x01-multiplier-row {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 6px;
-  flex-shrink: 0;
 }
 
 .btn-x01-mult {
@@ -561,24 +547,17 @@ html, body {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 5px;
-  flex: 1;
-  align-content: space-evenly;
 }
 
 .x01-num-btn {
   background: #1a1b23;
   border: 1px solid #3d3e52;
   border-radius: 8px;
-  height: 100%;
-  min-height: 38px;
-  max-height: 48px;
+  height: 44px;
   font-size: 1.1rem;
   font-weight: 700;
   color: #ffffff;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .x01-num-btn:active {
@@ -600,31 +579,17 @@ html, body {
   color: #ff5252;
 }
 
-/* CRICKET TABLOSUNU MOBİL DİKEY EKRANA TAM ESNETME */
+/* CRICKET TABLO */
 .board-scroll-wrapper {
   overflow-x: auto;
-  overflow-y: hidden;
   margin-bottom: 5px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
 }
 
 .cricket-board-table {
   width: 100%;
-  height: 100%;
   border-collapse: separate;
   border-spacing: 4px;
   table-layout: fixed;
-}
-
-.cricket-board-table tbody {
-  height: 100%;
-}
-
-.target-row {
-  height: calc(100% / 7);
 }
 
 .num-col {
@@ -719,13 +684,11 @@ html, body {
 
 .mark-cell-td {
   text-align: center;
-  height: 100%;
 }
 
 .board-mark-btn {
   width: 100%;
-  height: 100%;
-  min-height: 42px;
+  height: 44px;
   border: 1px solid #3d3e52;
   border-radius: 10px;
   background: #1a1b23;
@@ -755,8 +718,8 @@ html, body {
   color: #ffffff;
   font-weight: bold;
   font-size: 1rem;
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   border-radius: 8px;
   cursor: pointer;
 }
@@ -775,7 +738,6 @@ html, body {
   display: grid;
   gap: 6px;
   margin-bottom: 6px;
-  flex-shrink: 0;
 }
 
 .x01-player-card {
@@ -803,8 +765,7 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 8px;
-  flex-shrink: 0;
+  padding-top: 6px;
 }
 
 .btn-text {
@@ -820,10 +781,10 @@ html, body {
   background: #2b2c3a;
   border: 1px solid #3d3e52;
   color: #fff;
-  padding: 12px 24px;
-  font-size: 1rem;
-  font-weight: 700;
-  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 8px;
   cursor: pointer;
 }
 
