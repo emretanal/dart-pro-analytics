@@ -442,7 +442,6 @@ export default function App() {
     }
   };
 
-  // X01 DART VURUŞU (D1-D20, T1-T20, 1-20, Bull, Miss)
   const handleX01DartHit = (baseValue) => {
     if (winner) return;
 
@@ -458,7 +457,7 @@ export default function App() {
     let points = baseValue;
     let label = baseValue.toString();
 
-    if (baseValue === 25) { // Bull
+    if (baseValue === 25) {
       if (isDouble || isTriple) {
         points = 50;
         label = 'D-BULL';
@@ -466,7 +465,7 @@ export default function App() {
       } else {
         label = 'BULL';
       }
-    } else if (baseValue === 0) { // Miss
+    } else if (baseValue === 0) {
       points = 0;
       label = 'MISS';
       isDouble = false;
@@ -481,7 +480,6 @@ export default function App() {
       }
     }
 
-    // Double In Kontrolü
     const isIn = x01InStatus[activePlayerIndex];
     if (x01Rules.doubleIn && !isIn) {
       if (!isDouble) {
@@ -496,7 +494,6 @@ export default function App() {
     const currentScore = x01Scores[activePlayerIndex];
     const remaining = currentScore - points;
 
-    // BUST & FINISH KONTROLLERİ
     if (x01Rules.doubleOut && remaining === 0 && !isDouble) {
       alert(`BUST! ${t.doubleOutErr}`);
       setCurrentTurnDarts((prev) => [...prev, { label: `${label} (BUST)`, points: 0 }]);
@@ -513,7 +510,6 @@ export default function App() {
       return;
     }
 
-    // Geçerli Atış Kaydı
     setX01Scores((prev) => ({ ...prev, [activePlayerIndex]: remaining }));
     const newTurnDarts = [...currentTurnDarts, { label, points }];
     setCurrentTurnDarts(newTurnDarts);
@@ -524,7 +520,6 @@ export default function App() {
       return;
     }
 
-    // 3 Dart dolduysa otomatik sıra devri
     if (newTurnDarts.length === 3) {
       setTimeout(() => handleNextTurn(), 200);
     }
@@ -588,6 +583,21 @@ export default function App() {
     }
   };
 
+  const handleExitToGameSelect = () => {
+    setStep(1);
+    setPlayers([]);
+    setSelectedGame(null);
+    setGameMode('standard');
+    setScores({});
+    setX01Scores({});
+    setX01InStatus({});
+    setPenaltyPoints({});
+    setRoundsWon({});
+    setPlayerRoundsCount({});
+    setWinner(null);
+    setGameHistory([]);
+  };
+
   const clearAllMatchLogs = () => {
     if (window.confirm(t.clearLogsConfirm)) {
       setMatchLogs([]);
@@ -630,7 +640,6 @@ export default function App() {
     return avg.toFixed(1);
   };
 
-  // CHECKOUT ÖNERİSİ SADECE OYUNCUNUN TUR BAŞINDA (0 DART ATILMIŞKEN) HESAPLANIR
   const isStartOfTurn = currentTurnDarts.length === 0;
   const currentActiveRemaining = x01Scores[activePlayerIndex];
   const checkoutSuggestion = isStartOfTurn ? getCheckoutSuggestion(currentActiveRemaining) : null;
@@ -674,7 +683,6 @@ export default function App() {
         {step === 3 && <PlayerNamesStep playerCount={playerCount} onSubmit={handlePlayerNamesSubmit} onBack={() => setStep(2)} lang={lang} />}
         {step === 4 && <LegTargetStep onSelect={handleLegTargetSelect} onBack={() => setStep(3)} lang={lang} />}
 
-        {/* CRICKET EKRANI */}
         {step === 5 && selectedGame === 'cricket' && (
           <div className={`darts-score-theme ${gameMode === 'extended' ? 'compact-extended' : ''}`}>
             <div className="board-scroll-wrapper">
@@ -749,7 +757,6 @@ export default function App() {
           </div>
         )}
 
-        {/* X01 EKRANI */}
         {step === 5 && selectedGame === 'x01' && (
           <div className="darts-score-theme x01-theme">
             <div className="x01-header-grid" style={{ gridTemplateColumns: `repeat(${players.length}, 1fr)` }}>
@@ -773,7 +780,6 @@ export default function App() {
               ))}
             </div>
 
-            {/* SADECE TUR BAŞINDA KONTROL EDİLEN 3-DART CHECKOUT ÖNERİSİ */}
             {checkoutSuggestion && (
               <div className="checkout-badge-box">
                 <span className="checkout-label">🎯 {t.checkoutRoute}:</span>
@@ -781,7 +787,6 @@ export default function App() {
               </div>
             )}
 
-            {/* AKTİF TUR DARTLARI GÖSTERGESİ */}
             <div className="x01-turn-display">
               <span className="turn-dart-item">{currentTurnDarts[0]?.label || '-'}</span>
               <span className="turn-dart-item">{currentTurnDarts[1]?.label || '-'}</span>
@@ -791,7 +796,6 @@ export default function App() {
               </span>
             </div>
 
-            {/* D/T MULTIPLIER VE DART TUŞ TAKIMI */}
             <div className="x01-keypad-container">
               <div className="x01-multiplier-row">
                 <button 
@@ -846,9 +850,15 @@ export default function App() {
               <h1>{t.congrats}</h1>
               <h2 className="winner-name">{winner}</h2>
               <p className="winner-desc">{targetLegs} {t.wonText}</p>
-              <button className="btn-setup-submit btn-large" onClick={handleResetGame}>
-                {t.newGame}
-              </button>
+              
+              <div className="winner-modal-actions">
+                <button className="btn-setup-submit" onClick={handleResetGame}>
+                  {t.newGame}
+                </button>
+                <button className="btn-setup-back" onClick={handleExitToGameSelect}>
+                  {t.exit}
+                </button>
+              </div>
             </div>
           </div>
         )}

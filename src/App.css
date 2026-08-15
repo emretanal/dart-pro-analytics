@@ -785,6 +785,23 @@ html, body {
   box-sizing: border-box;
 }
 
+.winner-modal-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  margin-top: 16px;
+  justify-content: center;
+}
+
+.winner-modal-actions .btn-setup-submit {
+  flex: 1;
+}
+
+.winner-modal-actions .btn-setup-back {
+  flex: 1;
+  width: auto;
+}
+
 .history-list {
   overflow-y: auto;
   display: flex;

@@ -18,7 +18,6 @@ export default function PlayerNamesStep({ playerCount, onSubmit, onBack, lang = 
     }
   }[lang];
 
-  // Başlangıçta input değerlerini boş string ('') olarak tutuyoruz
   const [names, setNames] = useState(() => Array(playerCount).fill(''));
 
   const handleNameChange = (index, value) => {
@@ -29,7 +28,6 @@ export default function PlayerNamesStep({ playerCount, onSubmit, onBack, lang = 
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Eğer oyuncu isim alanını boş bıraktıysa varsayılan "Oyuncu 1", "Oyuncu 2" ismini ata
     const finalizedNames = names.map((name, i) => 
       name.trim() !== '' ? name.trim() : `${t.playerDefault} ${i + 1}`
     );

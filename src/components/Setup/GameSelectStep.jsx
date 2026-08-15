@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 export default function GameSelectStep({ onSelect, onBack, isFirstStep = false, lang = 'tr' }) {
   const [selectedGame, setSelectedGame] = useState(null);
-  const [subMode, setSubMode] = useState(null); // '501', '301', '701'
+  const [subMode, setSubMode] = useState(null);
   const [doubleIn, setDoubleIn] = useState(false);
   const [doubleOut, setDoubleOut] = useState(true);
 
@@ -152,7 +152,6 @@ export default function GameSelectStep({ onSelect, onBack, isFirstStep = false, 
           ))}
         </div>
       ) : (
-        /* X01 DOUBLE IN / OUT SEÇİM ALANI */
         <div className="x01-rules-container">
           <div style={{ color: '#4da6ff', fontWeight: 'bold', marginBottom: '8px', fontSize: '1.05rem', textAlign: 'center' }}>
             {t.x01RulesTitle}
@@ -184,7 +183,6 @@ export default function GameSelectStep({ onSelect, onBack, isFirstStep = false, 
         </div>
       )}
 
-      {/* AKSİYON SATIRI */}
       <div className="setup-action-row" style={{ marginTop: '16px' }}>
         {(!isFirstStep || selectedGame) && (
           <button 
