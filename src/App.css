@@ -85,11 +85,11 @@ html, body {
   50% { transform: translateY(-8px); }
 }
 
-/* ANA KONTEYNER - EKRAA TAM OTURAN MOBİL YAPI */
+/* ANA KONTEYNER */
 .app-container {
   display: flex;
   flex-direction: column;
-  height: 100dvh;
+  min-height: 100dvh;
   max-width: 600px;
   margin: 0 auto;
   padding: 8px 12px calc(8px + env(safe-area-inset-bottom)) 12px;
@@ -101,7 +101,6 @@ html, body {
   flex-direction: column;
   width: 100%;
   flex: 1;
-  min-height: 0;
 }
 
 /* ÜST BAR */
@@ -434,17 +433,16 @@ html, body {
   justify-content: center;
 }
 
-/* OYUN TEMASI (DİKEYDE USER-FRIENDLY MÜKEMMEL DOLDURMA) */
+/* OYUN EKRANI GENEL DÜZENİ */
 .darts-score-theme {
   display: flex;
   flex-direction: column;
   flex: 1;
   justify-content: space-between;
   width: 100%;
-  min-height: 0;
 }
 
-/* CHECKOUT BİTİŞ REHBERİ */
+/* CHECKOUT BİTİŞ REHBERİ STİLİ */
 .checkout-badge-box {
   background: linear-gradient(135deg, rgba(40, 167, 69, 0.15), rgba(77, 166, 255, 0.15));
   border: 1px solid #28a745;
@@ -471,7 +469,7 @@ html, body {
   letter-spacing: 1.5px;
 }
 
-/* X01 KEYPAD VE GÖSTERGE */
+/* X01 KEYPAD VE DART GÖSTERGESİ */
 .x01-turn-display {
   display: flex;
   justify-content: space-between;
@@ -506,15 +504,12 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  flex: 1;
-  min-height: 0;
 }
 
 .x01-multiplier-row {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 6px;
-  flex-shrink: 0;
 }
 
 .btn-x01-mult {
@@ -545,15 +540,13 @@ html, body {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 6px;
-  flex: 1;
 }
 
 .x01-num-btn {
   background: #1a1b23;
   border: 1px solid #3d3e52;
   border-radius: 8px;
-  height: 100%;
-  min-height: 44px;
+  height: 48px;
   font-size: 1.15rem;
   font-weight: 700;
   color: #ffffff;
@@ -582,46 +575,18 @@ html, body {
   color: #ff5252;
 }
 
-/* CRICKET TABLOSU - ERGONOMİK DİKEY ESNETME (TOUCH-FRIENDLY) */
+/* CRICKET TABLOSU - DOĞAL VE STABİL YÜKSEKLİK */
 .board-scroll-wrapper {
   overflow-x: auto;
-  overflow-y: hidden;
-  margin-bottom: 4px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
+  overflow-y: auto;
+  margin-bottom: 6px;
+  width: 100%;
 }
 
 .cricket-board-table {
   width: 100%;
-  height: 100%;
   border-collapse: separate;
   border-spacing: 4px;
-  table-layout: fixed;
-  display: flex;
-  flex-direction: column;
-}
-
-.cricket-board-table thead {
-  flex-shrink: 0;
-  display: table;
-  width: 100%;
-  table-layout: fixed;
-}
-
-.cricket-board-table tbody {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  justify-content: space-between;
-}
-
-.target-row {
-  flex: 1;
-  display: table;
-  width: 100%;
   table-layout: fixed;
 }
 
@@ -632,7 +597,7 @@ html, body {
 }
 
 .player-col-header {
-  padding: 4px 2px;
+  padding: 6px 2px;
   opacity: 0.35;
   transition: all 0.2s ease-in-out;
 }
@@ -719,21 +684,19 @@ html, body {
 
 .mark-cell-td {
   text-align: center;
-  height: 100%;
   padding: 1px;
   vertical-align: middle;
 }
 
-/* BUTONLAR DİKEYDE OTOMATİK ESNEYEREK TIKLAMAYI MÜKEMMEL KOLAYLAŞTIRIR */
+/* ERGONOMİK BUTON YÜKSEKLİĞİ (48PX DOKUNMA ALANI) */
 .board-mark-btn {
   width: 100%;
-  height: 100%;
-  min-height: 38px;
+  height: 48px;
   border: 1px solid #3d3e52;
-  border-radius: 8px;
+  border-radius: 10px;
   background: #1a1b23;
   color: #fff;
-  font-size: 1.25rem;
+  font-size: 1.3rem;
   font-weight: bold;
   cursor: pointer;
   display: flex;
