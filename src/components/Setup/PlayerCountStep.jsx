@@ -1,43 +1,34 @@
 export default function PlayerCountStep({ onSelect, onBack, lang = 'tr' }) {
-  const t = {
-    tr: {
-      title: 'Kaç Oyuncu Oynayacak?',
-      subtitle: 'Oyuncu sayısını seçin (Maks. 4)',
-      player: 'Oyuncu',
-      back: 'Geri'
-    },
-    en: {
-      title: 'How Many Players?',
-      subtitle: 'Select number of players (Max 4)',
-      player: 'Player(s)',
-      back: 'Back'
-    }
-  }[lang];
-
-  const counts = [1, 2, 3, 4];
+  const options = [1, 2, 3, 4];
 
   return (
     <div className="hero-card">
       <div className="setup-header-icon">🎯</div>
-      <h2 className="setup-title">{t.title}</h2>
-      <p className="setup-subtitle">{t.subtitle}</p>
+      <h1 className="setup-title">
+        {lang === 'tr' ? 'Kaç Oyuncu Oynayacak?' : 'How Many Players?'}
+      </h1>
+      <p className="setup-subtitle">
+        {lang === 'tr' ? 'Oyuncu sayısını seçin (Maks. 4)' : 'Select number of players (Max 4)'}
+      </p>
 
       <div className="player-count-grid">
-        {counts.map((count) => (
+        {options.map((count) => (
           <button
             key={count}
             className="btn-count-step"
             onClick={() => onSelect(count)}
           >
             <span className="btn-num">{count}</span>
-            <span className="btn-text-sub">{t.player}</span>
+            <span className="btn-text-sub">
+              {lang === 'tr' ? 'Oyuncu' : 'Player(s)'}
+            </span>
           </button>
         ))}
       </div>
 
-      <div className="setup-action-row" style={{ marginTop: '16px' }}>
-        <button type="button" className="btn-setup-back" onClick={onBack}>
-          {t.back}
+      <div className="setup-action-row">
+        <button className="btn-setup-back" onClick={onBack}>
+          {lang === 'tr' ? 'Geri' : 'Back'}
         </button>
       </div>
     </div>
