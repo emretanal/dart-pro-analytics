@@ -135,7 +135,7 @@ export default function App() {
     const saved = localStorage.getItem('dart_penaltyPoints');
     return saved ? JSON.parse(saved) : {};
   });
-  const [penaltyToast, setPenaltyToast] = useState(null); // CEZA ANLIK BİLDİRİM STATE'İ
+  const [penaltyToast, setPenaltyToast] = useState(null);
 
   const [turnDartsCount, setTurnDartsCount] = useState(() => parseInt(localStorage.getItem('dart_turnDartsCount')) || 0);
   const [multiplier, setMultiplier] = useState('single');
@@ -151,6 +151,7 @@ export default function App() {
 
   const [currentTurnDarts, setCurrentTurnDarts] = useState([]);
   const [isTurnFlashing, setIsTurnFlashing] = useState(false);
+  const [showBustOverlay, setShowBustOverlay] = useState(false); // BUST BÜYÜK EKRAN ANİMASYONU
 
   const [roundsWon, setRoundsWon] = useState(() => {
     const saved = localStorage.getItem('dart_roundsWon');
@@ -325,6 +326,7 @@ export default function App() {
     setMultiplier('single');
     setCurrentTurnDarts([]);
     setIsTurnFlashing(false);
+    setShowBustOverlay(false);
     setWinner(null);
     setGameHistory([]);
   };
@@ -383,6 +385,7 @@ export default function App() {
     setMultiplier('single');
     setCurrentTurnDarts([]);
     setIsTurnFlashing(false);
+    setShowBustOverlay(false);
     setGameHistory([]);
   };
 
@@ -404,7 +407,7 @@ export default function App() {
   };
 
   const handleCellClick = (playerIdx, targetId) => {
-    if (playerIdx !== activePlayerIndex || winner || isTurnFlashing) return;
+    if (playerIdx !== activePlayerIndex || winner || isTurnFlashing || showBustOverlay) return;
 
     if (turnDartsCount >= 3) {
       alert(t.turnLimitErr);
@@ -426,7 +429,6 @@ export default function App() {
 
     const newMarks = currentMarks + addedMarks;
 
-    // CEZALI CRICKET (CUT-THROAT) HESAPLAMA VE EKRANA POPUP BİLDİRİMİ
     if (gameMode === 'cutthroat' && newMarks > 3) {
       const extraMarks = Math.min(addedMarks, newMarks - 3);
       const penaltyAmount = targetObj.points * extraMarks;
@@ -443,7 +445,6 @@ export default function App() {
         }
       });
 
-      // Eğer rakiplere ceza eklendiyse 0.5 saniyeliğine dev pop-up göster
       if (addedToAny && penaltyAmount > 0) {
         setPenaltyToast(`+${penaltyAmount} ${t.penalty.toUpperCase()}!`);
         setTimeout(() => {
@@ -487,7 +488,7 @@ export default function App() {
   };
 
   const handleX01DartHit = (baseValue) => {
-    if (winner || isTurnFlashing) return;
+    if (winner || isTurnFlashing || showBustOverlay) return;
 
     if (currentTurnDarts.length >= 3) {
       alert(t.turnLimitErr);
@@ -546,17 +547,16 @@ export default function App() {
                    (x01Rules.doubleOut && remaining === 0 && !isDouble);
 
     if (isBust) {
-      const bustMsg = (x01Rules.doubleOut && remaining === 0 && !isDouble)
-        ? `BUST! ${t.doubleOutErr}`
-        : `BUST!`;
-      alert(bustMsg);
-
+      // BUST OLUŞTUĞUNDA: alert() yerine 3 saniye ekranda BUST yazıp sıradaki oyuncuya geç
       setX01Scores((prev) => ({ ...prev, [activePlayerIndex]: turnStartScore }));
       setCurrentTurnDarts((prev) => [...prev, { label: `${label} (BUST)`, points: 0 }]);
       setMultiplier('single');
 
+      setShowBustOverlay(true);
       setIsTurnFlashing(true);
+
       setTimeout(() => {
+        setShowBustOverlay(false);
         setIsTurnFlashing(false);
         handleNextTurn();
       }, 3000);
@@ -604,10 +604,11 @@ export default function App() {
     setCurrentTurnDarts([]);
     setMultiplier('single');
     setIsTurnFlashing(false);
+    setShowBustOverlay(false);
   };
 
   const handleUndo = () => {
-    if (gameHistory.length === 0 || winner || isTurnFlashing) return;
+    if (gameHistory.length === 0 || winner || isTurnFlashing || showBustOverlay) return;
 
     const lastState = gameHistory[gameHistory.length - 1];
 
@@ -623,6 +624,7 @@ export default function App() {
     setGameHistory((prev) => prev.slice(0, -1));
     setMultiplier('single');
     setIsTurnFlashing(false);
+    setShowBustOverlay(false);
   };
 
   const handleResetGame = () => {
@@ -828,11 +830,11 @@ export default function App() {
                 </button>
               </div>
 
-              <button className="btn-next" onClick={handleNextTurn} disabled={isTurnFlashing}>
+              <button className="btn-next" onClick={handleNextTurn} disabled={isTurnFlashing || showBustOverlay}>
                 {t.endTurn} ({turnDartsCount}/3)
               </button>
               
-              <button className="btn-text" onClick={handleUndo} style={{ opacity: gameHistory.length === 0 || isTurnFlashing ? 0.3 : 1 }} disabled={gameHistory.length === 0 || isTurnFlashing}>
+              <button className="btn-text" onClick={handleUndo} style={{ opacity: gameHistory.length === 0 || isTurnFlashing || showBustOverlay ? 0.3 : 1 }} disabled={gameHistory.length === 0 || isTurnFlashing || showBustOverlay}>
                 {t.undo}
               </button>
             </div>
@@ -883,14 +885,14 @@ export default function App() {
                 <button 
                   className={`btn-x01-mult ${multiplier === 'double' ? 'active-double' : ''}`}
                   onClick={() => toggleMultiplier('double')}
-                  disabled={isTurnFlashing}
+                  disabled={isTurnFlashing || showBustOverlay}
                 >
                   DOUBLE (D)
                 </button>
                 <button 
                   className={`btn-x01-mult ${multiplier === 'triple' ? 'active-triple' : ''}`}
                   onClick={() => toggleMultiplier('triple')}
-                  disabled={isTurnFlashing}
+                  disabled={isTurnFlashing || showBustOverlay}
                 >
                   TRIPLE (T)
                 </button>
@@ -902,15 +904,15 @@ export default function App() {
                     key={num}
                     className="x01-num-btn"
                     onClick={() => handleX01DartHit(num)}
-                    disabled={isTurnFlashing}
+                    disabled={isTurnFlashing || showBustOverlay}
                   >
                     {num}
                   </button>
                 ))}
-                <button className="x01-num-btn btn-bull" onClick={() => handleX01DartHit(25)} disabled={isTurnFlashing}>
+                <button className="x01-num-btn btn-bull" onClick={() => handleX01DartHit(25)} disabled={isTurnFlashing || showBustOverlay}>
                   BULL
                 </button>
-                <button className="x01-num-btn btn-miss" onClick={() => handleX01DartHit(0)} disabled={isTurnFlashing}>
+                <button className="x01-num-btn btn-miss" onClick={() => handleX01DartHit(0)} disabled={isTurnFlashing || showBustOverlay}>
                   MISS (0)
                 </button>
               </div>
@@ -918,13 +920,20 @@ export default function App() {
 
             <div className="action-bar">
               <button className="btn-text" onClick={handleResetGame}>{t.exit}</button>
-              <button className="btn-next" onClick={handleNextTurn} disabled={isTurnFlashing}>
+              <button className="btn-next" onClick={handleNextTurn} disabled={isTurnFlashing || showBustOverlay}>
                 {t.endTurn} ({currentTurnDarts.length}/3)
               </button>
-              <button className="btn-text" onClick={handleUndo} style={{ opacity: gameHistory.length === 0 || isTurnFlashing ? 0.3 : 1 }} disabled={gameHistory.length === 0 || isTurnFlashing}>
+              <button className="btn-text" onClick={handleUndo} style={{ opacity: gameHistory.length === 0 || isTurnFlashing || showBustOverlay ? 0.3 : 1 }} disabled={gameHistory.length === 0 || isTurnFlashing || showBustOverlay}>
                 {t.undo}
               </button>
             </div>
+          </div>
+        )}
+
+        {/* 3 SANİYE BÜYÜK KIRMIZI BUST YANIP SÖNME EKRANI */}
+        {showBustOverlay && (
+          <div className="bust-overlay">
+            <div className="bust-text">BUST!</div>
           </div>
         )}
 
