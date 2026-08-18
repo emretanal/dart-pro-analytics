@@ -273,7 +273,6 @@ export default function App() {
     setStep(5);
   };
 
-  // BULL-OFF TAMAMLANGANDA OYUNCULARI BULL-OFF SIRASINA GÖRE YENİDEN DİZİYORUZ
   const handleBullOffComplete = (orderedIndices) => {
     const reorderedPlayers = orderedIndices.map((idx) => players[idx]);
     setPlayers(reorderedPlayers);
@@ -345,7 +344,6 @@ export default function App() {
     const nextLegNum = currentLegNumber + 1;
     setCurrentLegNumber(nextLegNum);
 
-    // Her yeni Leg için Bull-Off sırasına göre sıradaki oyuncu başlar (1. Leg -> 0, 2. Leg -> 1, ...)
     const nextStarterIdx = (nextLegNum - 1) % players.length;
 
     const startScore = parseInt(gameMode) || 501;
@@ -469,6 +467,7 @@ export default function App() {
     }
   };
 
+  // X01 VURUŞ HESAPLAMA VE BUST (GEÇERSİZ TUR) KONTROLÜ
   const handleX01DartHit = (baseValue) => {
     if (winner) return;
 
@@ -522,22 +521,32 @@ export default function App() {
     const currentScore = x01Scores[activePlayerIndex];
     const remaining = currentScore - points;
 
-    if (x01Rules.doubleOut && remaining === 0 && !isDouble) {
-      alert(`BUST! ${t.doubleOutErr}`);
+    // Turun başındaki ilk puanı hesaplama (BUST olursa bu puana geri dönülecek)
+    const turnStartScore = currentScore + currentTurnDarts.reduce((sum, d) => sum + d.points, 0);
+
+    // BUST Koşulları:
+    // 1) Puan 0'ın altına düşerse (remaining < 0)
+    // 2) Double-Out kuralında kalan puan 1 olursa (Double ile bitirilemeyeceği için BUST)
+    // 3) Double-Out kuralında kalan puan 0 olur ama son vuruş Double değilse
+    const isBust = remaining < 0 ||
+                   (x01Rules.doubleOut && remaining === 1) ||
+                   (x01Rules.doubleOut && remaining === 0 && !isDouble);
+
+    if (isBust) {
+      const bustMsg = (x01Rules.doubleOut && remaining === 0 && !isDouble)
+        ? `BUST! ${t.doubleOutErr}`
+        : `BUST!`;
+      alert(bustMsg);
+
+      // BUST OLUŞTUĞUNDA: Oyuncunun puanını TUR BAŞINDAKİ puana (turnStartScore) GERİ YÜKLE!
+      setX01Scores((prev) => ({ ...prev, [activePlayerIndex]: turnStartScore }));
       setCurrentTurnDarts((prev) => [...prev, { label: `${label} (BUST)`, points: 0 }]);
       setMultiplier('single');
       setTimeout(() => handleNextTurn(), 300);
       return;
     }
 
-    if (remaining < 0 || (x01Rules.doubleOut && remaining === 1)) {
-      alert(`BUST!`);
-      setCurrentTurnDarts((prev) => [...prev, { label: `${label} (BUST)`, points: 0 }]);
-      setMultiplier('single');
-      setTimeout(() => handleNextTurn(), 300);
-      return;
-    }
-
+    // Geçerli Vuruş
     setX01Scores((prev) => ({ ...prev, [activePlayerIndex]: remaining }));
     const newTurnDarts = [...currentTurnDarts, { label, points }];
     setCurrentTurnDarts(newTurnDarts);
