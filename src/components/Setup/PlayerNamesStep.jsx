@@ -3,18 +3,18 @@ import { useState } from 'react';
 export default function PlayerNamesStep({ playerCount, onSubmit, onBack, lang }) {
   const isTr = lang === 'tr';
 
-  // İlk çalıştırmada listede öneri görünmesi için varsayılan örnek isimler
-  const defaultSampleNames = isTr
-    ? ['Ahmet', 'Mehmet', 'Can', 'Ayşe', 'Fatma', 'Ali', 'Burak', 'Ece']
-    : ['John', 'Alex', 'Sarah', 'Mike', 'Emma', 'David', 'Chris', 'Lisa'];
-
+  // Geçmişte kaydedilmiş oyuncu isimlerini yükle (Geçmiş yoksa boş liste)
   const [savedNames] = useState(() => {
     const saved = localStorage.getItem('dart_saved_player_names');
     if (saved) {
-      const parsed = JSON.parse(saved);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      } catch (e) {
+        console.error('Kayıtlı isimler okunamadı:', e);
+      }
     }
-    return defaultSampleNames;
+    return []; // Geçmişte kayıtlı isim yoksa öneri verme!
   });
 
   const [names, setNames] = useState(() => {
@@ -61,7 +61,7 @@ export default function PlayerNamesStep({ playerCount, onSubmit, onBack, lang })
             const defaultPlaceholder = `${isTr ? 'Oyuncu' : 'Player'} ${idx + 1}`;
             const currentVal = name.trim().toLowerCase();
 
-            // Diğer kutularda zaten seçilmiş olan isimleri öneri listesinden filtrele
+            // Sadece geçmişte gerçek maça girmiş kayıtlı isimler varsa öner
             const suggestions = savedNames.filter((savedName) => {
               const nameLower = savedName.toLowerCase();
               const isAlreadyChosen = names.some(
