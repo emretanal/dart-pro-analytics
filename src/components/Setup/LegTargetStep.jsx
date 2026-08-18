@@ -124,7 +124,7 @@ export default function LegTargetStep({ onSelect, onBack, lang = 'tr' }) {
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            justify-content: 'center',
+            justifyContent: 'center',
             outline: 'none'
           }}
         >
