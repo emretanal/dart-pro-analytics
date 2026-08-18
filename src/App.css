@@ -203,7 +203,7 @@ html, body {
 }
 
 .btn-count-step {
-  height: 58px;
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -224,7 +224,7 @@ html, body {
 }
 
 .btn-count-step .btn-num {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 800;
   color: #4da6ff;
   background: rgba(77, 166, 255, 0.12);
@@ -238,11 +238,107 @@ html, body {
   color: #ffffff;
 }
 
+/* OYUNCU İSİMLERİ DÜZENİ */
+.names-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-sizing: border-box;
+}
+
+.names-input-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.name-input-wrapper {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.name-input-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #1a1b23;
+  border: 1px solid #3d3e52;
+  border-radius: 10px;
+  padding: 0 12px;
+  height: 50px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.name-input-group:focus-within {
+  border-color: #4da6ff;
+}
+
+.player-badge {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border-radius: 50%;
+  background: #2b2c3a;
+  color: #4da6ff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.name-input-field {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 500;
+  width: 100%;
+}
+
+.suggestions-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background: #2b2c3a;
+  border: 1px solid #4da6ff;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8);
+  overflow-y: auto;
+  max-height: 180px;
+}
+
+.suggestion-item {
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+  border-bottom: 1px solid #3d3e52;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
 /* LEG SEÇİM DÜZENİ */
 .leg-select-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  gap: 10px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -250,8 +346,8 @@ html, body {
 .btn-leg-step {
   background: #1a1b23;
   border: 1px solid #3d3e52;
-  border-radius: 12px;
-  height: 58px;
+  border-radius: 10px;
+  height: 56px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -280,7 +376,7 @@ html, body {
   margin-top: 2px;
 }
 
-/* ALT AKSİYON SATIRI VE BUTON ÖLÇÜLERİ */
+/* ALT AKSİYON SATIRI VE BUTONLAR */
 .setup-action-row {
   display: flex;
   gap: 10px;
@@ -303,11 +399,7 @@ html, body {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-}
-
-.btn-setup-back.btn-full-back {
-  width: 100%;
-  flex: 1;
+  box-sizing: border-box;
 }
 
 .btn-setup-submit {
@@ -317,12 +409,13 @@ html, body {
   border: none;
   border-radius: 10px;
   height: 48px;
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
 }
 
 /* OYUN SEÇİM LİSTESİ */

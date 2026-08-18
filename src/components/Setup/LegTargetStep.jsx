@@ -36,7 +36,7 @@ export default function LegTargetStep({ onSelect, onBack, lang = 'tr' }) {
       </div>
 
       <div className="setup-action-row">
-        <button className="btn-setup-back btn-full-back" onClick={onBack}>
+        <button className="btn-setup-back" onClick={onBack}>
           {lang === 'tr' ? 'Geri' : 'Back'}
         </button>
       </div>
