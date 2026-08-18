@@ -1,91 +1,137 @@
 import { useState } from 'react';
 
 export default function BullOffStep({ players, onComplete, onBack, lang }) {
-  const [bullHits, setBullHits] = useState({});
-  const [currentIndex, setCurrentIndex] = useState(0);
-
   const isTr = lang === 'tr';
 
-  const handleHitSelect = (type) => {
-    const updatedHits = { ...bullHits, [currentIndex]: type };
-    setBullHits(updatedHits);
+  // Başlangıç sıralaması [0, 1, 2, ...]
+  const [order, setOrder] = useState(() => players.map((_, idx) => idx));
+  
+  // Atış skorları (D-BULL: 50, BULL: 25, Dışarı: 0)
+  const [hits, setHits] = useState({});
 
-    if (currentIndex + 1 < players.length) {
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      calculateOrderAndFinish(updatedHits);
-    }
-  };
+  // Skor seçildiğinde otomatik sırala (skor eşitse manuel sırayı korur)
+  const handleHitSelect = (playerIdx, score) => {
+    const updatedHits = { ...hits, [playerIdx]: score };
+    setHits(updatedHits);
 
-  const calculateOrderAndFinish = (hits) => {
-    const playerIndices = players.map((_, idx) => idx);
-
-    playerIndices.sort((a, b) => {
-      const scoreA = hits[a] !== undefined ? hits[a] : 0;
-      const scoreB = hits[b] !== undefined ? hits[b] : 0;
-      return scoreB - scoreA;
+    const sortedOrder = [...order].sort((a, b) => {
+      const scoreA = updatedHits[a] !== undefined ? updatedHits[a] : -1;
+      const scoreB = updatedHits[b] !== undefined ? updatedHits[b] : -1;
+      if (scoreB !== scoreA) {
+        return scoreB - scoreA;
+      }
+      return 0; // Puanlar eşitse mevcut manuel sırayı koru
     });
 
-    onComplete(playerIndices, hits);
+    setOrder(sortedOrder);
   };
 
-  const handleResetCurrent = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    }
+  // Sıralamada oyuncuyu yukarı taşı
+  const moveUp = (index) => {
+    if (index === 0) return;
+    const newOrder = [...order];
+    const temp = newOrder[index - 1];
+    newOrder[index - 1] = newOrder[index];
+    newOrder[index] = temp;
+    setOrder(newOrder);
   };
 
-  const activePlayerName = players[currentIndex];
+  // Sıralamada oyuncuyu aşağı taşı
+  const moveDown = (index) => {
+    if (index === order.length - 1) return;
+    const newOrder = [...order];
+    const temp = newOrder[index + 1];
+    newOrder[index + 1] = newOrder[index];
+    newOrder[index] = temp;
+    setOrder(newOrder);
+  };
+
+  const handleConfirm = () => {
+    onComplete(order, hits);
+  };
 
   return (
     <div className="hero-card">
       <div className="setup-header-icon">🎯</div>
-      <h2 className="setup-title">{isTr ? 'Bull-Off (Başlangıç Atışı)' : 'Bull-Off (First Throw)'}</h2>
+      <h2 className="setup-title">
+        {isTr ? 'Bull-Off (Başlangıç Sıralaması)' : 'Bull-Off (Order Determination)'}
+      </h2>
       <p className="setup-subtitle">
         {isTr
-          ? 'İlk başlayacak oyuncuyu ve leg sırasını belirlemek için merkeze tek dart atın.'
-          : 'Throw a single dart to determine starting player and leg order.'}
+          ? 'Atış sonucunu girin veya tahta üzerindeki merkeze yakınlığa göre ⬆️ ⬇️ butonlarıyla sıralamayı düzenleyin.'
+          : 'Select hit result or use ⬆️ ⬇️ buttons based on distance to center.'}
       </p>
 
-      <div className="bulloff-player-card">
-        <span className="bulloff-p-badge">P{currentIndex + 1}</span>
-        <span className="bulloff-p-name">{activePlayerName}</span>
-      </div>
-
-      <div className="bulloff-btn-grid">
-        <button className="btn-bulloff btn-dbull" onClick={() => handleHitSelect(50)}>
-          🔴 D-BULL (50)
-        </button>
-        <button className="btn-bulloff btn-sbull" onClick={() => handleHitSelect(25)}>
-          🟢 BULL (25)
-        </button>
-        <button className="btn-bulloff btn-missbull" onClick={() => handleHitSelect(0)}>
-          ❌ MISS (0)
-        </button>
-      </div>
-
-      <div className="bulloff-status-list">
-        {players.map((name, idx) => {
-          const hit = bullHits[idx];
-          let label = isTr ? 'Bekliyor' : 'Waiting';
-          let styleClass = '';
-
-          if (hit === 50) { label = 'D-BULL (50)'; styleClass = 'hit-50'; }
-          else if (hit === 25) { label = 'BULL (25)'; styleClass = 'hit-25'; }
-          else if (hit === 0) { label = 'MISS (0)'; styleClass = 'hit-0'; }
+      <div className="bulloff-order-list">
+        {order.map((playerIdx, rank) => {
+          const playerName = players[playerIdx];
+          const currentHit = hits[playerIdx];
 
           return (
-            <div key={idx} className={`bulloff-status-item ${idx === currentIndex ? 'active-throw' : ''}`}>
-              <span>{name}</span>
-              <span className={`bulloff-hit-badge ${styleClass}`}>{label}</span>
+            <div key={playerIdx} className="bulloff-order-card">
+              <div className="bulloff-rank-badge">
+                {rank + 1}. {isTr ? 'Sırada' : 'Pos'}
+              </div>
+
+              <div className="bulloff-player-info">
+                <span className="bulloff-player-name">{playerName}</span>
+                <div className="bulloff-hit-buttons">
+                  <button
+                    type="button"
+                    className={`btn-hit-chip dbull ${currentHit === 50 ? 'active' : ''}`}
+                    onClick={() => handleHitSelect(playerIdx, 50)}
+                  >
+                    D-BULL
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn-hit-chip sbull ${currentHit === 25 ? 'active' : ''}`}
+                    onClick={() => handleHitSelect(playerIdx, 25)}
+                  >
+                    BULL
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn-hit-chip miss ${currentHit === 0 ? 'active' : ''}`}
+                    onClick={() => handleHitSelect(playerIdx, 0)}
+                  >
+                    {isTr ? 'Dışarı' : 'Miss'}
+                  </button>
+                </div>
+              </div>
+
+              <div className="bulloff-move-buttons">
+                <button
+                  type="button"
+                  className="btn-move"
+                  onClick={() => moveUp(rank)}
+                  disabled={rank === 0}
+                  title={isTr ? 'Yukarı Taşı' : 'Move Up'}
+                >
+                  ⬆️
+                </button>
+                <button
+                  type="button"
+                  className="btn-move"
+                  onClick={() => moveDown(rank)}
+                  disabled={rank === order.length - 1}
+                  title={isTr ? 'Aşağı Taşı' : 'Move Down'}
+                >
+                  ⬇️
+                </button>
+              </div>
             </div>
           );
         })}
       </div>
 
       <div className="setup-action-row">
-        <button className="btn-setup-back" onClick={currentIndex === 0 ? onBack : handleResetCurrent}>
+        <button type="button" className="btn-setup-back" onClick={onBack}>
           {isTr ? 'Geri' : 'Back'}
+        </button>
+
+        <button type="button" className="btn-setup-submit" onClick={handleConfirm}>
+          {isTr ? 'Sıralamayı Onayla & Başla ➔' : 'Confirm Order & Start ➔'}
         </button>
       </div>
     </div>
