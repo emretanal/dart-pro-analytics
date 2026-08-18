@@ -9,125 +9,34 @@ export default function LegTargetStep({ onSelect, onBack, lang = 'tr' }) {
   ];
 
   return (
-    <div
-      style={{
-        width: '100%',
-        maxWidth: '100%',
-        boxSizing: 'border-box',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        background: '#222330',
-        border: '1px solid #333446',
-        borderRadius: '20px',
-        padding: '24px 18px',
-        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.45)',
-        marginTop: '5px'
-      }}
-    >
-      <div style={{ fontSize: '2.8rem', marginBottom: '8px' }}>🏆</div>
-      <h1
-        style={{
-          fontSize: '1.4rem',
-          fontWeight: '800',
-          color: '#ffffff',
-          margin: '0 0 6px 0',
-          textAlign: 'center'
-        }}
-      >
+    <div className="hero-card">
+      <div className="setup-header-icon">🏆</div>
+      <h1 className="setup-title">
         {lang === 'tr' ? 'Kaç Leg Kazanan Galip Sayılsın?' : 'How Many Legs to Win?'}
       </h1>
-      <p
-        style={{
-          fontSize: '0.88rem',
-          color: '#8a8b9e',
-          margin: '0 0 20px 0',
-          textAlign: 'center'
-        }}
-      >
+      <p className="setup-subtitle">
         {lang === 'tr'
           ? 'Maçı kazanmak için gereken leg sayısını belirleyin'
           : 'Set the number of legs needed to win the match'}
       </p>
 
-      {/* 2 SÜTUNLU KESİN IZGARA DÜZENİ */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: '12px',
-          width: '100%',
-          boxSizing: 'border-box',
-          marginBottom: '16px'
-        }}
-      >
+      <div className="leg-select-grid">
         {options.map((opt) => (
           <button
             key={opt.value}
+            className="btn-leg-step"
             onClick={() => onSelect(opt.value)}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '14px 10px',
-              height: '62px',
-              borderRadius: '12px',
-              background: '#1a1b23',
-              border: '1px solid #3d3e52',
-              color: '#ffffff',
-              cursor: 'pointer',
-              width: '100%',
-              boxSizing: 'border-box',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-              outline: 'none'
-            }}
           >
-            <div
-              style={{
-                fontSize: '1.15rem',
-                fontWeight: '800',
-                color: '#ffffff',
-                marginBottom: '2px',
-                lineHeight: '1.2'
-              }}
-            >
-              {opt.label}
-            </div>
-            <div
-              style={{
-                fontSize: '0.75rem',
-                fontWeight: '500',
-                color: '#8a8b9e',
-                lineHeight: '1'
-              }}
-            >
+            <span className="leg-count-num">{opt.label}</span>
+            <span className="leg-count-sub">
               {lang === 'tr' ? opt.subTr : opt.subEn}
-            </div>
+            </span>
           </button>
         ))}
       </div>
 
-      {/* GERİ BUTONU */}
-      <div style={{ width: '100%', display: 'flex', boxSizing: 'border-box' }}>
-        <button
-          onClick={onBack}
-          style={{
-            width: '100%',
-            height: '48px',
-            background: '#2b2c3a',
-            color: '#8a8b9e',
-            border: '1px solid #3d3e52',
-            borderRadius: '10px',
-            fontSize: '0.95rem',
-            fontWeight: '700',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            outline: 'none'
-          }}
-        >
+      <div className="setup-action-row">
+        <button className="btn-setup-back btn-full-back" onClick={onBack}>
           {lang === 'tr' ? 'Geri' : 'Back'}
         </button>
       </div>
