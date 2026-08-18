@@ -1,213 +1,156 @@
 import { useState } from 'react';
+import HowToPlayModal from '../Help/HowToPlayModal';
 
-export default function GameSelectStep({ onSelect, onBack, isFirstStep = false, lang = 'tr' }) {
-  const [selectedGame, setSelectedGame] = useState(null);
-  const [subMode, setSubMode] = useState(null);
-  const [doubleIn, setDoubleIn] = useState(false);
-  const [doubleOut, setDoubleOut] = useState(true);
+export default function GameSelectStep({ onSelect, lang = 'tr' }) {
+  const [subStep, setSubStep] = useState('main'); // 'main' | 'cricket' | 'x01'
+  const [selectedX01Mode, setSelectedX01Mode] = useState('501');
+  const [x01Rules, setX01Rules] = useState({ doubleIn: false, doubleOut: true });
+  const [showGuide, setShowGuide] = useState(false);
 
-  const t = {
-    tr: {
-      title: 'Oyun Türü Seçin',
-      subtitle: 'Oynamak istediğiniz dart oyununu belirleyin',
-      submodeSelect: 'Oyun Modu Seçin:',
-      back: 'Geri',
-      continue: 'Devam Et ➔',
-      cricketTitle: 'Cricket Oyunları',
-      cricketDesc: '15-20, Extended, Cut-Throat ve Wild-Card Cricket modları',
-      cStandard: 'Standart Cricket (15-20 & Bull)',
-      cStandardDesc: 'Klasik sayı kapatma ve puan toplama modu',
-      cExtended: 'Extended Cricket (20-10, B, T, D, H)',
-      cExtendedDesc: '20-10, Bull, Triple, Double ve House (H) hedefleri',
-      cCutthroat: 'Cezalı Cricket (Cut-Throat)',
-      cCutthroatDesc: 'Fazla vuruşlar rakibe ceza puanı olarak eklenir',
-      cNoscore: 'No-Score Cricket',
-      cNoscoreDesc: 'Puanlama yok; hedefleri ilk kapatan kazanır',
-      cWildcard: 'Wild-Card Cricket',
-      cWildcardDesc: 'Her leg başında rastgele 7 sayı belirlenir',
-      x01Title: 'X01 Oyunları',
-      x01Desc: '301, 501 ve 701 eksiltme oyunları',
-      x501Desc: 'Standart profesyonel eksiltme oyunu',
-      x301Desc: 'Hızlı ve kısa eksiltme oyunu',
-      x701Desc: 'Uzun maraton eksiltme oyunu',
-      x01RulesTitle: 'X01 Kurallarını Belirleyin:',
-      doubleInLabel: 'Double In (Çiftli Başlangıç)',
-      doubleInDesc: 'Puan eksiltmeye başlamak için ilk vuruşun Double olması gerekir.',
-      doubleOutLabel: 'Double Out (Çiftli Bitiriş)',
-      doubleOutDesc: 'Leg\'i bitirmek için son vuruşun Double olması gerekir.'
-    },
-    en: {
-      title: 'Select Game Type',
-      subtitle: 'Choose the dart game you want to play',
-      submodeSelect: 'Select Game Mode:',
-      back: 'Back',
-      continue: 'Continue ➔',
-      cricketTitle: 'Cricket Games',
-      cricketDesc: '15-20, Extended, Cut-Throat and Wild-Card modes',
-      cStandard: 'Standard Cricket (15-20 & Bull)',
-      cStandardDesc: 'Classic number closure and scoring mode',
-      cExtended: 'Extended Cricket (20-10, B, T, D, H)',
-      cExtendedDesc: '20-10, Bull, Triple, Double and House (H) targets',
-      cCutthroat: 'Cut-Throat Cricket',
-      cCutthroatDesc: 'Extra hits add penalty points to opponents',
-      cNoscore: 'No-Score Cricket',
-      cNoscoreDesc: 'No points; first to close all targets wins',
-      cWildcard: 'Wild-Card Cricket',
-      cWildcardDesc: 'Random 7 targets chosen at start of each leg',
-      x01Title: 'X01 Games',
-      x01Desc: '301, 501 and 701 countdown games',
-      x501Desc: 'Standard professional countdown game',
-      x301Desc: 'Fast and short countdown game',
-      x701Desc: 'Long marathon countdown game',
-      x01RulesTitle: 'Set X01 Rules:',
-      doubleInLabel: 'Double In',
-      doubleInDesc: 'Must hit a double before scoring points.',
-      doubleOutLabel: 'Double Out',
-      doubleOutDesc: 'Must finish on a double to win the leg.'
-    }
-  }[lang];
-
-  const games = [
-    { 
-      id: 'cricket', 
-      name: t.cricketTitle, 
-      desc: t.cricketDesc,
-      hasSubmodes: true,
-      submodes: [
-        { id: 'standard', name: t.cStandard, desc: t.cStandardDesc },
-        { id: 'extended', name: t.cExtended, desc: t.cExtendedDesc },
-        { id: 'cutthroat', name: t.cCutthroat, desc: t.cCutthroatDesc },
-        { id: 'noscore', name: t.cNoscore, desc: t.cNoscoreDesc },
-        { id: 'wildcard', name: t.cWildcard, desc: t.cWildcardDesc }
-      ]
-    },
-    { 
-      id: 'x01', 
-      name: t.x01Title, 
-      desc: t.x01Desc,
-      hasSubmodes: true,
-      submodes: [
-        { id: '501', name: '501', desc: t.x501Desc },
-        { id: '301', name: '301', desc: t.x301Desc },
-        { id: '701', name: '701', desc: t.x701Desc }
-      ]
-    },
-  ];
-
-  const handleGameClick = (game) => {
-    if (game.disabled) return;
-    if (game.hasSubmodes) {
-      setSelectedGame(game.id);
-    } else {
-      onSelect(game.id, 'standard', { doubleIn: false, doubleOut: true });
-    }
+  const handleCricketSelect = (mode) => {
+    onSelect('cricket', mode);
   };
 
-  const handleSubModeClick = (selectedSub) => {
-    if (selectedGame === 'x01') {
-      setSubMode(selectedSub);
-    } else {
-      onSelect(selectedGame, selectedSub, { doubleIn: false, doubleOut: true });
-    }
-  };
-
-  const handleX01Confirm = () => {
-    onSelect('x01', subMode, { doubleIn, doubleOut });
+  const handleX01Submit = () => {
+    onSelect('x01', selectedX01Mode, x01Rules);
   };
 
   return (
     <div className="hero-card">
-      <div className="setup-header-icon">🕹️</div>
-      <h2 className="setup-title">{t.title}</h2>
-      <p className="setup-subtitle">{t.subtitle}</p>
+      <div className="setup-header-icon">🎮</div>
+      <h1 className="setup-title">
+        {lang === 'tr' ? 'Oyun Türü Seçin' : 'Select Game Type'}
+      </h1>
+      <p className="setup-subtitle">
+        {lang === 'tr' ? 'Oynamak istediğiniz dart oyununu belirleyin' : 'Choose your preferred game mode'}
+      </p>
 
-      {!selectedGame ? (
-        <div className="game-select-list">
-          {games.map((game) => (
-            <button
-              key={game.id}
-              className={`btn-game-card ${game.disabled ? 'disabled' : ''}`}
-              onClick={() => handleGameClick(game)}
-              disabled={game.disabled}
-            >
-              <div className="game-card-title">{game.name}</div>
-              <div className="game-card-desc">{game.desc}</div>
+      {subStep === 'main' && (
+        <>
+          <div className="game-select-list">
+            <button className="btn-game-card" onClick={() => setSubStep('cricket')}>
+              <div className="game-card-title">Cricket {lang === 'tr' ? 'Oyunları' : 'Games'}</div>
+              <div className="game-card-desc">15-20, Extended, Cut-Throat, Wild-Card</div>
             </button>
-          ))}
-        </div>
-      ) : !subMode ? (
-        <div className="game-select-list">
-          <div style={{ color: '#4da6ff', fontWeight: 'bold', marginBottom: '8px', fontSize: '1.1rem', textAlign: 'center' }}>
-            {t.submodeSelect}
-          </div>
-          {games.find(g => g.id === selectedGame)?.submodes.map((sub) => (
-            <button
-              key={sub.id}
-              className="btn-game-card"
-              onClick={() => handleSubModeClick(sub.id)}
-            >
-              <div className="game-card-title">{sub.name}</div>
-              <div className="game-card-desc">{sub.desc}</div>
+
+            <button className="btn-game-card" onClick={() => setSubStep('x01')}>
+              <div className="game-card-title">X01 {lang === 'tr' ? 'Oyunları' : 'Games'}</div>
+              <div className="game-card-desc">301, 501, 701</div>
             </button>
-          ))}
-        </div>
-      ) : (
-        <div className="x01-rules-container">
-          <div style={{ color: '#4da6ff', fontWeight: 'bold', marginBottom: '8px', fontSize: '1.05rem', textAlign: 'center' }}>
-            {t.x01RulesTitle}
           </div>
 
-          <label className="toggle-rule-card">
-            <input 
-              type="checkbox" 
-              checked={doubleIn} 
-              onChange={(e) => setDoubleIn(e.target.checked)} 
-            />
-            <div className="toggle-rule-info">
-              <div className="toggle-rule-title">{t.doubleInLabel}</div>
-              <div className="toggle-rule-desc">{t.doubleInDesc}</div>
-            </div>
-          </label>
+          <button className="btn-how-to-play" onClick={() => setShowGuide(true)}>
+            ❓ {lang === 'tr' ? 'Nasıl Oynanır?' : 'How to Play?'}
+          </button>
+        </>
+      )}
 
-          <label className="toggle-rule-card">
-            <input 
-              type="checkbox" 
-              checked={doubleOut} 
-              onChange={(e) => setDoubleOut(e.target.checked)} 
-            />
-            <div className="toggle-rule-info">
-              <div className="toggle-rule-title">{t.doubleOutLabel}</div>
-              <div className="toggle-rule-desc">{t.doubleOutDesc}</div>
-            </div>
-          </label>
+      {subStep === 'cricket' && (
+        <div className="game-select-list">
+          <div className="sub-section-title">{lang === 'tr' ? 'Oyun Modu Seçin:' : 'Select Game Mode:'}</div>
+
+          <button className="btn-game-card" onClick={() => handleCricketSelect('standard')}>
+            <div className="game-card-title">{lang === 'tr' ? 'Standart Cricket (15-20 & Bull)' : 'Standard Cricket (15-20 & Bull)'}</div>
+            <div className="game-card-desc">{lang === 'tr' ? 'Klasik sayı kapatma ve puan toplama modu' : 'Classic number closing and scoring mode'}</div>
+          </button>
+
+          <button className="btn-game-card" onClick={() => handleCricketSelect('extended')}>
+            <div className="game-card-title">{lang === 'tr' ? 'Extended Cricket (20-10, B, T, D, H)' : 'Extended Cricket (20-10, B, T, D, H)'}</div>
+            <div className="game-card-desc">20-10, Bull, Triple, Double, House (H)</div>
+          </button>
+
+          <button className="btn-game-card" onClick={() => handleCricketSelect('cutthroat')}>
+            <div className="game-card-title">{lang === 'tr' ? 'Cezalı Cricket (Cut-Throat)' : 'Cut-Throat Cricket'}</div>
+            <div className="game-card-desc">{lang === 'tr' ? 'Fazla vuruşlar rakibe ceza puanı olarak eklenir' : 'Extra hits add penalty points to opponents'}</div>
+          </button>
+
+          <button className="btn-game-card" onClick={() => handleCricketSelect('no-score')}>
+            <div className="game-card-title">No-Score Cricket</div>
+            <div className="game-card-desc">{lang === 'tr' ? 'Puanlama yok; hedefleri ilk kapatan kazanır' : 'No points; first to close all targets wins'}</div>
+          </button>
+
+          <button className="btn-game-card" onClick={() => handleCricketSelect('wildcard')}>
+            <div className="game-card-title">Wild-Card Cricket</div>
+            <div className="game-card-desc">{lang === 'tr' ? 'Her leg başında rastgele 7 sayı belirlenir' : 'Random 7 targets generated each leg'}</div>
+          </button>
+
+          <div className="setup-action-row">
+            <button className="btn-setup-back" onClick={() => setSubStep('main')}>
+              {lang === 'tr' ? 'Geri' : 'Back'}
+            </button>
+          </div>
         </div>
       )}
 
-      <div className="setup-action-row" style={{ marginTop: '16px' }}>
-        {(!isFirstStep || selectedGame) && (
-          <button 
-            type="button" 
-            className="btn-setup-back" 
-            onClick={() => {
-              if (subMode) setSubMode(null);
-              else if (selectedGame) setSelectedGame(null);
-              else onBack();
-            }}
-          >
-            {t.back}
-          </button>
-        )}
+      {subStep === 'x01' && (
+        <div className="game-select-list">
+          <div className="sub-section-title">{lang === 'tr' ? 'Oyun Modu Seçin:' : 'Select Game Mode:'}</div>
 
-        {subMode && (
-          <button 
-            type="button"
-            className="btn-setup-submit" 
-            onClick={handleX01Confirm}
-          >
-            {t.continue}
-          </button>
-        )}
-      </div>
+          {['501', '301', '701'].map((mode) => (
+            <button
+              key={mode}
+              className={`btn-game-card ${selectedX01Mode === mode ? 'active-mode' : ''}`}
+              onClick={() => setSelectedX01Mode(mode)}
+            >
+              <div className="game-card-title">{mode}</div>
+              <div className="game-card-desc">
+                {mode === '501' && (lang === 'tr' ? 'Standart profesyonel eksiltme oyunu' : 'Standard professional countdown game')}
+                {mode === '301' && (lang === 'tr' ? 'Hızlı ve kısa eksiltme oyunu' : 'Fast & short countdown game')}
+                {mode === '701' && (lang === 'tr' ? 'Uzun maraton eksiltme oyunu' : 'Long marathon countdown game')}
+              </div>
+            </button>
+          ))}
+
+          <div className="sub-section-title" style={{ marginTop: '12px' }}>
+            {lang === 'tr' ? 'X01 Kurallarını Belirleyin:' : 'Set X01 Rules:'}
+          </div>
+
+          <div className="x01-rules-container">
+            <label className="toggle-rule-card">
+              <input
+                type="checkbox"
+                checked={x01Rules.doubleIn}
+                onChange={(e) => setX01Rules({ ...x01Rules, doubleIn: e.target.checked })}
+              />
+              <div className="toggle-rule-info">
+                <span className="toggle-rule-title">Double In ({lang === 'tr' ? 'Çiftli Başlangıç' : 'Double Start'})</span>
+                <span className="toggle-rule-desc">
+                  {lang === 'tr' ? 'Puan eksiltmeye başlamak için ilk vuruşun Double olması gerekir.' : 'First hit must be a double to start scoring.'}
+                </span>
+              </div>
+            </label>
+
+            <label className="toggle-rule-card">
+              <input
+                type="checkbox"
+                checked={x01Rules.doubleOut}
+                onChange={(e) => setX01Rules({ ...x01Rules, doubleOut: e.target.checked })}
+              />
+              <div className="toggle-rule-info">
+                <span className="toggle-rule-title">Double Out ({lang === 'tr' ? 'Çiftli Bitiş' : 'Double Finish'})</span>
+                <span className="toggle-rule-desc">
+                  {lang === 'tr' ? "Leg'i bitirmek için son vuruşun Double olması gerekir." : 'Final winning dart must hit a double.'}
+                </span>
+              </div>
+            </label>
+          </div>
+
+          <div className="setup-action-row">
+            <button className="btn-setup-back" onClick={() => setSubStep('main')}>
+              {lang === 'tr' ? 'Geri' : 'Back'}
+            </button>
+            <button className="btn-setup-submit" onClick={handleX01Submit}>
+              {lang === 'tr' ? 'Devam Et ➔' : 'Continue ➔'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      <HowToPlayModal
+        isOpen={showGuide}
+        onClose={() => setShowGuide(false)}
+        lang={lang}
+      />
     </div>
   );
 }
