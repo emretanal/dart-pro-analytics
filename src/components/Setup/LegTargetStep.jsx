@@ -53,7 +53,7 @@ export default function LegTargetStep({ onSelect, onBack, lang = 'tr' }) {
       {/* 2 SÜTUNLU KESİN IZGARA DÜZENİ */}
       <div
         style={{
-          display: 'grid !important',
+          display: 'grid',
           gridTemplateColumns: 'repeat(2, 1fr)',
           gap: '12px',
           width: '100%',
@@ -69,7 +69,7 @@ export default function LegTargetStep({ onSelect, onBack, lang = 'tr' }) {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              justify-content: 'center',
+              justifyContent: 'center',
               padding: '14px 10px',
               height: '62px',
               borderRadius: '12px',

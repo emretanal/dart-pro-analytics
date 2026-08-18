@@ -44,7 +44,7 @@ export default function PlayerCountStep({ onSelect, onBack, lang = 'tr' }) {
       {/* 2x2 KESİN IZGARA DÜZENİ */}
       <div
         style={{
-          display: 'grid !important',
+          display: 'grid',
           gridTemplateColumns: 'repeat(2, 1fr)',
           gap: '12px',
           width: '100%',
@@ -59,7 +59,7 @@ export default function PlayerCountStep({ onSelect, onBack, lang = 'tr' }) {
             style={{
               display: 'flex',
               alignItems: 'center',
-              justify-content: 'center',
+              justifyContent: 'center',
               gap: '10px',
               height: '62px',
               borderRadius: '12px',
@@ -109,7 +109,7 @@ export default function PlayerCountStep({ onSelect, onBack, lang = 'tr' }) {
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            justify-content: 'center',
+            justifyContent: 'center',
             outline: 'none'
           }}
         >
