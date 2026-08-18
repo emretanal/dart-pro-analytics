@@ -655,6 +655,7 @@ html, body {
   border-radius: 10px;
   padding: 10px 16px;
   flex-shrink: 0;
+  transition: all 0.2s ease;
 }
 
 .turn-dart-item {
@@ -668,6 +669,32 @@ html, body {
   font-size: 1rem;
   font-weight: 800;
   color: #28a745;
+}
+
+/* 3 SANİYE YANIP SÖNME (PULSE/BLINK) ANİMASYONU */
+@keyframes turnBlinkAnimation {
+  0%, 100% {
+    opacity: 1;
+    border-color: #ffc107;
+    background-color: rgba(255, 193, 7, 0.25);
+    box-shadow: 0 0 15px rgba(255, 193, 7, 0.5);
+  }
+  50% {
+    opacity: 0.35;
+    border-color: #4da6ff;
+    background-color: #1a1b23;
+    box-shadow: none;
+  }
+}
+
+.x01-turn-display.flashing-turn {
+  animation: turnBlinkAnimation 0.6s infinite ease-in-out;
+}
+
+.x01-turn-display.flashing-turn .turn-dart-item,
+.x01-turn-display.flashing-turn .turn-total-sum {
+  color: #ffc107 !important;
+  font-weight: 900 !important;
 }
 
 .x01-keypad-container {

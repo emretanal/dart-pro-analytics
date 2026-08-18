@@ -148,6 +148,7 @@ export default function App() {
   });
 
   const [currentTurnDarts, setCurrentTurnDarts] = useState([]);
+  const [isTurnFlashing, setIsTurnFlashing] = useState(false);
 
   const [roundsWon, setRoundsWon] = useState(() => {
     const saved = localStorage.getItem('dart_roundsWon');
@@ -321,6 +322,7 @@ export default function App() {
     setTurnDartsCount(0);
     setMultiplier('single');
     setCurrentTurnDarts([]);
+    setIsTurnFlashing(false);
     setWinner(null);
     setGameHistory([]);
   };
@@ -378,6 +380,7 @@ export default function App() {
     setTurnDartsCount(0);
     setMultiplier('single');
     setCurrentTurnDarts([]);
+    setIsTurnFlashing(false);
     setGameHistory([]);
   };
 
@@ -399,7 +402,7 @@ export default function App() {
   };
 
   const handleCellClick = (playerIdx, targetId) => {
-    if (playerIdx !== activePlayerIndex || winner) return;
+    if (playerIdx !== activePlayerIndex || winner || isTurnFlashing) return;
 
     if (turnDartsCount >= 3) {
       alert(t.turnLimitErr);
@@ -467,9 +470,8 @@ export default function App() {
     }
   };
 
-  // X01 VURUŞ HESAPLAMA VE BUST (GEÇERSİZ TUR) KONTROLÜ
   const handleX01DartHit = (baseValue) => {
-    if (winner) return;
+    if (winner || isTurnFlashing) return;
 
     if (currentTurnDarts.length >= 3) {
       alert(t.turnLimitErr);
@@ -483,7 +485,7 @@ export default function App() {
     let points = baseValue;
     let label = baseValue.toString();
 
-    if (baseValue === 25) { // Bull Vuruşu
+    if (baseValue === 25) {
       if (isDouble || isTriple) {
         points = 50;
         label = 'D-BULL';
@@ -492,7 +494,7 @@ export default function App() {
         points = 25;
         label = 'BULL';
       }
-    } else if (baseValue === 0) { // Miss
+    } else if (baseValue === 0) {
       points = 0;
       label = 'MISS';
       isDouble = false;
@@ -521,13 +523,8 @@ export default function App() {
     const currentScore = x01Scores[activePlayerIndex];
     const remaining = currentScore - points;
 
-    // Turun başındaki ilk puanı hesaplama (BUST olursa bu puana geri dönülecek)
     const turnStartScore = currentScore + currentTurnDarts.reduce((sum, d) => sum + d.points, 0);
 
-    // BUST Koşulları:
-    // 1) Puan 0'ın altına düşerse (remaining < 0)
-    // 2) Double-Out kuralında kalan puan 1 olursa (Double ile bitirilemeyeceği için BUST)
-    // 3) Double-Out kuralında kalan puan 0 olur ama son vuruş Double değilse
     const isBust = remaining < 0 ||
                    (x01Rules.doubleOut && remaining === 1) ||
                    (x01Rules.doubleOut && remaining === 0 && !isDouble);
@@ -538,15 +535,18 @@ export default function App() {
         : `BUST!`;
       alert(bustMsg);
 
-      // BUST OLUŞTUĞUNDA: Oyuncunun puanını TUR BAŞINDAKİ puana (turnStartScore) GERİ YÜKLE!
       setX01Scores((prev) => ({ ...prev, [activePlayerIndex]: turnStartScore }));
       setCurrentTurnDarts((prev) => [...prev, { label: `${label} (BUST)`, points: 0 }]);
       setMultiplier('single');
-      setTimeout(() => handleNextTurn(), 300);
+
+      setIsTurnFlashing(true);
+      setTimeout(() => {
+        setIsTurnFlashing(false);
+        handleNextTurn();
+      }, 3000);
       return;
     }
 
-    // Geçerli Vuruş
     setX01Scores((prev) => ({ ...prev, [activePlayerIndex]: remaining }));
     const newTurnDarts = [...currentTurnDarts, { label, points }];
     setCurrentTurnDarts(newTurnDarts);
@@ -558,7 +558,11 @@ export default function App() {
     }
 
     if (newTurnDarts.length === 3) {
-      setTimeout(() => handleNextTurn(), 200);
+      setIsTurnFlashing(true);
+      setTimeout(() => {
+        setIsTurnFlashing(false);
+        handleNextTurn();
+      }, 3000);
     }
   };
 
@@ -583,10 +587,11 @@ export default function App() {
     setTurnDartsCount(0);
     setCurrentTurnDarts([]);
     setMultiplier('single');
+    setIsTurnFlashing(false);
   };
 
   const handleUndo = () => {
-    if (gameHistory.length === 0 || winner) return;
+    if (gameHistory.length === 0 || winner || isTurnFlashing) return;
 
     const lastState = gameHistory[gameHistory.length - 1];
 
@@ -601,6 +606,7 @@ export default function App() {
     if (lastState.currentTargets) setCurrentTargets(lastState.currentTargets);
     setGameHistory((prev) => prev.slice(0, -1));
     setMultiplier('single');
+    setIsTurnFlashing(false);
   };
 
   const handleResetGame = () => {
@@ -806,11 +812,11 @@ export default function App() {
                 </button>
               </div>
 
-              <button className="btn-next" onClick={handleNextTurn}>
+              <button className="btn-next" onClick={handleNextTurn} disabled={isTurnFlashing}>
                 {t.endTurn} ({turnDartsCount}/3)
               </button>
               
-              <button className="btn-text" onClick={handleUndo} style={{ opacity: gameHistory.length === 0 ? 0.3 : 1 }} disabled={gameHistory.length === 0}>
+              <button className="btn-text" onClick={handleUndo} style={{ opacity: gameHistory.length === 0 || isTurnFlashing ? 0.3 : 1 }} disabled={gameHistory.length === 0 || isTurnFlashing}>
                 {t.undo}
               </button>
             </div>
@@ -847,7 +853,7 @@ export default function App() {
               </div>
             )}
 
-            <div className="x01-turn-display">
+            <div className={`x01-turn-display ${isTurnFlashing ? 'flashing-turn' : ''}`}>
               <span className="turn-dart-item">{currentTurnDarts[0]?.label || '-'}</span>
               <span className="turn-dart-item">{currentTurnDarts[1]?.label || '-'}</span>
               <span className="turn-dart-item">{currentTurnDarts[2]?.label || '-'}</span>
@@ -861,12 +867,14 @@ export default function App() {
                 <button 
                   className={`btn-x01-mult ${multiplier === 'double' ? 'active-double' : ''}`}
                   onClick={() => toggleMultiplier('double')}
+                  disabled={isTurnFlashing}
                 >
                   DOUBLE (D)
                 </button>
                 <button 
                   className={`btn-x01-mult ${multiplier === 'triple' ? 'active-triple' : ''}`}
                   onClick={() => toggleMultiplier('triple')}
+                  disabled={isTurnFlashing}
                 >
                   TRIPLE (T)
                 </button>
@@ -878,14 +886,15 @@ export default function App() {
                     key={num}
                     className="x01-num-btn"
                     onClick={() => handleX01DartHit(num)}
+                    disabled={isTurnFlashing}
                   >
                     {num}
                   </button>
                 ))}
-                <button className="x01-num-btn btn-bull" onClick={() => handleX01DartHit(25)}>
+                <button className="x01-num-btn btn-bull" onClick={() => handleX01DartHit(25)} disabled={isTurnFlashing}>
                   BULL
                 </button>
-                <button className="x01-num-btn btn-miss" onClick={() => handleX01DartHit(0)}>
+                <button className="x01-num-btn btn-miss" onClick={() => handleX01DartHit(0)} disabled={isTurnFlashing}>
                   MISS (0)
                 </button>
               </div>
@@ -893,10 +902,10 @@ export default function App() {
 
             <div className="action-bar">
               <button className="btn-text" onClick={handleResetGame}>{t.exit}</button>
-              <button className="btn-next" onClick={handleNextTurn}>
+              <button className="btn-next" onClick={handleNextTurn} disabled={isTurnFlashing}>
                 {t.endTurn} ({currentTurnDarts.length}/3)
               </button>
-              <button className="btn-text" onClick={handleUndo} style={{ opacity: gameHistory.length === 0 ? 0.3 : 1 }} disabled={gameHistory.length === 0}>
+              <button className="btn-text" onClick={handleUndo} style={{ opacity: gameHistory.length === 0 || isTurnFlashing ? 0.3 : 1 }} disabled={gameHistory.length === 0 || isTurnFlashing}>
                 {t.undo}
               </button>
             </div>
