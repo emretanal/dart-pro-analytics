@@ -3,9 +3,18 @@ import { useState } from 'react';
 export default function PlayerNamesStep({ playerCount, onSubmit, onBack, lang }) {
   const isTr = lang === 'tr';
 
+  // İlk çalıştırmada listede öneri görünmesi için varsayılan örnek isimler
+  const defaultSampleNames = isTr
+    ? ['Ahmet', 'Mehmet', 'Can', 'Ayşe', 'Fatma', 'Ali', 'Burak', 'Ece']
+    : ['John', 'Alex', 'Sarah', 'Mike', 'Emma', 'David', 'Chris', 'Lisa'];
+
   const [savedNames] = useState(() => {
     const saved = localStorage.getItem('dart_saved_player_names');
-    return saved ? JSON.parse(saved) : ['Oyuncu 1', 'Oyuncu 2', 'Oyuncu 3', 'Oyuncu 4'];
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+    return defaultSampleNames;
   });
 
   const [names, setNames] = useState(() => {
@@ -31,6 +40,7 @@ export default function PlayerNamesStep({ playerCount, onSubmit, onBack, lang })
     e.preventDefault();
     const cleanedNames = names.map((n, i) => n.trim() || `${isTr ? 'Oyuncu' : 'Player'} ${i + 1}`);
 
+    // Yeni girilen isimleri hafızadaki benzersiz listeye ekle ve kaydet
     const updatedSaved = Array.from(new Set([...cleanedNames, ...savedNames]));
     localStorage.setItem('dart_saved_player_names', JSON.stringify(updatedSaved));
 
@@ -42,7 +52,7 @@ export default function PlayerNamesStep({ playerCount, onSubmit, onBack, lang })
       <div className="setup-header-icon">👥</div>
       <h2 className="setup-title">{isTr ? 'Oyuncu İsimleri' : 'Player Names'}</h2>
       <p className="setup-subtitle">
-        {isTr ? 'İsim yazmaya başlayın veya geçmişten seçin.' : 'Start typing or pick from history.'}
+        {isTr ? 'Tüm oyuncular için isim yazın veya listeden seçin.' : 'Type names or select from list for all players.'}
       </p>
 
       <form className="names-form" onSubmit={handleSubmit}>
@@ -51,18 +61,24 @@ export default function PlayerNamesStep({ playerCount, onSubmit, onBack, lang })
             const defaultPlaceholder = `${isTr ? 'Oyuncu' : 'Player'} ${idx + 1}`;
             const currentVal = name.trim().toLowerCase();
 
+            // Diğer kutularda zaten seçilmiş olan isimleri öneri listesinden filtrele
             const suggestions = savedNames.filter((savedName) => {
               const nameLower = savedName.toLowerCase();
               const isAlreadyChosen = names.some(
                 (n, i) => i !== idx && n.trim().toLowerCase() === nameLower
               );
-              return !isAlreadyChosen && (currentVal === '' || nameLower.includes(currentVal));
+
+              if (isAlreadyChosen) return false;
+              if (currentVal === '' || currentVal.startsWith(isTr ? 'oyuncu' : 'player')) return true;
+
+              return nameLower.includes(currentVal);
             });
 
-            const showDropdown = activeFocusedIndex === idx && suggestions.length > 0;
+            const isFocused = activeFocusedIndex === idx;
+            const showDropdown = isFocused && suggestions.length > 0;
 
             return (
-              <div key={idx} className="name-input-wrapper">
+              <div key={idx} className={`name-input-wrapper ${isFocused ? 'is-active' : ''}`}>
                 <div className="name-input-group">
                   <span className="player-badge">P{idx + 1}</span>
                   <input
@@ -72,8 +88,11 @@ export default function PlayerNamesStep({ playerCount, onSubmit, onBack, lang })
                     onChange={(e) => handleInputChange(idx, e.target.value)}
                     onFocus={() => {
                       setActiveFocusedIndex(idx);
-                      // Tıklandığında varsayılan "Oyuncu X" ismini temizle
-                      if (name === defaultPlaceholder) {
+                      // Tıklandığında varsayılan "Oyuncu X" ismini otomatik temizle
+                      if (
+                        name.trim() === defaultPlaceholder ||
+                        name.trim().toLowerCase().startsWith(isTr ? 'oyuncu' : 'player')
+                      ) {
                         handleInputChange(idx, '');
                       }
                     }}
