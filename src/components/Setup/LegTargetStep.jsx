@@ -9,17 +9,49 @@ export default function LegTargetStep({ onSelect, onBack, lang = 'tr' }) {
   ];
 
   return (
-    <div className="hero-card" style={{ width: '100%', boxSizing: 'border-box' }}>
-      <div className="setup-header-icon" style={{ fontSize: '2.5rem', marginBottom: '8px' }}>🏆</div>
-      <h1 className="setup-title" style={{ fontSize: '1.4rem', fontWeight: '800', color: '#ffffff', margin: '0 0 6px 0', textAlign: 'center' }}>
+    <div
+      style={{
+        width: '100%',
+        maxWidth: '100%',
+        boxSizing: 'border-box',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        background: '#222330',
+        border: '1px solid #333446',
+        borderRadius: '20px',
+        padding: '24px 18px',
+        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.45)',
+        marginTop: '5px'
+      }}
+    >
+      <div style={{ fontSize: '2.5rem', marginBottom: '8px' }}>🏆</div>
+      <h1
+        style={{
+          fontSize: '1.4rem',
+          fontWeight: '800',
+          color: '#ffffff',
+          margin: '0 0 6px 0',
+          textAlign: 'center'
+        }}
+      >
         {lang === 'tr' ? 'Kaç Leg Kazanan Galip Sayılsın?' : 'How Many Legs to Win?'}
       </h1>
-      <p className="setup-subtitle" style={{ fontSize: '0.88rem', color: '#8a8b9e', margin: '0 0 20px 0', textAlign: 'center' }}>
-        {lang === 'tr' ? 'Maçı kazanmak için gereken leg sayısını belirleyin' : 'Set the number of legs needed to win the match'}
+      <p
+        style={{
+          fontSize: '0.88rem',
+          color: '#8a8b9e',
+          margin: '0 0 20px 0',
+          textAlign: 'center'
+        }}
+      >
+        {lang === 'tr'
+          ? 'Maçı kazanmak için gereken leg sayısını belirleyin'
+          : 'Set the number of legs needed to win the match'}
       </p>
 
-      {/* 2 SÜTUNLU GARANTİ IZGARA DÜZENİ (INLINE GRID) */}
-      <div 
+      {/* 2 SÜTUNLU KESİN IZGARA DÜZENİ */}
+      <div
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(2, 1fr)',
@@ -46,14 +78,26 @@ export default function LegTargetStep({ onSelect, onBack, lang = 'tr' }) {
               cursor: 'pointer',
               width: '100%',
               boxSizing: 'border-box',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-              transition: 'all 0.2s ease'
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
             }}
           >
-            <span style={{ fontSize: '1.15rem', fontWeight: '800', color: '#ffffff', marginBottom: '2px' }}>
+            <span
+              style={{
+                fontSize: '1.15rem',
+                fontWeight: '800',
+                color: '#ffffff',
+                marginBottom: '2px'
+              }}
+            >
               {opt.label}
             </span>
-            <span style={{ fontSize: '0.75rem', fontWeight: '500', color: '#8a8b9e' }}>
+            <span
+              style={{
+                fontSize: '0.75rem',
+                fontWeight: '500',
+                color: '#8a8b9e'
+              }}
+            >
               {lang === 'tr' ? opt.subTr : opt.subEn}
             </span>
           </button>
