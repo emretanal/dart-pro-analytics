@@ -17,7 +17,7 @@ export default function GameSelectStep({ onSelect, lang = 'tr' }) {
 
   return (
     <div className="hero-card">
-      <div className="setup-header-icon">🎮</div>
+      <div className="setup-header-icon">🎯</div>
       <h1 className="setup-title">
         {lang === 'tr' ? 'Oyun Türü Seçin' : 'Select Game Type'}
       </h1>
