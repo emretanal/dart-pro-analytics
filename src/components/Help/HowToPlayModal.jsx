@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import './HowToPlayModal.css';
 
 const GUIDE_CONTENT = {
   tr: {
@@ -120,7 +121,7 @@ export default function HowToPlayModal({ isOpen, onClose, lang = 'tr' }) {
 
               {/* VEKTÖREL DART DİLİMİ ŞEMASI */}
               <div className="board-visual-card">
-                <svg viewBox="0 0 340 230" className="dartboard-slice-svg">
+                <svg viewBox="0 0 340 230" className="dartboard-slice-svg" preserveAspectRatio="xMidYMid meet">
                   {/* Arka Plan Dilim Alanları */}
                   {/* Double Ring */}
                   <path d="M 120 15 A 150 150 0 0 1 220 15 L 208 32 A 130 130 0 0 0 132 32 Z" fill="#ff334b" stroke="#ffffff" strokeWidth="1" />

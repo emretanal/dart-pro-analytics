@@ -4,6 +4,7 @@ import PlayerNamesStep from './components/Setup/PlayerNamesStep';
 import GameSelectStep from './components/Setup/GameSelectStep';
 import LegTargetStep from './components/Setup/LegTargetStep';
 import BullOffStep from './components/Setup/BullOffStep';
+import HowToPlayModal from './components/HowToPlayModal';
 import { getCheckoutSuggestion } from './utils/checkoutTable';
 import './App.css';
 
@@ -40,7 +41,8 @@ const MARK_SYMBOLS = ['', '/', 'X', '⭕'];
 const TRANSLATIONS = {
   tr: {
     targetCol: 'Hedef',
-    historyLogs: 'Geçmiş Maçlar',
+    historyLogs: 'Geçmiş',
+    howToPlay: 'Nasıl Oynanır?',
     noHistory: 'Henüz kaydedilmiş bir maç bulunmuyor.',
     clearLogs: 'Tüm Maç Geçmişini Temizle',
     clearLogsConfirm: 'Tüm maç geçmişini silmek istediğinize emin misiniz?',
@@ -66,7 +68,8 @@ const TRANSLATIONS = {
   },
   en: {
     targetCol: 'Target',
-    historyLogs: 'Match History',
+    historyLogs: 'History',
+    howToPlay: 'How to Play?',
     noHistory: 'No match logs recorded yet.',
     clearLogs: 'Clear All Match Logs',
     clearLogsConfirm: 'Are you sure you want to clear all match history?',
@@ -174,12 +177,14 @@ export default function App() {
     return saved ? JSON.parse(saved) : [];
   });
   const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [showGuideModal, setShowGuideModal] = useState(false);
 
+  // Splash Screen süresi yarıya (1500ms) düşürüldü
   useEffect(() => {
     if (showSplash) {
       const timer = setTimeout(() => {
         setShowSplash(false);
-      }, 3000);
+      }, 1500);
       return () => clearTimeout(timer);
     }
   }, [showSplash]);
@@ -756,12 +761,14 @@ export default function App() {
 
   if (showSplash) {
     return (
-      <div className="splash-screen">
-        <div className="splash-content">
-          <div className="splash-logo">🎯</div>
-          <h1 className="splash-title">{t.welcomeTitle}</h1>
-          <p className="splash-subtitle">{t.welcomeSub}</p>
-          <div className="splash-loader"></div>
+      <div className="app-container setup-mode-container">
+        <div className="splash-screen">
+          <div className="splash-content">
+            <div className="splash-logo">🎯</div>
+            <h1 className="splash-title">{t.welcomeTitle}</h1>
+            <p className="splash-subtitle">{t.welcomeSub}</p>
+            <div className="splash-loader"></div>
+          </div>
         </div>
       </div>
     );
@@ -774,14 +781,19 @@ export default function App() {
     5, 4, 3, 2, 1
   ];
 
+  const isSetupMode = step < 6;
+
   return (
-    <div className="app-container">
+    <div className={`app-container ${isSetupMode ? 'setup-mode-container' : ''}`}>
       <div className="top-header-bar">
-        <button className="btn-lang-toggle" onClick={() => setLang(lang === 'tr' ? 'en' : 'tr')}>
+        <button className="btn-header-action" onClick={() => setLang(lang === 'tr' ? 'en' : 'tr')}>
           🌐 {lang.toUpperCase()}
         </button>
+        <button className="btn-header-action" onClick={() => setShowGuideModal(true)}>
+          📖 {t.howToPlay}
+        </button>
         {step === 1 && (
-          <button className="btn-logs-toggle" onClick={() => setShowHistoryModal(true)}>
+          <button className="btn-header-action" onClick={() => setShowHistoryModal(true)}>
             📊 {t.historyLogs} ({matchLogs.length})
           </button>
         )}
@@ -960,7 +972,7 @@ export default function App() {
           </div>
         )}
 
-        {/* CRICKET 3. ATIŞ ÖZET TAM EKRAN OVERLAY (ÇOKLU DİL DESTEKLİ) */}
+        {/* CRICKET SUMMARY OVERLAY */}
         {showCricketSummaryOverlay && (
           <div className="cricket-summary-overlay">
             <div className="cricket-summary-card">
@@ -975,14 +987,14 @@ export default function App() {
           </div>
         )}
 
-        {/* X01 BUST BÜYÜK KIRMIZI YANIP SÖNME OVERLAY (3 SANİYE) */}
+        {/* X01 BUST OVERLAY */}
         {showBustOverlay && (
           <div className="bust-overlay">
             <div className="bust-text">BUST!</div>
           </div>
         )}
 
-        {/* ANLIK CEZA BİLDİRİM TOAST OVERLAY (0.5 SANİYE) */}
+        {/* PENALTY TOAST */}
         {penaltyToast && (
           <div className="penalty-toast-overlay">
             <div className="penalty-toast-card">
@@ -1015,7 +1027,7 @@ export default function App() {
           <div className="winner-overlay">
             <div className="history-modal">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                <h2 style={{ margin: 0, color: '#4da6ff' }}>📜 {t.historyLogs}</h2>
+                <h2 style={{ margin: 0, color: '#4da6ff', fontSize: '1.2rem' }}>📜 {t.historyLogs}</h2>
                 <button className="btn-text" onClick={() => setShowHistoryModal(false)}>{t.close}</button>
               </div>
 
@@ -1053,6 +1065,13 @@ export default function App() {
             </div>
           </div>
         )}
+
+        {/* NASIL OYNANIR REHBERİ MODALI */}
+        <HowToPlayModal 
+          isOpen={showGuideModal} 
+          onClose={() => setShowGuideModal(false)} 
+          lang={lang} 
+        />
 
       </main>
     </div>
