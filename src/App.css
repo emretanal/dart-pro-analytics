@@ -95,7 +95,7 @@ html, body {
   50% { transform: translateY(-8px); }
 }
 
-/* ANA KONTEYNER - KESİN 100% GENİŞLİK VE İKİ YANA YASLANMA */
+/* ANA KONTEYNER */
 .app-container {
   display: flex;
   flex-direction: column;
@@ -148,7 +148,7 @@ html, body {
   color: #4da6ff;
 }
 
-/* HERO KART (KURULUM ADIMLARI) - SABİT TAM EKRAN GENİŞLİĞİ */
+/* HERO KART (KURULUM ADIMLARI) */
 .hero-card {
   background: #222330 !important;
   border: 1px solid #333446 !important;
@@ -633,7 +633,87 @@ html, body {
   box-sizing: border-box;
 }
 
-/* CHECKOUT BİTİŞ REHBERİ STİLİ - GENİŞLİK KORUMASI */
+/* CRICKET 3. ATIŞ ÖZET TAM EKRAN OVERLAY (3 SANİYE YANIP SÖNME) */
+.cricket-summary-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100dvh;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+  pointer-events: none;
+}
+
+.cricket-summary-card {
+  background: rgba(34, 35, 48, 0.95);
+  border: 3px solid #4da6ff;
+  box-shadow: 0 0 35px rgba(77, 166, 255, 0.6);
+  border-radius: 20px;
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  max-width: 90vw;
+  box-sizing: border-box;
+  animation: cricketSummaryBlink 0.6s infinite ease-in-out;
+}
+
+.cricket-summary-player {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+.cricket-summary-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #4da6ff;
+  letter-spacing: 2px;
+}
+
+.cricket-summary-darts {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.cricket-summary-dart-item {
+  background: #1a1b23;
+  border: 2px solid #4da6ff;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #ffffff;
+  min-width: 65px;
+  text-align: center;
+}
+
+@keyframes cricketSummaryBlink {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    border-color: #4da6ff;
+    box-shadow: 0 0 35px rgba(77, 166, 255, 0.7);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.96);
+    border-color: #28a745;
+    box-shadow: 0 0 15px rgba(40, 167, 69, 0.3);
+  }
+}
+
+/* CHECKOUT BİTİŞ REHBERİ STİLİ */
 .checkout-badge-box {
   background: linear-gradient(135deg, rgba(40, 167, 69, 0.2), rgba(77, 166, 255, 0.2));
   border: 1px solid #28a745;

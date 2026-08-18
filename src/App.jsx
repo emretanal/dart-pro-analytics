@@ -151,7 +151,8 @@ export default function App() {
 
   const [currentTurnDarts, setCurrentTurnDarts] = useState([]);
   const [isTurnFlashing, setIsTurnFlashing] = useState(false);
-  const [showBustOverlay, setShowBustOverlay] = useState(false); // BUST BÜYÜK EKRAN ANİMASYONU
+  const [showBustOverlay, setShowBustOverlay] = useState(false);
+  const [showCricketSummaryOverlay, setShowCricketSummaryOverlay] = useState(false); // CRICKET 3. ATIŞ ÖZET OVERLAY
 
   const [roundsWon, setRoundsWon] = useState(() => {
     const saved = localStorage.getItem('dart_roundsWon');
@@ -327,6 +328,7 @@ export default function App() {
     setCurrentTurnDarts([]);
     setIsTurnFlashing(false);
     setShowBustOverlay(false);
+    setShowCricketSummaryOverlay(false);
     setWinner(null);
     setGameHistory([]);
   };
@@ -386,6 +388,7 @@ export default function App() {
     setCurrentTurnDarts([]);
     setIsTurnFlashing(false);
     setShowBustOverlay(false);
+    setShowCricketSummaryOverlay(false);
     setGameHistory([]);
   };
 
@@ -406,11 +409,12 @@ export default function App() {
     ]);
   };
 
+  // CRICKET HEDEF TIKLAMA VE TUR TAMAMLAMA SİSTEMİ
   const handleCellClick = (playerIdx, targetId) => {
-    if (playerIdx !== activePlayerIndex || winner || isTurnFlashing || showBustOverlay) return;
+    if (playerIdx !== activePlayerIndex || winner || isTurnFlashing || showBustOverlay || showCricketSummaryOverlay) return;
 
     if (turnDartsCount >= 3) {
-      alert(t.turnLimitErr);
+      // 4. atış yapılmak istendiğinde uyarı verme, sessizce engelle
       return;
     }
 
@@ -426,6 +430,18 @@ export default function App() {
     if (targetId === 'Bull' && multiplier === 'triple') {
       addedMarks = 2;
     }
+
+    // Cricket tur içi dart etiketini formatlama
+    let hitLabel = targetObj.display;
+    if (multiplier === 'double') hitLabel = `D${targetObj.display}`;
+    if (multiplier === 'triple') hitLabel = `T${targetObj.display}`;
+    if (targetId === 'Bull') {
+      if (multiplier === 'double' || multiplier === 'triple') hitLabel = 'D-BULL';
+      else hitLabel = 'BULL';
+    }
+
+    const newTurnDarts = [...currentTurnDarts, { label: hitLabel }];
+    setCurrentTurnDarts(newTurnDarts);
 
     const newMarks = currentMarks + addedMarks;
 
@@ -466,7 +482,8 @@ export default function App() {
     };
 
     setScores(updatedScores);
-    setTurnDartsCount((prev) => prev + 1);
+    const newDartsCount = turnDartsCount + 1;
+    setTurnDartsCount(newDartsCount);
     setMultiplier('single');
 
     const hasClosedAll = currentTargets.every(
@@ -474,24 +491,35 @@ export default function App() {
     );
 
     if (hasClosedAll) {
+      let isLegWon = true;
       if (gameMode === 'cutthroat') {
         const myPenalties = penaltyPoints[playerIdx] || 0;
-        const isLowestPenalty = players.every((_, pIdx) => (penaltyPoints[pIdx] || 0) >= myPenalties);
-
-        if (isLowestPenalty) {
-          setTimeout(() => startNextLeg(playerIdx), 50);
-        }
-      } else {
-        setTimeout(() => startNextLeg(playerIdx), 50);
+        isLegWon = players.every((_, pIdx) => (penaltyPoints[pIdx] || 0) >= myPenalties);
       }
+
+      if (isLegWon) {
+        setTimeout(() => startNextLeg(playerIdx), 50);
+        return;
+      }
+    }
+
+    // 3. ATIŞ TAMAMLANDIĞINDA: 3 SANİYE YANIP SÖNEN TAM EKRAN ÖZETİNİ GÖSTER VE SONRA GEÇ
+    if (newDartsCount === 3) {
+      setShowCricketSummaryOverlay(true);
+      setIsTurnFlashing(true);
+
+      setTimeout(() => {
+        setShowCricketSummaryOverlay(false);
+        setIsTurnFlashing(false);
+        handleNextTurn();
+      }, 3000);
     }
   };
 
   const handleX01DartHit = (baseValue) => {
-    if (winner || isTurnFlashing || showBustOverlay) return;
+    if (winner || isTurnFlashing || showBustOverlay || showCricketSummaryOverlay) return;
 
     if (currentTurnDarts.length >= 3) {
-      alert(t.turnLimitErr);
       return;
     }
 
@@ -547,7 +575,6 @@ export default function App() {
                    (x01Rules.doubleOut && remaining === 0 && !isDouble);
 
     if (isBust) {
-      // BUST OLUŞTUĞUNDA: alert() yerine 3 saniye ekranda BUST yazıp sıradaki oyuncuya geç
       setX01Scores((prev) => ({ ...prev, [activePlayerIndex]: turnStartScore }));
       setCurrentTurnDarts((prev) => [...prev, { label: `${label} (BUST)`, points: 0 }]);
       setMultiplier('single');
@@ -605,10 +632,11 @@ export default function App() {
     setMultiplier('single');
     setIsTurnFlashing(false);
     setShowBustOverlay(false);
+    setShowCricketSummaryOverlay(false);
   };
 
   const handleUndo = () => {
-    if (gameHistory.length === 0 || winner || isTurnFlashing || showBustOverlay) return;
+    if (gameHistory.length === 0 || winner || isTurnFlashing || showBustOverlay || showCricketSummaryOverlay) return;
 
     const lastState = gameHistory[gameHistory.length - 1];
 
@@ -625,6 +653,7 @@ export default function App() {
     setMultiplier('single');
     setIsTurnFlashing(false);
     setShowBustOverlay(false);
+    setShowCricketSummaryOverlay(false);
   };
 
   const handleResetGame = () => {
@@ -801,6 +830,7 @@ export default function App() {
                           <button
                             className={`board-mark-btn ${pIdx === activePlayerIndex ? 'active-turn' : ''}`}
                             onClick={() => handleCellClick(pIdx, target.id)}
+                            disabled={isTurnFlashing || showCricketSummaryOverlay}
                           >
                             {getSymbol(scores[pIdx]?.[target.id])}
                           </button>
@@ -819,22 +849,24 @@ export default function App() {
                 <button 
                   className={`btn-mult ${multiplier === 'double' ? 'active-double' : ''}`}
                   onClick={() => toggleMultiplier('double')}
+                  disabled={isTurnFlashing || showCricketSummaryOverlay}
                 >
                   D
                 </button>
                 <button 
                   className={`btn-mult ${multiplier === 'triple' ? 'active-triple' : ''}`}
                   onClick={() => toggleMultiplier('triple')}
+                  disabled={isTurnFlashing || showCricketSummaryOverlay}
                 >
                   T
                 </button>
               </div>
 
-              <button className="btn-next" onClick={handleNextTurn} disabled={isTurnFlashing || showBustOverlay}>
+              <button className="btn-next" onClick={handleNextTurn} disabled={isTurnFlashing || showCricketSummaryOverlay}>
                 {t.endTurn} ({turnDartsCount}/3)
               </button>
               
-              <button className="btn-text" onClick={handleUndo} style={{ opacity: gameHistory.length === 0 || isTurnFlashing || showBustOverlay ? 0.3 : 1 }} disabled={gameHistory.length === 0 || isTurnFlashing || showBustOverlay}>
+              <button className="btn-text" onClick={handleUndo} style={{ opacity: gameHistory.length === 0 || isTurnFlashing || showCricketSummaryOverlay ? 0.3 : 1 }} disabled={gameHistory.length === 0 || isTurnFlashing || showCricketSummaryOverlay}>
                 {t.undo}
               </button>
             </div>
@@ -930,7 +962,22 @@ export default function App() {
           </div>
         )}
 
-        {/* 3 SANİYE BÜYÜK KIRMIZI BUST YANIP SÖNME EKRANI */}
+        {/* CRICKET 3. ATIŞ ÖZET TAM EKRAN POPUP OVERLAY (3 SANİYE YANIP SÖNME) */}
+        {showCricketSummaryOverlay && (
+          <div className="cricket-summary-overlay">
+            <div className="cricket-summary-card">
+              <div className="cricket-summary-player">🎯 {players[activePlayerIndex]}</div>
+              <div className="cricket-summary-title">TUR TAMAMLANDI</div>
+              <div className="cricket-summary-darts">
+                <span className="cricket-summary-dart-item">{currentTurnDarts[0]?.label || '-'}</span>
+                <span className="cricket-summary-dart-item">{currentTurnDarts[1]?.label || '-'}</span>
+                <span className="cricket-summary-dart-item">{currentTurnDarts[2]?.label || '-'}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* X01 BUST BÜYÜK KIRMIZI YANIP SÖNME OVERLAY (3 SANİYE) */}
         {showBustOverlay && (
           <div className="bust-overlay">
             <div className="bust-text">BUST!</div>
