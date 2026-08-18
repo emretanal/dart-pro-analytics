@@ -172,16 +172,15 @@ export const getCheckoutSuggestion = (remainingScore, dartsLeft = 3) => {
     if (remainingScore <= 40 && remainingScore % 2 === 0) {
       return `D${remainingScore / 2}`;
     }
-    return null; // Tek dartla bitirilemeyen sayı için öneri yok
+    return null;
   }
 
-  // 2 Dart hakkı kalmışsa: Maksimum 110 sayı 2 dartla bitirilebilir
+  // 2 Dart hakkı kalmışsa
   if (dartsLeft === 2) {
     const rawSuggestion = CHECKOUT_TABLE[remainingScore];
     if (!rawSuggestion) return null;
 
     const parts = rawSuggestion.split(' ');
-    // Eğer 3 dartlık bir kombinasyonsa tur ortasında otomatik 2-dartlık alternatif üret
     if (parts.length === 3) {
       if (remainingScore <= 100) {
         if (remainingScore % 2 === 0 && remainingScore <= 40) {
@@ -192,11 +191,11 @@ export const getCheckoutSuggestion = (remainingScore, dartsLeft = 3) => {
           return `${singlePart} D20`;
         }
       }
-      return null; // 2 dartla bitmesi imkansızsa önermeyi bırak
+      return null;
     }
     return rawSuggestion;
   }
 
-  // 3 Dart hakkı varken tam tablo önerisi verilir
+  // 3 Dart hakkı varken
   return CHECKOUT_TABLE[remainingScore] || null;
 };

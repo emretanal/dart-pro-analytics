@@ -227,6 +227,11 @@ html, body {
   box-sizing: border-box;
 }
 
+.name-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
 .name-input-group {
   display: flex;
   align-items: center;
@@ -267,6 +272,44 @@ html, body {
   font-size: 1rem;
   font-weight: 500;
   width: 100%;
+}
+
+.suggestions-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 999;
+  background: #2b2c3a;
+  border: 1px solid #4da6ff;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.suggestion-item {
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+  border-bottom: 1px solid #3d3e52;
+  transition: background 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-item:hover, .suggestion-item:active {
+  background: #4da6ff;
+  color: #000000;
 }
 
 /* OYUN SEÇİM LİSTESİ */
@@ -393,6 +436,122 @@ html, body {
   color: #8a8b9e;
 }
 
+/* BULL-OFF EKRANI STİLLERİ */
+.bulloff-player-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #1a1b23;
+  border: 1px solid #4da6ff;
+  border-radius: 12px;
+  padding: 12px 16px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 16px;
+}
+
+.bulloff-p-badge {
+  background: #0066cc;
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.9rem;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.bulloff-p-name {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.bulloff-btn-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.btn-bulloff {
+  height: 50px;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  cursor: pointer;
+  border: none;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.btn-dbull {
+  background: #dc3545;
+}
+
+.btn-sbull {
+  background: #28a745;
+}
+
+.btn-missbull {
+  background: #2b2c3a;
+  border: 1px solid #3d3e52;
+  color: #aaa;
+}
+
+.bulloff-status-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.bulloff-status-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1a1b23;
+  border: 1px solid #3d3e52;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.bulloff-status-item.active-throw {
+  border-color: #ffc107;
+  background: rgba(255, 193, 7, 0.1);
+}
+
+.bulloff-hit-badge {
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #2b2c3a;
+  color: #8a8b9e;
+}
+
+.bulloff-hit-badge.hit-50 {
+  background: rgba(220, 53, 69, 0.2);
+  color: #ff5252;
+  border: 1px solid #dc3545;
+}
+
+.bulloff-hit-badge.hit-25 {
+  background: rgba(40, 167, 69, 0.2);
+  color: #28a745;
+  border: 1px solid #28a745;
+}
+
+.bulloff-hit-badge.hit-0 {
+  background: rgba(255, 255, 255, 0.05);
+  color: #777;
+}
+
 /* ALT AKSİYON SATIRI */
 .setup-action-row {
   display: flex;
@@ -467,6 +626,16 @@ html, body {
   font-size: 1.15rem;
   font-weight: 800;
   letter-spacing: 1.5px;
+}
+
+.checkout-part-bull {
+  color: #28a745;
+  font-weight: 800;
+}
+
+.checkout-part-dbull {
+  color: #ff5252;
+  font-weight: 800;
 }
 
 /* X01 KEYPAD VE DART GÖSTERGESİ */
@@ -575,7 +744,7 @@ html, body {
   color: #ff5252;
 }
 
-/* CRICKET TABLOSU - STANDART CRICKET DÜZENİ */
+/* CRICKET TABLOSU */
 .board-scroll-wrapper {
   overflow-x: auto;
   overflow-y: auto;
@@ -716,7 +885,7 @@ html, body {
   border-color: #0066cc;
 }
 
-/* YALNIZCA EXTENDED CRICKET MODU İÇİN ÖZEL SIKIŞTIRILMIŞ BUTONLAR VE TABLO */
+/* EXTENDED CRICKET ÖZEL SIKIŞTIRILMIŞ BUTONLAR */
 .compact-extended .cricket-board-table {
   border-spacing: 2px;
 }
@@ -743,7 +912,7 @@ html, body {
 }
 
 .compact-extended .board-mark-btn {
-  height: 28px; /* Extended Cricket için kompakt sıkıştırılmış buton yüksekliği */
+  height: 28px;
   border-radius: 6px;
   font-size: 0.95rem;
 }

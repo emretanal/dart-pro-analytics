@@ -3,6 +3,7 @@ import PlayerCountStep from './components/Setup/PlayerCountStep';
 import PlayerNamesStep from './components/Setup/PlayerNamesStep';
 import GameSelectStep from './components/Setup/GameSelectStep';
 import LegTargetStep from './components/Setup/LegTargetStep';
+import BullOffStep from './components/Setup/BullOffStep';
 import { getCheckoutSuggestion } from './utils/checkoutTable';
 import './App.css';
 
@@ -94,7 +95,7 @@ export default function App() {
   const t = TRANSLATIONS[lang];
 
   const [showSplash, setShowSplash] = useState(() => {
-    const isMidGame = localStorage.getItem('dart_step') === '5';
+    const isMidGame = localStorage.getItem('dart_step') === '6';
     return !isMidGame;
   });
 
@@ -113,6 +114,12 @@ export default function App() {
   });
   const [targetLegs, setTargetLegs] = useState(() => parseInt(localStorage.getItem('dart_targetLegs')) || 3);
   const [winner, setWinner] = useState(() => localStorage.getItem('dart_winner') || null);
+
+  const [bullOffOrder, setBullOffOrder] = useState(() => {
+    const saved = localStorage.getItem('dart_bullOffOrder');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [currentLegNumber, setCurrentLegNumber] = useState(() => parseInt(localStorage.getItem('dart_currentLegNumber')) || 1);
 
   const [activePlayerIndex, setActivePlayerIndex] = useState(() => parseInt(localStorage.getItem('dart_activePlayerIndex')) || 0);
   const [currentTargets, setCurrentTargets] = useState(() => {
@@ -181,6 +188,8 @@ export default function App() {
     localStorage.setItem('dart_targetLegs', targetLegs);
     if (winner) localStorage.setItem('dart_winner', winner); else localStorage.removeItem('dart_winner');
     localStorage.setItem('dart_activePlayerIndex', activePlayerIndex);
+    localStorage.setItem('dart_bullOffOrder', JSON.stringify(bullOffOrder));
+    localStorage.setItem('dart_currentLegNumber', currentLegNumber);
     localStorage.setItem('dart_currentTargets', JSON.stringify(currentTargets));
     localStorage.setItem('dart_scores', JSON.stringify(scores));
     localStorage.setItem('dart_penaltyPoints', JSON.stringify(penaltyPoints));
@@ -193,7 +202,7 @@ export default function App() {
     localStorage.setItem('dart_match_logs', JSON.stringify(matchLogs));
   }, [
     lang, step, playerCount, players, selectedGame, gameMode, x01Rules, targetLegs, winner,
-    activePlayerIndex, currentTargets, scores, penaltyPoints, turnDartsCount,
+    activePlayerIndex, bullOffOrder, currentLegNumber, currentTargets, scores, penaltyPoints, turnDartsCount,
     x01Scores, x01InStatus, roundsWon, playerRoundsCount, gameHistory, matchLogs
   ]);
 
@@ -261,11 +270,18 @@ export default function App() {
 
   const handleLegTargetSelect = (legs) => {
     setTargetLegs(legs);
-    resetBoard(players, selectedGame, gameMode);
     setStep(5);
   };
 
-  const resetBoard = (playerList, gameType = selectedGame, mode = gameMode) => {
+  const handleBullOffComplete = (orderedIndices) => {
+    setBullOffOrder(orderedIndices);
+    setCurrentLegNumber(1);
+    const starterIdx = orderedIndices[0];
+    resetBoard(players, selectedGame, gameMode, starterIdx);
+    setStep(6);
+  };
+
+  const resetBoard = (playerList, gameType = selectedGame, mode = gameMode, starterPlayerIdx = 0) => {
     const initialRounds = {};
     const initialPlayerRounds = {};
     const initialScores = {};
@@ -297,7 +313,7 @@ export default function App() {
     setX01InStatus(initialInStatus);
     setRoundsWon(initialRounds);
     setPlayerRoundsCount(initialPlayerRounds);
-    setActivePlayerIndex(0);
+    setActivePlayerIndex(starterPlayerIdx);
     setTurnDartsCount(0);
     setMultiplier('single');
     setCurrentTurnDarts([]);
@@ -320,6 +336,12 @@ export default function App() {
       saveMatchToLogs(winnerName, updatedRoundsWon);
       return;
     }
+
+    const nextLegNum = currentLegNumber + 1;
+    setCurrentLegNumber(nextLegNum);
+
+    const starterOrderPosition = (nextLegNum - 1) % bullOffOrder.length;
+    const nextStarterIdx = bullOffOrder[starterOrderPosition];
 
     const startScore = parseInt(gameMode) || 501;
     const newScores = {};
@@ -349,7 +371,7 @@ export default function App() {
     setX01Scores(newX01);
     setX01InStatus(newInStatus);
     setPlayerRoundsCount(newPlayerRounds);
-    setActivePlayerIndex(0);
+    setActivePlayerIndex(nextStarterIdx);
     setTurnDartsCount(0);
     setMultiplier('single');
     setCurrentTurnDarts([]);
@@ -663,7 +685,6 @@ export default function App() {
     });
   };
 
-  // ANLIK KALAN DART SAYISINA GÖRE DİNAMİK BİTİŞ KONTROLÜ
   const dartsLeftInTurn = 3 - currentTurnDarts.length;
   const currentActiveRemaining = x01Scores[activePlayerIndex];
   const checkoutSuggestion = getCheckoutSuggestion(currentActiveRemaining, dartsLeftInTurn);
@@ -706,8 +727,9 @@ export default function App() {
         {step === 2 && <PlayerCountStep onSelect={handlePlayerCountSelect} onBack={() => setStep(1)} lang={lang} />}
         {step === 3 && <PlayerNamesStep playerCount={playerCount} onSubmit={handlePlayerNamesSubmit} onBack={() => setStep(2)} lang={lang} />}
         {step === 4 && <LegTargetStep onSelect={handleLegTargetSelect} onBack={() => setStep(3)} lang={lang} />}
+        {step === 5 && <BullOffStep players={players} onComplete={handleBullOffComplete} onBack={() => setStep(4)} lang={lang} />}
 
-        {step === 5 && selectedGame === 'cricket' && (
+        {step === 6 && selectedGame === 'cricket' && (
           <div className={`darts-score-theme ${gameMode === 'extended' ? 'compact-extended' : ''}`}>
             <div className="board-scroll-wrapper">
               <table className="cricket-board-table">
@@ -781,7 +803,7 @@ export default function App() {
           </div>
         )}
 
-        {step === 5 && selectedGame === 'x01' && (
+        {step === 6 && selectedGame === 'x01' && (
           <div className="darts-score-theme x01-theme">
             <div className="x01-header-grid" style={{ gridTemplateColumns: `repeat(${players.length}, 1fr)` }}>
               {players.map((name, idx) => (
