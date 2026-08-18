@@ -778,6 +778,51 @@ html, body {
   color: #ff5252;
 }
 
+/* CEZA ANLIK POPUP/TOAST BİLDİRİMİ (0.5 SANİYE) */
+.penalty-toast-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 99999;
+  pointer-events: none;
+  animation: penaltyPopIn 0.5s ease-out forwards;
+}
+
+.penalty-toast-card {
+  background: rgba(26, 27, 35, 0.95);
+  border: 3px solid #ff5252;
+  box-shadow: 0 0 35px rgba(255, 82, 82, 0.8), inset 0 0 20px rgba(255, 82, 82, 0.3);
+  border-radius: 20px;
+  padding: 16px 32px;
+  color: #ff5252;
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-align: center;
+  white-space: nowrap;
+  text-shadow: 0 0 10px rgba(255, 82, 82, 0.6);
+}
+
+@keyframes penaltyPopIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.4);
+  }
+  30% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.15);
+  }
+  80% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+}
+
 /* CRICKET TABLOSU */
 .board-scroll-wrapper {
   overflow-x: auto;

@@ -135,6 +135,8 @@ export default function App() {
     const saved = localStorage.getItem('dart_penaltyPoints');
     return saved ? JSON.parse(saved) : {};
   });
+  const [penaltyToast, setPenaltyToast] = useState(null); // CEZA ANLIK BİLDİRİM STATE'İ
+
   const [turnDartsCount, setTurnDartsCount] = useState(() => parseInt(localStorage.getItem('dart_turnDartsCount')) || 0);
   const [multiplier, setMultiplier] = useState('single');
 
@@ -424,17 +426,31 @@ export default function App() {
 
     const newMarks = currentMarks + addedMarks;
 
+    // CEZALI CRICKET (CUT-THROAT) HESAPLAMA VE EKRANA POPUP BİLDİRİMİ
     if (gameMode === 'cutthroat' && newMarks > 3) {
       const extraMarks = Math.min(addedMarks, newMarks - 3);
+      const penaltyAmount = targetObj.points * extraMarks;
+      let addedToAny = false;
+
       const updatedPenalties = { ...penaltyPoints };
       players.forEach((_, pIdx) => {
         if (pIdx !== playerIdx) {
           const otherMarks = scores[pIdx]?.[targetId] || 0;
           if (otherMarks < 3) {
-            updatedPenalties[pIdx] = (updatedPenalties[pIdx] || 0) + (targetObj.points * extraMarks);
+            updatedPenalties[pIdx] = (updatedPenalties[pIdx] || 0) + penaltyAmount;
+            addedToAny = true;
           }
         }
       });
+
+      // Eğer rakiplere ceza eklendiyse 0.5 saniyeliğine dev pop-up göster
+      if (addedToAny && penaltyAmount > 0) {
+        setPenaltyToast(`+${penaltyAmount} ${t.penalty.toUpperCase()}!`);
+        setTimeout(() => {
+          setPenaltyToast(null);
+        }, 500);
+      }
+
       setPenaltyPoints(updatedPenalties);
     }
 
@@ -908,6 +924,15 @@ export default function App() {
               <button className="btn-text" onClick={handleUndo} style={{ opacity: gameHistory.length === 0 || isTurnFlashing ? 0.3 : 1 }} disabled={gameHistory.length === 0 || isTurnFlashing}>
                 {t.undo}
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* ANLIK CEZA BİLDİRİM TOAST OVERLAY (0.5 SANİYE) */}
+        {penaltyToast && (
+          <div className="penalty-toast-overlay">
+            <div className="penalty-toast-card">
+              🚨 {penaltyToast}
             </div>
           </div>
         )}
