@@ -10,13 +10,13 @@ const GUIDE_CONTENT = {
       { id: 'cricket', label: '🏏 Cricket Kuralları' },
     ],
     board: {
-      intro: 'Dart tahtası 1 ile 20 arasındaki sayılardan ve merkezdeki Bull bölgesinden oluşur:',
+      intro: 'Dart tahtası 1-20 arasındaki sayılardan ve merkez bölgesinden oluşur. Bir dilimin bölgeleri ve puan karşılıkları:',
       items: [
-        { title: 'Single (Tekli Alan):', desc: 'Siyah ve krem renkli geniş alanlar. Sayının kendi değerini verir (Örn: 20).' },
-        { title: 'Double (Çiftli Halka - D):', desc: 'En dıştaki kırmızı/yeşil dar halka. Sayı değerini 2 ile çarpar (Örn: D20 = 40 Puan).' },
-        { title: 'Triple (Üçlü Halka - T):', desc: 'İçteki kırmızı/yeşil dar halka. Sayı değerini 3 ile çarpar (Örn: T20 = 60 Puan).' },
-        { title: 'Outer Bull (Dış Merkez - 25):', desc: 'Yeşil merkez halka. 25 puan değerindedir.' },
-        { title: 'Inner / Double Bull (İç Merkez - 50):', desc: 'Kırmızı tam merkez. 50 puan değerindedir ve Double kuralında bitiş atışı sayılır.' },
+        { title: 'Single (Tekli Alan):', desc: 'Geniş alanlar. Sayının kendi değerini kazandırır (Örn: 20).', badge: 'x1' },
+        { title: 'Double (Çiftli Halka - D):', desc: 'En dıştaki dar halka. Sayı değerini 2 ile çarpar (Örn: D20 = 40 Puan).', badge: 'x2' },
+        { title: 'Triple (Üçlü Halka - T):', desc: 'İçteki dar halka. Sayı değerini 3 ile çarpar (Örn: T20 = 60 Puan).', badge: 'x3' },
+        { title: 'Outer Bull (Dış Merkez):', desc: 'Yeşil merkez halka. 25 puan değerindedir.', badge: '25 Puan' },
+        { title: 'Inner / Double Bull (İç Merkez):', desc: 'Kırmızı tam merkez. 50 puan değerindedir ve Double kuralında bitiş vuruşu sayılır.', badge: '50 Puan' },
       ]
     },
     x01: {
@@ -52,13 +52,13 @@ const GUIDE_CONTENT = {
       { id: 'cricket', label: '🏏 Cricket Rules' },
     ],
     board: {
-      intro: 'A dartboard consists of numbers 1-20 and the central Bullseye:',
+      intro: 'A dartboard consists of numbers 1-20 and the central Bullseye. Here is the segment breakdown:',
       items: [
-        { title: 'Single Segment:', desc: 'The large black/cream areas. Scores face value (e.g., 20).' },
-        { title: 'Double Ring (D):', desc: 'The outer narrow ring. Multiplies score by 2 (e.g., D20 = 40 Points).' },
-        { title: 'Triple Ring (T):', desc: 'The inner narrow ring. Multiplies score by 3 (e.g., T20 = 60 Points).' },
-        { title: 'Outer Bull (25):', desc: 'The outer green center circle. Worth 25 points.' },
-        { title: 'Inner Bull / Double Bull (50):', desc: 'The inner red circle. Worth 50 points and counts as a double.' }
+        { title: 'Single Segment:', desc: 'Large scoring areas. Scores face value (e.g., 20).', badge: 'x1' },
+        { title: 'Double Ring (D):', desc: 'Outer narrow ring. Multiplies score by 2 (e.g., D20 = 40 Points).', badge: 'x2' },
+        { title: 'Triple Ring (T):', desc: 'Inner narrow ring. Multiplies score by 3 (e.g., T20 = 60 Points).', badge: 'x3' },
+        { title: 'Outer Bull:', desc: 'Outer green center circle. Worth 25 points.', badge: '25 Pts' },
+        { title: 'Inner Bull / Double Bull:', desc: 'Inner red circle. Worth 50 points and counts as a double finish.', badge: '50 Pts' },
       ]
     },
     x01: {
@@ -68,7 +68,7 @@ const GUIDE_CONTENT = {
         'Points scored are subtracted from your remaining total.',
         'Double Out: The final winning dart must hit a Double (D) segment.',
         'Double In: If active, you must hit a double before you can start deducting points.',
-        'BUST: Throwing more points than remaining (or leaving 1 point on Double Out) resets your turn.'
+        'BUST: Throwing more points than remaining resets your turn.'
       ]
     },
     cricket: {
@@ -117,10 +117,63 @@ export default function HowToPlayModal({ isOpen, onClose, lang = 'tr' }) {
           {activeTab === 'board' && (
             <div className="guide-section">
               <p className="guide-intro">{content.board.intro}</p>
+
+              {/* VEKTÖREL DART DİLİMİ ŞEMASI */}
+              <div className="board-visual-card">
+                <svg viewBox="0 0 340 230" className="dartboard-slice-svg">
+                  {/* Arka Plan Dilim Alanları */}
+                  {/* Double Ring */}
+                  <path d="M 120 15 A 150 150 0 0 1 220 15 L 208 32 A 130 130 0 0 0 132 32 Z" fill="#ff334b" stroke="#ffffff" strokeWidth="1" />
+                  {/* Single Outer */}
+                  <path d="M 132 32 A 130 130 0 0 1 208 32 L 190 70 A 90 90 0 0 0 150 70 Z" fill="#2b2c3a" stroke="#ffffff" strokeWidth="1" />
+                  {/* Triple Ring */}
+                  <path d="M 150 70 A 90 90 0 0 1 190 70 L 180 88 A 72 72 0 0 0 160 88 Z" fill="#ff334b" stroke="#ffffff" strokeWidth="1" />
+                  {/* Single Inner */}
+                  <path d="M 160 88 A 72 72 0 0 1 180 88 L 173 130 A 35 35 0 0 0 167 130 Z" fill="#2b2c3a" stroke="#ffffff" strokeWidth="1" />
+                  {/* Outer Bull */}
+                  <circle cx="170" cy="155" r="22" fill="#28a745" stroke="#ffffff" strokeWidth="1.5" />
+                  {/* Inner Bull */}
+                  <circle cx="170" cy="155" r="10" fill="#dc3545" stroke="#ffffff" strokeWidth="1.5" />
+
+                  {/* Sayı İfadesi */}
+                  <text x="170" y="11" fill="#ffffff" fontSize="11" fontWeight="800" textAnchor="middle">20</text>
+
+                  {/* İŞARETÇİ ÇİZGİLERİ VE ETİKETLER */}
+                  {/* Double Line */}
+                  <line x1="214" y1="23" x2="265" y2="23" stroke="#ff9800" strokeWidth="1.5" strokeDasharray="3 2" />
+                  <rect x="265" y="13" width="65" height="18" rx="4" fill="#ff9800" />
+                  <text x="297" y="25" fill="#000" fontSize="9" fontWeight="800" textAnchor="middle">DOUBLE (x2)</text>
+
+                  {/* Single Outer Line */}
+                  <line x1="75" y1="50" x2="140" y2="50" stroke="#4da6ff" strokeWidth="1.5" strokeDasharray="3 2" />
+                  <rect x="10" y="41" width="65" height="18" rx="4" fill="#4da6ff" />
+                  <text x="42" y="53" fill="#000" fontSize="9" fontWeight="800" textAnchor="middle">SINGLE (x1)</text>
+
+                  {/* Triple Line */}
+                  <line x1="185" y1="79" x2="265" y2="79" stroke="#e91e63" strokeWidth="1.5" strokeDasharray="3 2" />
+                  <rect x="265" y="70" width="65" height="18" rx="4" fill="#e91e63" />
+                  <text x="297" y="82" fill="#fff" fontSize="9" fontWeight="800" textAnchor="middle">TRIPLE (x3)</text>
+
+                  {/* Outer Bull Line */}
+                  <line x1="75" y1="150" x2="150" y2="150" stroke="#28a745" strokeWidth="1.5" strokeDasharray="3 2" />
+                  <rect x="10" y="141" width="65" height="18" rx="4" fill="#28a745" />
+                  <text x="42" y="153" fill="#fff" fontSize="9" fontWeight="800" textAnchor="middle">BULL (25)</text>
+
+                  {/* Inner Bull Line */}
+                  <line x1="170" y1="165" x2="170" y2="202" stroke="#dc3545" strokeWidth="1.5" strokeDasharray="3 2" />
+                  <rect x="125" y="202" width="90" height="18" rx="4" fill="#dc3545" />
+                  <text x="170" y="214" fill="#fff" fontSize="9" fontWeight="800" textAnchor="middle">D-BULL (50)</text>
+                </svg>
+              </div>
+
+              {/* DETAYLI AÇIKLAMA KARTLARI */}
               <div className="guide-list">
                 {content.board.items.map((item, i) => (
                   <div key={i} className="guide-card">
-                    <strong>{item.title}</strong>
+                    <div className="guide-card-header">
+                      <strong>{item.title}</strong>
+                      <span className="guide-badge">{item.badge}</span>
+                    </div>
                     <span>{item.desc}</span>
                   </div>
                 ))}
@@ -142,7 +195,7 @@ export default function HowToPlayModal({ isOpen, onClose, lang = 'tr' }) {
           {activeTab === 'cricket' && (
             <div className="guide-section">
               <p className="guide-intro">{content.cricket.intro}</p>
-              
+
               <div className="guide-symbols-grid">
                 {content.cricket.marks.map((m, i) => (
                   <div key={i} className="symbol-item">

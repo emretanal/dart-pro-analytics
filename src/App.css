@@ -193,204 +193,11 @@ html, body {
   width: 100%;
 }
 
-/* OYUNCU SAYISI EKRANI */
-.player-count-grid {
-  display: grid !important;
-  grid-template-columns: repeat(2, 1fr) !important;
-  gap: 12px !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-}
-
-.btn-count-step {
-  height: 58px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 8px !important;
-  font-size: 1.1rem !important;
-  font-weight: 700 !important;
-  border-radius: 12px !important;
-  background: #1a1b23 !important;
-  color: #ffffff !important;
-  border: 1px solid #3d3e52 !important;
-  cursor: pointer !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-}
-
-.btn-count-step:active {
-  background: #0066cc !important;
-  border-color: #0066cc !important;
-}
-
-.btn-count-step .btn-num {
-  font-size: 1.2rem;
-  color: #4da6ff;
-}
-
-.btn-count-step .btn-text-sub {
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-/* OYUNCU İSİMLERİ EKRANI VE AUTOCOMPLETE */
-.names-form {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  box-sizing: border-box;
-}
-
-.names-input-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  max-height: 45dvh;
-  overflow-y: auto;
-  padding-bottom: 70px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.name-input-wrapper {
-  position: relative;
-  width: 100%;
-  z-index: 1;
-}
-
-.name-input-wrapper.is-active {
-  z-index: 1000 !important;
-}
-
-.name-input-group {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: #1a1b23;
-  border: 1px solid #3d3e52;
-  border-radius: 10px;
-  padding: 0 12px;
-  height: 50px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.name-input-group:focus-within {
-  border-color: #4da6ff;
-}
-
-.player-badge {
-  width: 28px;
-  height: 28px;
-  min-width: 28px;
-  border-radius: 50%;
-  background: #2b2c3a;
-  color: #4da6ff;
-  font-weight: 700;
-  font-size: 0.85rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.name-input-field {
-  flex: 1;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: #ffffff;
-  font-size: 1rem;
-  font-weight: 500;
-  width: 100%;
-}
-
-.suggestions-dropdown {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  right: 0;
-  z-index: 9999;
-  background: #2b2c3a;
-  border: 1px solid #4da6ff;
-  border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8);
-  overflow: hidden;
-  max-height: 180px;
-  overflow-y: auto;
-}
-
-.suggestion-item {
-  padding: 10px 14px;
-  text-align: left;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #ffffff;
-  cursor: pointer;
-  border-bottom: 1px solid #3d3e52;
-  transition: background 0.15s, color 0.15s;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.suggestion-item:last-child {
-  border-bottom: none;
-}
-
-.suggestion-item:hover, .suggestion-item:active {
-  background: #4da6ff;
-  color: #000000;
-}
-
-/* OYUN SEÇİM LİSTESİ */
-.game-select-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.btn-game-card {
-  background: #1a1b23;
-  border: 1px solid #3d3e52;
-  border-radius: 12px;
-  padding: 16px;
-  text-align: left;
-  cursor: pointer;
-  width: 100%;
-  box-sizing: border-box;
-  transition: all 0.2s;
-}
-
-.btn-game-card:active {
-  border-color: #4da6ff;
-}
-
-.btn-game-card.active-mode {
-  border-color: #4da6ff;
-  background: #2b2c3a;
-}
-
-.game-card-title {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 2px;
-}
-
-.game-card-desc {
-  font-size: 0.82rem;
-  color: #8a8b9e;
-}
-
 /* NASIL OYNANIR REHBER MODALİ */
 .guide-modal {
-  max-width: 460px !important;
-  width: 92% !important;
-  max-height: 85dvh;
+  max-width: 480px !important;
+  width: 94% !important;
+  max-height: 88dvh;
   display: flex;
   flex-direction: column;
   padding: 18px !important;
@@ -406,7 +213,7 @@ html, body {
 
 .guide-header h2 {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   color: #4da6ff;
 }
 
@@ -438,17 +245,37 @@ html, body {
 .guide-content-body {
   overflow-y: auto;
   text-align: left;
-  padding-right: 4px;
+  padding-right: 2px;
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
 .guide-intro {
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   color: #ccc;
   margin: 0 0 10px 0;
   line-height: 1.4;
+}
+
+/* VEKTÖREL DART DİLİMİ ŞEMA KARTI */
+.board-visual-card {
+  background: #1a1b23;
+  border: 1px solid #3d3e52;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.dartboard-slice-svg {
+  width: 100%;
+  max-width: 320px;
+  height: auto;
 }
 
 .guide-list {
@@ -467,9 +294,25 @@ html, body {
   gap: 4px;
 }
 
+.guide-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .guide-card strong {
   color: #4da6ff;
   font-size: 0.9rem;
+}
+
+.guide-badge {
+  background: #2b2c3a;
+  border: 1px solid #4da6ff;
+  color: #4da6ff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 6px;
 }
 
 .guide-card span {
@@ -537,6 +380,48 @@ html, body {
   background: #383a4d;
 }
 
+/* OYUN SEÇİM LİSTESİ */
+.game-select-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.btn-game-card {
+  background: #1a1b23;
+  border: 1px solid #3d3e52;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.2s;
+}
+
+.btn-game-card:active {
+  border-color: #4da6ff;
+}
+
+.btn-game-card.active-mode {
+  border-color: #4da6ff;
+  background: #2b2c3a;
+}
+
+.game-card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 2px;
+}
+
+.game-card-desc {
+  font-size: 0.82rem;
+  color: #8a8b9e;
+}
+
 /* X01 DOUBLE IN / OUT CHECKBOX KARTLARI */
 .x01-rules-container {
   display: flex;
@@ -587,164 +472,6 @@ html, body {
   font-size: 0.8rem;
   color: #8a8b9e;
   margin-top: 2px;
-}
-
-/* LEG SEÇİM IZGARASI */
-.leg-select-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.btn-leg-step {
-  background: #1a1b23;
-  border: 1px solid #3d3e52;
-  border-radius: 10px;
-  height: 56px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-sizing: border-box;
-}
-
-.btn-leg-step:active {
-  background: #0066cc;
-  border-color: #0066cc;
-}
-
-.leg-count-num {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #ffffff;
-}
-
-.leg-count-sub {
-  font-size: 0.72rem;
-  color: #8a8b9e;
-}
-
-/* BULL-OFF EKRANI STİLLERİ */
-.bulloff-order-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;
-  margin-bottom: 16px;
-  max-height: 50dvh;
-  overflow-y: auto;
-  box-sizing: border-box;
-}
-
-.bulloff-order-card {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: #1a1b23;
-  border: 1px solid #3d3e52;
-  border-radius: 12px;
-  padding: 10px 12px;
-  box-sizing: border-box;
-  width: 100%;
-}
-
-.bulloff-rank-badge {
-  background: #0066cc;
-  color: #ffffff;
-  font-weight: 800;
-  font-size: 0.85rem;
-  padding: 6px 8px;
-  border-radius: 8px;
-  min-width: 65px;
-  text-align: center;
-  flex-shrink: 0;
-}
-
-.bulloff-player-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
-  min-width: 0;
-}
-
-.bulloff-player-name {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: #ffffff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 100%;
-  text-align: left;
-}
-
-.bulloff-hit-buttons {
-  display: flex;
-  gap: 4px;
-  width: 100%;
-}
-
-.btn-hit-chip {
-  flex: 1;
-  height: 28px;
-  border-radius: 6px;
-  border: 1px solid #3d3e52;
-  background: #2b2c3a;
-  color: #aaa;
-  font-size: 0.75rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.btn-hit-chip.dbull.active {
-  background: #dc3545;
-  border-color: #ff5252;
-  color: #fff;
-}
-
-.btn-hit-chip.sbull.active {
-  background: #28a745;
-  border-color: #5cd875;
-  color: #fff;
-}
-
-.btn-hit-chip.miss.active {
-  background: #6c757d;
-  border-color: #a7acb1;
-  color: #fff;
-}
-
-.bulloff-move-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  flex-shrink: 0;
-}
-
-.btn-move {
-  background: #2b2c3a;
-  border: 1px solid #3d3e52;
-  border-radius: 6px;
-  width: 32px;
-  height: 28px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-}
-
-.btn-move:disabled {
-  opacity: 0.2;
-  cursor: not-allowed;
 }
 
 /* ALT AKSİYON SATIRI */
@@ -799,7 +526,7 @@ html, body {
   box-sizing: border-box;
 }
 
-/* CRICKET 3. ATIŞ ÖZET TAM EKRAN OVERLAY (3 SANİYE YANIP SÖNME) */
+/* CRICKET 3. ATIŞ ÖZET TAM EKRAN OVERLAY */
 .cricket-summary-overlay {
   position: fixed;
   top: 0;
@@ -957,7 +684,7 @@ html, body {
   white-space: nowrap;
 }
 
-/* 3 SANİYE YANIP SÖNME (PULSE/BLINK) ANİMASYONU */
+/* 3 SANİYE YANIP SÖNME ANİMASYONU */
 @keyframes turnBlinkAnimation {
   0%, 100% {
     opacity: 1;
@@ -1301,7 +1028,6 @@ html, body {
   border-color: #0066cc;
 }
 
-/* EXTENDED CRICKET ÖZEL SIKIŞTIRILMIŞ BUTONLAR */
 .compact-extended .cricket-board-table {
   border-spacing: 2px;
 }
