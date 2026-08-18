@@ -48,6 +48,7 @@ export default function PlayerNamesStep({ playerCount, onSubmit, onBack, lang })
       <form className="names-form" onSubmit={handleSubmit}>
         <div className="names-input-list">
           {names.map((name, idx) => {
+            const defaultPlaceholder = `${isTr ? 'Oyuncu' : 'Player'} ${idx + 1}`;
             const currentVal = name.trim().toLowerCase();
 
             const suggestions = savedNames.filter((savedName) => {
@@ -69,11 +70,21 @@ export default function PlayerNamesStep({ playerCount, onSubmit, onBack, lang })
                     className="name-input-field"
                     value={name}
                     onChange={(e) => handleInputChange(idx, e.target.value)}
-                    onFocus={() => setActiveFocusedIndex(idx)}
+                    onFocus={() => {
+                      setActiveFocusedIndex(idx);
+                      // Tıklandığında varsayılan "Oyuncu X" ismini temizle
+                      if (name === defaultPlaceholder) {
+                        handleInputChange(idx, '');
+                      }
+                    }}
                     onBlur={() => {
                       setTimeout(() => setActiveFocusedIndex(null), 200);
+                      // Boş bırakılırsa varsayılan ismi geri yükle
+                      if (!name.trim()) {
+                        handleInputChange(idx, defaultPlaceholder);
+                      }
                     }}
-                    placeholder={`${isTr ? 'Oyuncu' : 'Player'} ${idx + 1}`}
+                    placeholder={defaultPlaceholder}
                     maxLength={15}
                   />
                 </div>
