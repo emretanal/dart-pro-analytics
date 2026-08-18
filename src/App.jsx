@@ -61,7 +61,8 @@ const TRANSLATIONS = {
     welcomeTitle: 'DART PRO ANALYTICS',
     welcomeSub: 'Skor Takip & İstatistik Sistemi',
     doubleInErr: 'Double In kuralı aktif! Oyuna girmek için ilk vuruşunuzun Double olması gerekir.',
-    doubleOutErr: 'Double Out kuralı aktif! Bitiş vuruşu Double olmak zorundadır.'
+    doubleOutErr: 'Double Out kuralı aktif! Bitiş vuruşu Double olmak zorundadır.',
+    turnCompleted: 'TUR TAMAMLANDI'
   },
   en: {
     targetCol: 'Target',
@@ -86,7 +87,8 @@ const TRANSLATIONS = {
     welcomeTitle: 'DART PRO ANALYTICS',
     welcomeSub: 'Scorekeeper & Analytics',
     doubleInErr: 'Double In active! You must hit a double to start scoring.',
-    doubleOutErr: 'Double Out active! You must finish on a double.'
+    doubleOutErr: 'Double Out active! You must finish on a double.',
+    turnCompleted: 'TURN COMPLETED'
   }
 };
 
@@ -152,7 +154,7 @@ export default function App() {
   const [currentTurnDarts, setCurrentTurnDarts] = useState([]);
   const [isTurnFlashing, setIsTurnFlashing] = useState(false);
   const [showBustOverlay, setShowBustOverlay] = useState(false);
-  const [showCricketSummaryOverlay, setShowCricketSummaryOverlay] = useState(false); // CRICKET 3. ATIŞ ÖZET OVERLAY
+  const [showCricketSummaryOverlay, setShowCricketSummaryOverlay] = useState(false);
 
   const [roundsWon, setRoundsWon] = useState(() => {
     const saved = localStorage.getItem('dart_roundsWon');
@@ -409,12 +411,10 @@ export default function App() {
     ]);
   };
 
-  // CRICKET HEDEF TIKLAMA VE TUR TAMAMLAMA SİSTEMİ
   const handleCellClick = (playerIdx, targetId) => {
     if (playerIdx !== activePlayerIndex || winner || isTurnFlashing || showBustOverlay || showCricketSummaryOverlay) return;
 
     if (turnDartsCount >= 3) {
-      // 4. atış yapılmak istendiğinde uyarı verme, sessizce engelle
       return;
     }
 
@@ -431,7 +431,6 @@ export default function App() {
       addedMarks = 2;
     }
 
-    // Cricket tur içi dart etiketini formatlama
     let hitLabel = targetObj.display;
     if (multiplier === 'double') hitLabel = `D${targetObj.display}`;
     if (multiplier === 'triple') hitLabel = `T${targetObj.display}`;
@@ -503,7 +502,6 @@ export default function App() {
       }
     }
 
-    // 3. ATIŞ TAMAMLANDIĞINDA: 3 SANİYE YANIP SÖNEN TAM EKRAN ÖZETİNİ GÖSTER VE SONRA GEÇ
     if (newDartsCount === 3) {
       setShowCricketSummaryOverlay(true);
       setIsTurnFlashing(true);
@@ -962,12 +960,12 @@ export default function App() {
           </div>
         )}
 
-        {/* CRICKET 3. ATIŞ ÖZET TAM EKRAN POPUP OVERLAY (3 SANİYE YANIP SÖNME) */}
+        {/* CRICKET 3. ATIŞ ÖZET TAM EKRAN OVERLAY (ÇOKLU DİL DESTEKLİ) */}
         {showCricketSummaryOverlay && (
           <div className="cricket-summary-overlay">
             <div className="cricket-summary-card">
               <div className="cricket-summary-player">🎯 {players[activePlayerIndex]}</div>
-              <div className="cricket-summary-title">TUR TAMAMLANDI</div>
+              <div className="cricket-summary-title">{t.turnCompleted}</div>
               <div className="cricket-summary-darts">
                 <span className="cricket-summary-dart-item">{currentTurnDarts[0]?.label || '-'}</span>
                 <span className="cricket-summary-dart-item">{currentTurnDarts[1]?.label || '-'}</span>
