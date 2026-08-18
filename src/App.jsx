@@ -273,11 +273,16 @@ export default function App() {
     setStep(5);
   };
 
+  // BULL-OFF TAMAMLANGANDA OYUNCULARI BULL-OFF SIRASINA GÖRE YENİDEN DİZİYORUZ
   const handleBullOffComplete = (orderedIndices) => {
-    setBullOffOrder(orderedIndices);
+    const reorderedPlayers = orderedIndices.map((idx) => players[idx]);
+    setPlayers(reorderedPlayers);
+
+    const newOrderIndices = reorderedPlayers.map((_, i) => i);
+    setBullOffOrder(newOrderIndices);
     setCurrentLegNumber(1);
-    const starterIdx = orderedIndices[0];
-    resetBoard(players, selectedGame, gameMode, starterIdx);
+
+    resetBoard(reorderedPlayers, selectedGame, gameMode, 0);
     setStep(6);
   };
 
@@ -340,8 +345,8 @@ export default function App() {
     const nextLegNum = currentLegNumber + 1;
     setCurrentLegNumber(nextLegNum);
 
-    const starterOrderPosition = (nextLegNum - 1) % bullOffOrder.length;
-    const nextStarterIdx = bullOffOrder[starterOrderPosition];
+    // Her yeni Leg için Bull-Off sırasına göre sıradaki oyuncu başlar (1. Leg -> 0, 2. Leg -> 1, ...)
+    const nextStarterIdx = (nextLegNum - 1) % players.length;
 
     const startScore = parseInt(gameMode) || 501;
     const newScores = {};
