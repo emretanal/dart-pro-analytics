@@ -2,19 +2,49 @@ export default function PlayerCountStep({ onSelect, onBack, lang = 'tr' }) {
   const options = [1, 2, 3, 4];
 
   return (
-    <div className="hero-card" style={{ width: '100%', boxSizing: 'border-box' }}>
-      <div className="setup-header-icon" style={{ fontSize: '2.5rem', marginBottom: '8px' }}>🎯</div>
-      <h1 className="setup-title" style={{ fontSize: '1.4rem', fontWeight: '800', color: '#ffffff', margin: '0 0 6px 0', textAlign: 'center' }}>
+    <div
+      style={{
+        width: '100%',
+        maxWidth: '100%',
+        boxSizing: 'border-box',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        background: '#222330',
+        border: '1px solid #333446',
+        borderRadius: '20px',
+        padding: '24px 18px',
+        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.45)',
+        marginTop: '5px'
+      }}
+    >
+      <div style={{ fontSize: '2.8rem', marginBottom: '8px' }}>🎯</div>
+      <h1
+        style={{
+          fontSize: '1.4rem',
+          fontWeight: '800',
+          color: '#ffffff',
+          margin: '0 0 6px 0',
+          textAlign: 'center'
+        }}
+      >
         {lang === 'tr' ? 'Kaç Oyuncu Oynayacak?' : 'How Many Players?'}
       </h1>
-      <p className="setup-subtitle" style={{ fontSize: '0.88rem', color: '#8a8b9e', margin: '0 0 20px 0', textAlign: 'center' }}>
+      <p
+        style={{
+          fontSize: '0.88rem',
+          color: '#8a8b9e',
+          margin: '0 0 20px 0',
+          textAlign: 'center'
+        }}
+      >
         {lang === 'tr' ? 'Oyuncu sayısını seçin (Maks. 4)' : 'Select number of players (Max 4)'}
       </p>
 
-      {/* 2x2 KESİN IZGARA DÜZENİ (INLINE GRID) */}
-      <div 
+      {/* 2x2 KESİN IZGARA DÜZENİ */}
+      <div
         style={{
-          display: 'grid',
+          display: 'grid !important',
           gridTemplateColumns: 'repeat(2, 1fr)',
           gap: '12px',
           width: '100%',
@@ -31,7 +61,7 @@ export default function PlayerCountStep({ onSelect, onBack, lang = 'tr' }) {
               alignItems: 'center',
               justify-content: 'center',
               gap: '10px',
-              height: '60px',
+              height: '62px',
               borderRadius: '12px',
               background: '#1a1b23',
               border: '1px solid #3d3e52',
@@ -40,10 +70,11 @@ export default function PlayerCountStep({ onSelect, onBack, lang = 'tr' }) {
               width: '100%',
               boxSizing: 'border-box',
               padding: '0 12px',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+              outline: 'none'
             }}
           >
-            <span 
+            <div
               style={{
                 fontSize: '1.2rem',
                 fontWeight: '900',
@@ -54,10 +85,10 @@ export default function PlayerCountStep({ onSelect, onBack, lang = 'tr' }) {
               }}
             >
               {count}
-            </span>
-            <span style={{ fontSize: '0.95rem', fontWeight: '700', color: '#ffffff' }}>
+            </div>
+            <div style={{ fontSize: '0.95rem', fontWeight: '700', color: '#ffffff' }}>
               {lang === 'tr' ? 'Oyuncu' : 'Player(s)'}
-            </span>
+            </div>
           </button>
         ))}
       </div>
@@ -78,7 +109,8 @@ export default function PlayerCountStep({ onSelect, onBack, lang = 'tr' }) {
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            justify-content: 'center'
+            justify-content: 'center',
+            outline: 'none'
           }}
         >
           {lang === 'tr' ? 'Geri' : 'Back'}

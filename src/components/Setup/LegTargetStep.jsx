@@ -25,7 +25,7 @@ export default function LegTargetStep({ onSelect, onBack, lang = 'tr' }) {
         marginTop: '5px'
       }}
     >
-      <div style={{ fontSize: '2.5rem', marginBottom: '8px' }}>🏆</div>
+      <div style={{ fontSize: '2.8rem', marginBottom: '8px' }}>🏆</div>
       <h1
         style={{
           fontSize: '1.4rem',
@@ -53,7 +53,7 @@ export default function LegTargetStep({ onSelect, onBack, lang = 'tr' }) {
       {/* 2 SÜTUNLU KESİN IZGARA DÜZENİ */}
       <div
         style={{
-          display: 'grid',
+          display: 'grid !important',
           gridTemplateColumns: 'repeat(2, 1fr)',
           gap: '12px',
           width: '100%',
@@ -70,7 +70,8 @@ export default function LegTargetStep({ onSelect, onBack, lang = 'tr' }) {
               flexDirection: 'column',
               alignItems: 'center',
               justify-content: 'center',
-              padding: '12px 8px',
+              padding: '14px 10px',
+              height: '62px',
               borderRadius: '12px',
               background: '#1a1b23',
               border: '1px solid #3d3e52',
@@ -78,28 +79,31 @@ export default function LegTargetStep({ onSelect, onBack, lang = 'tr' }) {
               cursor: 'pointer',
               width: '100%',
               boxSizing: 'border-box',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+              outline: 'none'
             }}
           >
-            <span
+            <div
               style={{
                 fontSize: '1.15rem',
                 fontWeight: '800',
                 color: '#ffffff',
-                marginBottom: '2px'
+                marginBottom: '2px',
+                lineHeight: '1.2'
               }}
             >
               {opt.label}
-            </span>
-            <span
+            </div>
+            <div
               style={{
                 fontSize: '0.75rem',
                 fontWeight: '500',
-                color: '#8a8b9e'
+                color: '#8a8b9e',
+                lineHeight: '1'
               }}
             >
               {lang === 'tr' ? opt.subTr : opt.subEn}
-            </span>
+            </div>
           </button>
         ))}
       </div>
@@ -120,7 +124,8 @@ export default function LegTargetStep({ onSelect, onBack, lang = 'tr' }) {
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            justify-content: 'center'
+            justify-content: 'center',
+            outline: 'none'
           }}
         >
           {lang === 'tr' ? 'Geri' : 'Back'}
