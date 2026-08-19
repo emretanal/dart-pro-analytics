@@ -1007,7 +1007,21 @@ body {
   font-size: 1.3rem;
   font-weight: 900;
   color: var(--accent-color);
-  margin: 2px 0;
+  margin: 2px 0 0;
+  line-height: 1.1;
+}
+
+/* Cezalı modda puan istenmeyen bir şeydir; kırmızı gösterilir. */
+.p-score.is-penalty {
+  color: var(--danger-color);
+}
+
+.p-score-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  margin-bottom: 3px;
 }
 
 .analytics-box {

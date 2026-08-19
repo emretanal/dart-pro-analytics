@@ -39,6 +39,15 @@ const EXTENDED_CRICKET_TARGETS = [
 
 const MARK_SYMBOLS = ['', '/', 'X', '⭕'];
 
+/* Puanın oyuncunun KENDİSİNE yazıldığı Cricket modları.
+   Kapatılan bir hedefe atılan fazla isabetler, o hedefi henüz kapatmamış
+   en az bir rakip varsa puan kazandırır; tüm rakipler kapattıysa hedef
+   "ölür" ve puan getirmez. Kazanmak için tüm hedefleri kapatmak VE puanın
+   rakiplerden düşük olmaması gerekir.
+   - cutthroat: puan rakiplere yazılır, en DÜŞÜK puan kazanır (ayrı ele alınır)
+   - no-score:  puan hiç tutulmaz, ilk kapatan kazanır */
+const CRICKET_SCORING_MODES = ['standard', 'extended', 'wildcard'];
+
 /* Üst çubukta gösterilen Cricket mod adları */
 const CRICKET_MODE_LABELS = {
   standard: { tr: 'Standart', en: 'Standard' },
@@ -68,6 +77,8 @@ const TRANSLATIONS = {
     endTurn: 'TURU BİTİR',
     undo: 'Geri Al',
     penalty: 'Ceza',
+    points: 'Puan',
+    legs: 'Leg',
     darts: 'Dart',
     rounds: 'Tur',
     checkoutRoute: 'Bitiş Rotası',
@@ -96,6 +107,8 @@ const TRANSLATIONS = {
     endTurn: 'END TURN',
     undo: 'Undo',
     penalty: 'Penalty',
+    points: 'Points',
+    legs: 'Legs',
     darts: 'Darts',
     rounds: 'Rounds',
     checkoutRoute: 'Checkout Route',
@@ -153,6 +166,12 @@ export default function App() {
   });
   const [penaltyPoints, setPenaltyPoints] = useState(() => {
     const saved = localStorage.getItem('dart_penaltyPoints');
+    return saved ? JSON.parse(saved) : {};
+  });
+  // Puan toplayan Cricket modlarında (Standart / Extended / Wild-Card)
+  // oyuncunun kendi topladığı puan. Cezalı modda kullanılmaz.
+  const [cricketPoints, setCricketPoints] = useState(() => {
+    const saved = localStorage.getItem('dart_cricketPoints');
     return saved ? JSON.parse(saved) : {};
   });
   const [penaltyToast, setPenaltyToast] = useState(null);
@@ -235,6 +254,7 @@ export default function App() {
     localStorage.setItem('dart_currentTargets', JSON.stringify(currentTargets));
     localStorage.setItem('dart_scores', JSON.stringify(scores));
     localStorage.setItem('dart_penaltyPoints', JSON.stringify(penaltyPoints));
+    localStorage.setItem('dart_cricketPoints', JSON.stringify(cricketPoints));
     localStorage.setItem('dart_turnDartsCount', turnDartsCount);
     localStorage.setItem('dart_x01Scores', JSON.stringify(x01Scores));
     localStorage.setItem('dart_x01InStatus', JSON.stringify(x01InStatus));
@@ -244,7 +264,7 @@ export default function App() {
     localStorage.setItem('dart_match_logs', JSON.stringify(matchLogs));
   }, [
     lang, theme, step, playerCount, players, selectedGame, gameMode, x01Rules, targetLegs, winner,
-    activePlayerIndex, bullOffOrder, currentLegNumber, currentTargets, scores, penaltyPoints, turnDartsCount,
+    activePlayerIndex, bullOffOrder, currentLegNumber, currentTargets, scores, penaltyPoints, cricketPoints, turnDartsCount,
     x01Scores, x01InStatus, roundsWon, playerRoundsCount, gameHistory, matchLogs
   ]);
 
@@ -263,7 +283,16 @@ export default function App() {
       roundsWon: finalRoundsWon[idx] || 0,
       dartsThrown: getTotalDarts(idx),
       statLabel: selectedGame === 'cricket' ? 'MPR' : 'Avg',
-      statValue: selectedGame === 'cricket' ? calculateMPR(idx) : calculateX01Avg(idx)
+      statValue: selectedGame === 'cricket' ? calculateMPR(idx) : calculateX01Avg(idx),
+      // Cricket modlarında son leg'in puanı (Cezalı'da ceza puanı)
+      cricketScore:
+        selectedGame !== 'cricket'
+          ? null
+          : gameMode === 'cutthroat'
+            ? penaltyPoints[idx] || 0
+            : CRICKET_SCORING_MODES.includes(gameMode)
+              ? cricketPoints[idx] || 0
+              : null,
     }));
 
     const newMatchRecord = {
@@ -355,6 +384,7 @@ export default function App() {
 
     setScores(initialScores);
     setPenaltyPoints(initialPenalties);
+    setCricketPoints(initialPenalties);
     setX01Scores(initialX01);
     setX01InStatus(initialInStatus);
     setRoundsWon(initialRounds);
@@ -416,6 +446,7 @@ export default function App() {
 
     setScores(newScores);
     setPenaltyPoints(newPenalties);
+    setCricketPoints({ ...newPenalties });
     setX01Scores(newX01);
     setX01InStatus(newInStatus);
     setPlayerRoundsCount(newPlayerRounds);
@@ -437,6 +468,7 @@ export default function App() {
         x01Scores: { ...x01Scores },
         x01InStatus: { ...x01InStatus },
         penaltyPoints: { ...penaltyPoints },
+        cricketPoints: { ...cricketPoints },
         playerRoundsCount: { ...playerRoundsCount },
         activePlayerIndex,
         turnDartsCount,
@@ -479,30 +511,51 @@ export default function App() {
 
     const newMarks = currentMarks + addedMarks;
 
-    if (gameMode === 'cutthroat' && newMarks > 3) {
-      const extraMarks = Math.min(addedMarks, newMarks - 3);
-      const penaltyAmount = targetObj.points * extraMarks;
-      let addedToAny = false;
+    // Kapatma sonrası fazla isabetler. extraMarks = 3'ü aşan isabet sayısı.
+    const extraMarks = newMarks > 3 ? Math.min(addedMarks, newMarks - 3) : 0;
+    const gainAmount = targetObj.points * extraMarks;
 
-      const updatedPenalties = { ...penaltyPoints };
-      players.forEach((_, pIdx) => {
-        if (pIdx !== playerIdx) {
-          const otherMarks = scores[pIdx]?.[targetId] || 0;
-          if (otherMarks < 3) {
-            updatedPenalties[pIdx] = (updatedPenalties[pIdx] || 0) + penaltyAmount;
-            addedToAny = true;
-          }
-        }
+    // Hedefi henüz kapatmamış rakipler (hedef "ölü" mü değil mi).
+    const openOpponents = players
+      .map((_, pIdx) => pIdx)
+      .filter((pIdx) => pIdx !== playerIdx && (scores[pIdx]?.[targetId] || 0) < 3);
+
+    // Tek kişilik oyunda rakip yoktur; alıştırma amacıyla puan yine yazılır.
+    const isSoloPlay = players.length === 1;
+
+    let updatedPenalties = penaltyPoints;
+    let updatedCricketPoints = cricketPoints;
+
+    if (gameMode === 'cutthroat' && extraMarks > 0) {
+      // CEZALI: puan, hedefi kapatmamış TÜM rakiplere yazılır.
+      updatedPenalties = { ...penaltyPoints };
+      openOpponents.forEach((pIdx) => {
+        updatedPenalties[pIdx] = (updatedPenalties[pIdx] || 0) + gainAmount;
       });
 
-      if (addedToAny && penaltyAmount > 0) {
-        setPenaltyToast(`+${penaltyAmount} ${t.penalty.toUpperCase()}!`);
+      if (openOpponents.length > 0 && gainAmount > 0) {
+        setPenaltyToast(`+${gainAmount} ${t.penalty.toUpperCase()}!`);
         setTimeout(() => {
           setPenaltyToast(null);
         }, 500);
       }
 
       setPenaltyPoints(updatedPenalties);
+    } else if (CRICKET_SCORING_MODES.includes(gameMode) && extraMarks > 0) {
+      // STANDART / EXTENDED / WILD-CARD: puan oyuncunun KENDİSİNE yazılır,
+      // ancak hedefi kapatmamış en az bir rakip varsa (yoksa hedef ölüdür).
+      if ((openOpponents.length > 0 || isSoloPlay) && gainAmount > 0) {
+        updatedCricketPoints = {
+          ...cricketPoints,
+          [playerIdx]: (cricketPoints[playerIdx] || 0) + gainAmount,
+        };
+        setCricketPoints(updatedCricketPoints);
+
+        setPenaltyToast(`+${gainAmount} ${t.points.toUpperCase()}!`);
+        setTimeout(() => {
+          setPenaltyToast(null);
+        }, 500);
+      }
     }
 
     const updatedPlayerScores = {
@@ -527,8 +580,16 @@ export default function App() {
     if (hasClosedAll) {
       let isLegWon = true;
       if (gameMode === 'cutthroat') {
-        const myPenalties = penaltyPoints[playerIdx] || 0;
-        isLegWon = players.every((_, pIdx) => (penaltyPoints[pIdx] || 0) >= myPenalties);
+        // Cezalı: en DÜŞÜK puan kazanır.
+        // NOT: burada güncel (updatedPenalties) değerler kullanılmalı; state
+        // henüz yazılmadığı için penaltyPoints bu atışı içermez.
+        const myPenalties = updatedPenalties[playerIdx] || 0;
+        isLegWon = players.every((_, pIdx) => (updatedPenalties[pIdx] || 0) >= myPenalties);
+      } else if (CRICKET_SCORING_MODES.includes(gameMode)) {
+        // Standart / Extended / Wild-Card: en YÜKSEK puan kazanır.
+        // Tüm hedefleri kapatmak tek başına yetmez; puan da geride olmamalı.
+        const myPoints = updatedCricketPoints[playerIdx] || 0;
+        isLegWon = players.every((_, pIdx) => (updatedCricketPoints[pIdx] || 0) <= myPoints);
       }
 
       if (isLegWon) {
@@ -677,6 +738,7 @@ export default function App() {
     setX01Scores(lastState.x01Scores || {});
     setX01InStatus(lastState.x01InStatus || {});
     setPenaltyPoints(lastState.penaltyPoints || {});
+    setCricketPoints(lastState.cricketPoints || {});
     setPlayerRoundsCount(lastState.playerRoundsCount);
     setActivePlayerIndex(lastState.activePlayerIndex);
     setTurnDartsCount(lastState.turnDartsCount);
@@ -699,6 +761,7 @@ export default function App() {
       setX01Scores({});
       setX01InStatus({});
       setPenaltyPoints({});
+    setCricketPoints({});
       setRoundsWon({});
       setPlayerRoundsCount({});
       setWinner(null);
@@ -718,6 +781,7 @@ export default function App() {
     setX01Scores({});
     setX01InStatus({});
     setPenaltyPoints({});
+    setCricketPoints({});
     setRoundsWon({});
     setPlayerRoundsCount({});
     setWinner(null);
@@ -898,17 +962,28 @@ export default function App() {
                         {/* İçerik ayrı bir kart içinde: <th> üzerinde border-radius
                             çalışmadığı için yuvarlak köşeler bu div'e uygulanıyor. */}
                         <div className="player-header-card">
-                          <div className="rounds-label">{t.rounds}: {roundsWon[idx] || 0} / {targetLegs}</div>
+                          <div className="rounds-label">{t.legs}: {roundsWon[idx] || 0} / {targetLegs}</div>
                           <div className="p-name">{name}</div>
-                          <div className="p-score">{roundsWon[idx] || 0}</div>
+                          {/* Büyük rakam moda göre anlamlı olan skoru gösterir:
+                              puanlı modlarda toplanan puan, Cezalı'da ceza,
+                              No-Score'da kazanılan leg sayısı. */}
+                          <div className={`p-score ${gameMode === 'cutthroat' ? 'is-penalty' : ''}`}>
+                            {gameMode === 'cutthroat'
+                              ? penaltyPoints[idx] || 0
+                              : CRICKET_SCORING_MODES.includes(gameMode)
+                                ? cricketPoints[idx] || 0
+                                : roundsWon[idx] || 0}
+                          </div>
+                          <div className="p-score-label">
+                            {gameMode === 'cutthroat'
+                              ? t.penalty
+                              : CRICKET_SCORING_MODES.includes(gameMode)
+                                ? t.points
+                                : t.legs}
+                          </div>
                           <div className="analytics-box">
                             <div><span className="analytics-label">{t.darts}:</span> {getTotalDarts(idx)}</div>
                             <div><span className="analytics-label">MPR:</span> {calculateMPR(idx)}</div>
-                            {gameMode === 'cutthroat' && (
-                              <div className="penalty-box">
-                                <span className="penalty-label">{t.penalty}:</span> {penaltyPoints[idx] || 0}
-                              </div>
-                            )}
                           </div>
                         </div>
                       </th>

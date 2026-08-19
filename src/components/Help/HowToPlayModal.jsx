@@ -482,8 +482,9 @@ const GUIDE_CONTENT = {
   },
 };
 
-/* Cricket modu kimlikleri; X01 modları sayı ("501" vb.) olarak gelir. */
-const CRICKET_MODES = ['standard', 'extended', 'cutthroat', 'no-score', 'wildcard'];
+/* Cricket modu kimlikleri; X01 modları sayı ("501" vb.) olarak gelir.
+   Sıra, oyun seçim ekranındaki sırayla aynı tutulmalıdır. */
+const CRICKET_MODES = ['no-score', 'cutthroat', 'standard', 'extended', 'wildcard'];
 
 export default function HowToPlayModal({
   isOpen,

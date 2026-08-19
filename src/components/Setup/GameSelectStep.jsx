@@ -49,24 +49,24 @@ export default function GameSelectStep({
         <div className="game-select-list">
           <div className="sub-section-title">{lang === 'tr' ? 'Oyun Modu Seçin:' : 'Select Game Mode:'}</div>
 
+          <button className="btn-game-card" onClick={() => handleCricketSelect('no-score')}>
+            <div className="game-card-title">No-Score Cricket</div>
+            <div className="game-card-desc">{lang === 'tr' ? 'Puanlama yok; hedefleri ilk kapatan kazanır' : 'No points; first to close all targets wins'}</div>
+          </button>
+
+          <button className="btn-game-card" onClick={() => handleCricketSelect('cutthroat')}>
+            <div className="game-card-title">{lang === 'tr' ? 'Cezalı Cricket (Cut-Throat)' : 'Cut-Throat Cricket'}</div>
+            <div className="game-card-desc">{lang === 'tr' ? 'Fazla vuruşlar rakibe ceza puanı olarak eklenir; en düşük puan kazanır' : 'Extra hits add penalty points to opponents; lowest score wins'}</div>
+          </button>
+
           <button className="btn-game-card" onClick={() => handleCricketSelect('standard')}>
             <div className="game-card-title">{lang === 'tr' ? 'Standart Cricket (15-20 & Bull)' : 'Standard Cricket (15-20 & Bull)'}</div>
-            <div className="game-card-desc">{lang === 'tr' ? 'Klasik sayı kapatma ve puan toplama modu' : 'Classic number closing and scoring mode'}</div>
+            <div className="game-card-desc">{lang === 'tr' ? 'Fazla vuruşlar size puan yazar; en yüksek puan kazanır' : 'Extra hits score for you; highest score wins'}</div>
           </button>
 
           <button className="btn-game-card" onClick={() => handleCricketSelect('extended')}>
             <div className="game-card-title">{lang === 'tr' ? 'Extended Cricket (20-10, B, T, D, H)' : 'Extended Cricket (20-10, B, T, D, H)'}</div>
             <div className="game-card-desc">20-10, Bull, Triple, Double, House (H)</div>
-          </button>
-
-          <button className="btn-game-card" onClick={() => handleCricketSelect('cutthroat')}>
-            <div className="game-card-title">{lang === 'tr' ? 'Cezalı Cricket (Cut-Throat)' : 'Cut-Throat Cricket'}</div>
-            <div className="game-card-desc">{lang === 'tr' ? 'Fazla vuruşlar rakibe ceza puanı olarak eklenir' : 'Extra hits add penalty points to opponents'}</div>
-          </button>
-
-          <button className="btn-game-card" onClick={() => handleCricketSelect('no-score')}>
-            <div className="game-card-title">No-Score Cricket</div>
-            <div className="game-card-desc">{lang === 'tr' ? 'Puanlama yok; hedefleri ilk kapatan kazanır' : 'No points; first to close all targets wins'}</div>
           </button>
 
           <button className="btn-game-card" onClick={() => handleCricketSelect('wildcard')}>
