@@ -4,7 +4,7 @@ import PlayerNamesStep from './components/Setup/PlayerNamesStep';
 import GameSelectStep from './components/Setup/GameSelectStep';
 import LegTargetStep from './components/Setup/LegTargetStep';
 import BullOffStep from './components/Setup/BullOffStep';
-import HowToPlayModal from './components/HowToPlayModal';
+import HowToPlayModal from './components/Help/HowToPlayModal';
 import { getCheckoutSuggestion } from './utils/checkoutTable';
 import './App.css';
 

@@ -1,15 +1,5 @@
-/* Overlay: 9:16 Mobil Dikey Merkezleme */
-.winner-overlay {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(2, 6, 23, 0.88);
-  backdrop-filter: blur(8px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  padding: 0;
-}
+/* Not: .winner-overlay ve .btn-text zaten App.css'te tanımlı,
+   burada yalnızca "Nasıl Oynanır" rehberine özgü stiller var. */
 
 /* Modal Kapsayıcısı: Sabit 9:16 Oran Limiti ve İki Yana Tam Yaslama */
 .history-modal.guide-modal {
@@ -37,7 +27,7 @@
   }
 }
 
-/* Üst Başlık Batan Alanı */
+/* Üst Başlık Sabit Alanı */
 .guide-header {
   display: flex;
   justify-content: space-between;
@@ -53,22 +43,6 @@
   font-weight: 800;
   color: #f8fafc;
   margin: 0;
-}
-
-.btn-text {
-  background: transparent;
-  border: none;
-  color: #94a3b8;
-  font-size: 0.9rem;
-  font-weight: 700;
-  cursor: pointer;
-  padding: 6px 10px;
-  border-radius: 6px;
-}
-
-.btn-text:active {
-  background-color: #1e293b;
-  color: #f8fafc;
 }
 
 /* Sekmeler: Sabit Genişlik Yapısı ile Daralma/Genişlemeleri Önler */
