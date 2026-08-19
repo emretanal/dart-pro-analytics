@@ -828,7 +828,7 @@ export default function App() {
         : '';
 
   return (
-    <div className={`app-container ${isSetupMode ? 'setup-mode-container' : ''}`} data-theme={theme}>
+    <div className={`app-container ${isSetupMode ? 'setup-mode-container' : 'game-mode-container'}`} data-theme={theme}>
       {/* Üst çubuk:
           - Ana ekran (step 1): Seçenekler + Geçmiş + Rehber
           - Diğer tüm ekranlar: aktif oyun bilgisi + Rehber
@@ -864,7 +864,9 @@ export default function App() {
         )}
       </div>
 
-      <main className="app-content">
+      {/* Oyun ekranlarında dış katman kaydırılmamalı; yalnızca skor tablosunun
+          kendi alanı kaydırılır, böylece alt aksiyon çubuğu hep görünür kalır. */}
+      <main className={`app-content ${step === 6 ? 'is-game-screen' : ''}`}>
         {step === 1 && (
           <GameSelectStep
             onSelect={handleGameSelect}

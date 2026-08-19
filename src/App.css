@@ -114,6 +114,16 @@ body {
   box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
 }
 
+/* Oyun (skor) ekranı: yükseklik ekranla TAM olarak sınırlanır.
+   min-height yeterli değil; skor tablosu uzun olduğunda kapsayıcı büyüyerek
+   alt aksiyon çubuğunu ekran dışına itiyordu. Kaydırma yalnızca tablo
+   alanında (.board-scroll-wrapper) yapılır. */
+.app-container.game-mode-container {
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .top-header-bar {
   width: 100%;
   display: flex;
@@ -172,16 +182,25 @@ body {
   padding-left: 4px;
 }
 
-/* Dar ekranlarda başlık çubuğunun tek satırda kalması için uzun buton
-   etiketlerini gizle; simge (ve varsa sayaç) yeterli bilgiyi verir. */
+/* Başlık çubuğu artık en fazla 3 öğe taşıdığı için etiketler dar
+   ekranlarda da görünebiliyor; yalnızca boşluk/yazı biraz sıkılaştırılıyor. */
 @media (max-width: 430px) {
-  .btn-label-text {
-    display: none;
+  .btn-header-action {
+    padding: 8px 7px;
+    font-size: 0.74rem;
   }
 
-  .btn-header-action {
-    padding: 8px 9px;
-    font-size: 0.76rem;
+  .top-header-bar {
+    padding: 10px 10px;
+    gap: 4px;
+  }
+}
+
+/* Çok dar cihazlarda (iPhone SE vb.) etiketleri gizlemek yerine yalnızca
+   daha da sıkıştır; taşma olursa simgeye düşülür. */
+@media (max-width: 340px) {
+  .btn-label-text {
+    display: none;
   }
 }
 
@@ -194,6 +213,13 @@ body {
   min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Oyun (skor) ekranları: dış katman kaydırılmaz. Aksi halde skor tablosu
+   büyüdükçe tüm sayfa uzar ve alt aksiyon çubuğu ekranın dışına taşar.
+   Kaydırma sorumluluğu yalnızca .board-scroll-wrapper'a aittir. */
+.app-content.is-game-screen {
+  overflow: hidden;
 }
 
 /* ==========================================================================
@@ -899,10 +925,18 @@ body {
   overflow-y: auto;
   width: 100%;
   -webkit-overflow-scrolling: touch;
+  /* Tablonun kalan yüksekliği doldurabilmesi için flex kapsayıcı. */
+  display: flex;
+  flex-direction: column;
 }
 
+/* Tablo, sarmalayıcının kalan yüksekliğini doldurur (flex: 1 0 auto).
+   "0 auto" kısmı önemli: büyüyebilir ama içeriğinin altına SIKIŞMAZ, bu
+   sayede Extended modunda satırlar okunaklı kalır ve sarmalayıcı kaydırılır.
+   Not: table üzerinde height:100% güvenilir çalışmıyor, flex kullanıldı. */
 .cricket-board-table {
   width: 100%;
+  flex: 1 0 auto;
   border-collapse: collapse;
   text-align: center;
 }
@@ -1008,13 +1042,20 @@ body {
   color: var(--text-primary);
 }
 
+/* height:1px "hilesi": tablo hücrelerinde yüzdelik yükseklik ancak hücreye
+   belirli bir yükseklik verilirse çözülür. Hücre içeriğe göre yine büyür,
+   ama içindeki buton artık height:100% ile satırı tam doldurabilir. */
 .mark-cell-td {
   padding: 4px;
+  height: 1px;
 }
 
 .board-mark-btn {
   width: 100%;
-  height: 44px;
+  /* Sabit yükseklik yerine esnek: satır ne kadar yer alırsa o kadar büyür,
+     ama dokunma hedefi 44px'in altına inmez. */
+  height: 100%;
+  min-height: 44px;
   background-color: var(--bg-surface);
   border: 1px solid var(--card-border);
   border-radius: var(--radius-sm);
@@ -1044,9 +1085,34 @@ body {
   font-size: 0.95rem;
 }
 
+/* Extended Cricket: 15 hedef satırı var. Alt sınır düşürülür ki tablo
+   ekrana sığabilsin; yer kalırsa satırlar yine büyüyerek boşluğu doldurur,
+   sığmazsa board-scroll-wrapper kaydırılır. */
 .compact-extended .board-mark-btn {
-  height: 36px;
+  height: 100%;
+  min-height: 32px;
   font-size: 1.1rem;
+}
+
+.compact-extended .mark-cell-td {
+  padding: 2px 3px;
+}
+
+.compact-extended .player-header-card {
+  padding: 6px;
+}
+
+.compact-extended .analytics-box {
+  font-size: 0.66rem;
+}
+
+.compact-extended .p-score {
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.compact-extended .p-name {
+  font-size: 0.85rem;
 }
 
 /* ==========================================================================
@@ -1586,6 +1652,10 @@ body {
   }
 
   .board-mark-btn {
-    height: 38px;
+    min-height: 38px;
+  }
+
+  .compact-extended .board-mark-btn {
+    min-height: 30px;
   }
 }
