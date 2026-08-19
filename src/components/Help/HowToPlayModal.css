@@ -6,7 +6,7 @@
   width: 100vw;
   max-width: 480px;
   height: 100dvh;
-  background-color: #0f172a;
+  background-color: var(--bg-card);
   display: flex;
   flex-direction: column;
   padding: 16px 14px;
@@ -33,7 +33,7 @@
   justify-content: space-between;
   align-items: center;
   padding-bottom: 12px;
-  border-bottom: 1px solid #334155;
+  border-bottom: 1px solid var(--border-color);
   margin-bottom: 12px;
   flex-shrink: 0;
 }
@@ -41,14 +41,14 @@
 .guide-header h2 {
   font-size: 1.15rem;
   font-weight: 800;
-  color: #f8fafc;
+  color: var(--text-primary);
   margin: 0;
 }
 
 /* Sekmeler: Sabit Genişlik Yapısı ile Daralma/Genişlemeleri Önler */
 .guide-tabs {
   display: flex;
-  background-color: #1e293b;
+  background-color: var(--bg-surface);
   padding: 4px;
   border-radius: 10px;
   gap: 4px;
@@ -63,7 +63,7 @@
   padding: 10px 0;
   border: none;
   background: transparent;
-  color: #94a3b8;
+  color: var(--text-secondary);
   font-size: 0.78rem;
   font-weight: 700;
   border-radius: 8px;
@@ -74,8 +74,8 @@
 }
 
 .guide-tab-btn.active {
-  background-color: #10b981;
-  color: #020617;
+  background-color: var(--accent-color);
+  color: #04150c;
 }
 
 /* İçerik Alanı: Kaydırılabilir İç Kapsayıcı */
@@ -97,15 +97,15 @@
 
 .guide-intro {
   font-size: 0.85rem;
-  color: #cbd5e1;
+  color: var(--text-secondary);
   line-height: 1.4;
   margin: 0;
 }
 
 /* Dart Tahtası Görsel Şeması */
 .board-visual-card {
-  background-color: #1e293b;
-  border: 1px solid #334155;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 8px;
   display: flex;
@@ -130,8 +130,8 @@
 }
 
 .guide-card {
-  background-color: #1e293b;
-  border: 1px solid #334155;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 10px 12px;
   display: flex;
@@ -147,19 +147,19 @@
 
 .guide-card strong {
   font-size: 0.88rem;
-  color: #f8fafc;
+  color: var(--text-primary);
 }
 
 .guide-card span {
   font-size: 0.8rem;
-  color: #94a3b8;
+  color: var(--text-secondary);
   line-height: 1.35;
 }
 
 .guide-badge {
-  background-color: #0f172a;
-  border: 1px solid #334155;
-  color: #10b981;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--accent-color);
   font-weight: 800;
   font-size: 0.72rem;
   padding: 2px 8px;
@@ -178,7 +178,7 @@
 
 .guide-bullet-list li {
   font-size: 0.85rem;
-  color: #cbd5e1;
+  color: var(--text-secondary);
   line-height: 1.4;
 }
 
@@ -191,8 +191,8 @@
 }
 
 .symbol-item {
-  background-color: #1e293b;
-  border: 1px solid #334155;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 10px 6px;
   display: flex;
@@ -205,10 +205,10 @@
 .symbol-icon {
   font-size: 1.2rem;
   font-weight: 800;
-  color: #10b981;
+  color: var(--accent-color);
 }
 
 .symbol-label {
   font-size: 0.72rem;
-  color: #94a3b8;
+  color: var(--text-secondary);
 }

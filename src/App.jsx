@@ -99,6 +99,9 @@ export default function App() {
   const [lang, setLang] = useState(() => localStorage.getItem('dart_lang') || 'tr');
   const t = TRANSLATIONS[lang];
 
+  // Gece (varsayılan, siyah ağırlıklı) / Gündüz mod anahtarı
+  const [theme, setTheme] = useState(() => localStorage.getItem('dart_theme') || 'dark');
+
   const [showSplash, setShowSplash] = useState(() => {
     const isMidGame = localStorage.getItem('dart_step') === '6';
     return !isMidGame;
@@ -198,6 +201,7 @@ export default function App() {
 
   useEffect(() => {
     localStorage.setItem('dart_lang', lang);
+    localStorage.setItem('dart_theme', theme);
     localStorage.setItem('dart_step', step);
     localStorage.setItem('dart_playerCount', playerCount);
     localStorage.setItem('dart_players', JSON.stringify(players));
@@ -220,7 +224,7 @@ export default function App() {
     localStorage.setItem('dart_gameHistory', JSON.stringify(gameHistory));
     localStorage.setItem('dart_match_logs', JSON.stringify(matchLogs));
   }, [
-    lang, step, playerCount, players, selectedGame, gameMode, x01Rules, targetLegs, winner,
+    lang, theme, step, playerCount, players, selectedGame, gameMode, x01Rules, targetLegs, winner,
     activePlayerIndex, bullOffOrder, currentLegNumber, currentTargets, scores, penaltyPoints, turnDartsCount,
     x01Scores, x01InStatus, roundsWon, playerRoundsCount, gameHistory, matchLogs
   ]);
@@ -774,7 +778,7 @@ export default function App() {
 
   if (showSplash) {
     return (
-      <div className="app-container setup-mode-container">
+      <div className="app-container setup-mode-container" data-theme={theme}>
         <div className="splash-screen">
           <div className="splash-content">
             <div className="splash-logo">🎯</div>
@@ -797,8 +801,11 @@ export default function App() {
   const isSetupMode = step < 6;
 
   return (
-    <div className={`app-container ${isSetupMode ? 'setup-mode-container' : ''}`}>
+    <div className={`app-container ${isSetupMode ? 'setup-mode-container' : ''}`} data-theme={theme}>
       <div className="top-header-bar">
+        <button className="btn-header-action btn-theme-toggle" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+          {theme === 'dark' ? '🌙' : '☀️'}
+        </button>
         <button className="btn-header-action" onClick={() => setLang(lang === 'tr' ? 'en' : 'tr')}>
           🌐 {lang.toUpperCase()}
         </button>
@@ -1053,12 +1060,12 @@ export default function App() {
           <div className="winner-overlay">
             <div className="history-modal">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                <h2 style={{ margin: 0, color: '#4da6ff', fontSize: '1.2rem' }}>📜 {t.historyLogs}</h2>
+                <h2 style={{ margin: 0, color: 'var(--accent-color)', fontSize: '1.2rem' }}>📜 {t.historyLogs}</h2>
                 <button className="btn-text" onClick={() => setShowHistoryModal(false)}>{t.close}</button>
               </div>
 
               {matchLogs.length === 0 ? (
-                <p style={{ color: '#aaa', padding: '20px 0' }}>{t.noHistory}</p>
+                <p style={{ color: 'var(--text-secondary)', padding: '20px 0' }}>{t.noHistory}</p>
               ) : (
                 <div className="history-list">
                   {matchLogs.map((log) => (
