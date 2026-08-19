@@ -1,0 +1,5 @@
+# Tüm arama motoru botlarına sitenin tamamını taramamalarını söyler.
+# Bu bir erişim kontrolü DEĞİLDİR; adresi bilen herkes siteye girebilir.
+# Yalnızca arama sonuçlarında listelenmeyi engellemek içindir.
+User-agent: *
+Disallow: /
