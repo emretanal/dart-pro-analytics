@@ -66,15 +66,23 @@ button {
   font-family: inherit;
 }
 
-/* Metin alanları da tarayıcının kendi çerçevesini/iç gölgesini almasın. */
+/* Metin alanları da tarayıcının kendi çerçevesini/iç gölgesini almasın.
+
+   ÖNEMLİ: font-size en az 16px olmalı. iOS Safari, yazı boyutu 16px'in
+   altında olan bir alana odaklanıldığında sayfayı otomatik olarak
+   yakınlaştırır ve odak kalktığında bu yakınlaştırmayı GERİ ALMAZ; ekran
+   kaymış halde kalır. 16px bu davranışı tamamen engeller. */
 input[type='text'],
 input[type='number'],
-input:not([type]) {
+input:not([type]),
+textarea,
+select {
   -webkit-appearance: none;
   appearance: none;
   border: none;
   outline: none;
   font-family: inherit;
+  font-size: 16px;
 }
 
 body {
@@ -672,7 +680,8 @@ body {
   border: none;
   outline: none;
   color: var(--text-primary);
-  font-size: 0.95rem;
+  /* 16px altına DÜŞÜRMEYİN: iOS Safari odaklanınca zoom yapar ve geri almaz. */
+  font-size: 16px;
   font-weight: 600;
   padding-right: 10px;
 }

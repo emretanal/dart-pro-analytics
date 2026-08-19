@@ -212,6 +212,12 @@ export default function App() {
     }
   }, [showSplash]);
 
+  // <html lang> özniteliğini arayüz diliyle eşitle: Türkçe'de büyük harfe
+  // çevirme (örn. "i" -> "İ") ve tireleme bu değere göre doğru çalışır.
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
+
   useEffect(() => {
     localStorage.setItem('dart_lang', lang);
     localStorage.setItem('dart_theme', theme);
