@@ -1,6 +1,3 @@
-import { useState } from 'react';
-import HowToPlayModal from '../Help/HowToPlayModal';
-
 export default function GameSelectStep({
   onSelect,
   lang = 'tr',
@@ -11,8 +8,6 @@ export default function GameSelectStep({
   x01Rules,
   setX01Rules,
 }) {
-  const [showGuide, setShowGuide] = useState(false);
-
   const handleCricketSelect = (mode) => {
     onSelect('cricket', mode);
   };
@@ -37,23 +32,17 @@ export default function GameSelectStep({
       </p>
 
       {subStep === 'main' && (
-        <>
-          <div className="game-select-list">
-            <button className="btn-game-card" onClick={() => setSubStep('cricket')}>
-              <div className="game-card-title">Cricket {lang === 'tr' ? 'Oyunları' : 'Games'}</div>
-              <div className="game-card-desc">15-20, Extended, Cut-Throat, Wild-Card</div>
-            </button>
-
-            <button className="btn-game-card" onClick={() => setSubStep('x01-mode')}>
-              <div className="game-card-title">X01 {lang === 'tr' ? 'Oyunları' : 'Games'}</div>
-              <div className="game-card-desc">301, 501, 701</div>
-            </button>
-          </div>
-
-          <button className="btn-how-to-play" onClick={() => setShowGuide(true)}>
-            ❓ {lang === 'tr' ? 'Nasıl Oynanır?' : 'How to Play?'}
+        <div className="game-select-list">
+          <button className="btn-game-card" onClick={() => setSubStep('cricket')}>
+            <div className="game-card-title">Cricket {lang === 'tr' ? 'Oyunları' : 'Games'}</div>
+            <div className="game-card-desc">15-20, Extended, Cut-Throat, Wild-Card</div>
           </button>
-        </>
+
+          <button className="btn-game-card" onClick={() => setSubStep('x01-mode')}>
+            <div className="game-card-title">X01 {lang === 'tr' ? 'Oyunları' : 'Games'}</div>
+            <div className="game-card-desc">301, 501, 701</div>
+          </button>
+        </div>
       )}
 
       {subStep === 'cricket' && (
@@ -166,12 +155,6 @@ export default function GameSelectStep({
           </div>
         </div>
       )}
-
-      <HowToPlayModal
-        isOpen={showGuide}
-        onClose={() => setShowGuide(false)}
-        lang={lang}
-      />
     </div>
   );
 }

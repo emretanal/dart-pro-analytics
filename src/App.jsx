@@ -810,11 +810,11 @@ export default function App() {
           🌐 {lang.toUpperCase()}
         </button>
         <button className="btn-header-action" onClick={() => setShowGuideModal(true)}>
-          📖 {t.howToPlay}
+          📖 <span className="btn-label-text">{t.howToPlay}</span>
         </button>
         {step === 1 && (
           <button className="btn-header-action" onClick={() => setShowHistoryModal(true)}>
-            📊 {t.historyLogs} ({matchLogs.length})
+            📊 <span className="btn-label-text">{t.historyLogs}</span> ({matchLogs.length})
           </button>
         )}
       </div>
@@ -1100,10 +1100,11 @@ export default function App() {
         )}
 
         {/* NASIL OYNANIR REHBERİ MODALI */}
-        <HowToPlayModal 
-          isOpen={showGuideModal} 
-          onClose={() => setShowGuideModal(false)} 
-          lang={lang} 
+        <HowToPlayModal
+          isOpen={showGuideModal}
+          onClose={() => setShowGuideModal(false)}
+          lang={lang}
+          gameContext={selectedGame}
         />
 
       </main>

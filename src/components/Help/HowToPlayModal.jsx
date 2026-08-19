@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './HowToPlayModal.css';
 
 const GUIDE_CONTENT = {
@@ -88,11 +88,26 @@ const GUIDE_CONTENT = {
   }
 };
 
-export default function HowToPlayModal({ isOpen, onClose, lang = 'tr' }) {
+export default function HowToPlayModal({ isOpen, onClose, lang = 'tr', gameContext = null }) {
   const [activeTab, setActiveTab] = useState('board');
+
+  // Bir oyun zaten seçiliyse (Cricket ya da X01 devam ediyorsa) rehber
+  // doğrudan o oyunun kurallarını açsın; henüz oyun seçilmemişse (Oyun Türü
+  // Seçin ekranı) tüm rehber sekmeleri erişilebilir kalsın.
+  const isGameLocked = gameContext === 'cricket' || gameContext === 'x01';
+
+  useEffect(() => {
+    if (isOpen) {
+      setActiveTab(isGameLocked ? gameContext : 'board');
+    }
+  }, [isOpen, gameContext, isGameLocked]);
+
   if (!isOpen) return null;
 
   const content = GUIDE_CONTENT[lang] || GUIDE_CONTENT.tr;
+  const visibleTabs = isGameLocked
+    ? content.tabs.filter((tab) => tab.id === gameContext)
+    : content.tabs;
 
   return (
     <div className="winner-overlay">
@@ -102,17 +117,19 @@ export default function HowToPlayModal({ isOpen, onClose, lang = 'tr' }) {
           <button className="btn-text" onClick={onClose}>{content.close}</button>
         </div>
 
-        <div className="guide-tabs">
-          {content.tabs.map((tab) => (
-            <button
-              key={tab.id}
-              className={`guide-tab-btn ${activeTab === tab.id ? 'active' : ''}`}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        {!isGameLocked && (
+          <div className="guide-tabs">
+            {visibleTabs.map((tab) => (
+              <button
+                key={tab.id}
+                className={`guide-tab-btn ${activeTab === tab.id ? 'active' : ''}`}
+                onClick={() => setActiveTab(tab.id)}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        )}
 
         <div className="guide-content-body">
           {activeTab === 'board' && (
