@@ -893,17 +893,21 @@ export default function App() {
                     <th className="num-col">{t.targetCol}</th>
                     {players.map((name, idx) => (
                       <th key={idx} className={`player-col-header ${idx === activePlayerIndex ? 'active' : ''}`}>
-                        <div className="rounds-label">{t.rounds}: {roundsWon[idx] || 0} / {targetLegs}</div>
-                        <div className="p-name">{name}</div>
-                        <div className="p-score">{roundsWon[idx] || 0}</div>
-                        <div className="analytics-box">
-                          <div><span className="analytics-label">{t.darts}:</span> {getTotalDarts(idx)}</div>
-                          <div><span className="analytics-label">MPR:</span> {calculateMPR(idx)}</div>
-                          {gameMode === 'cutthroat' && (
-                            <div className="penalty-box">
-                              <span className="penalty-label">{t.penalty}:</span> {penaltyPoints[idx] || 0}
-                            </div>
-                          )}
+                        {/* İçerik ayrı bir kart içinde: <th> üzerinde border-radius
+                            çalışmadığı için yuvarlak köşeler bu div'e uygulanıyor. */}
+                        <div className="player-header-card">
+                          <div className="rounds-label">{t.rounds}: {roundsWon[idx] || 0} / {targetLegs}</div>
+                          <div className="p-name">{name}</div>
+                          <div className="p-score">{roundsWon[idx] || 0}</div>
+                          <div className="analytics-box">
+                            <div><span className="analytics-label">{t.darts}:</span> {getTotalDarts(idx)}</div>
+                            <div><span className="analytics-label">MPR:</span> {calculateMPR(idx)}</div>
+                            {gameMode === 'cutthroat' && (
+                              <div className="penalty-box">
+                                <span className="penalty-label">{t.penalty}:</span> {penaltyPoints[idx] || 0}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </th>
                     ))}
