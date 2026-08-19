@@ -1897,3 +1897,81 @@ body {
   .focus-targets { margin-top: 10px; }
   .focus-hint { margin-top: 12px; }
 }
+
+/* ---- Tam ekran detayda: bu leg'de atılan dartlar (X01) ---- */
+.focus-throws {
+  margin-top: 18px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.focus-throws-title {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--accent-color);
+  text-align: left;
+}
+
+.focus-throw-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.focus-throw-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+
+.focus-throw-turn {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  min-width: 46px;
+  text-align: left;
+}
+
+.focus-throw-label {
+  flex: 1;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.focus-throw-points {
+  font-size: 0.9rem;
+  font-weight: 900;
+  color: var(--accent-color);
+  min-width: 42px;
+  text-align: right;
+}
+
+/* Bust olan atış kırmızı gösterilir */
+.focus-throw-row.is-bust .focus-throw-label,
+.focus-throw-row.is-bust .focus-throw-points {
+  color: var(--danger-color);
+}
+
+/* ---- TURU BİTİR ile otomatik MISS: butonu yakıp söndür ---- */
+.btn-miss.is-auto-flash {
+  animation: autoMissPulse 0.4s ease-in-out 4;
+}
+
+@keyframes autoMissPulse {
+  0%, 100% {
+    background-color: rgba(239, 68, 68, 0.08);
+    color: var(--danger-color);
+  }
+  50% {
+    background-color: var(--danger-color);
+    color: #fff;
+  }
+}

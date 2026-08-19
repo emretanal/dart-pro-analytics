@@ -179,6 +179,14 @@ export default function App() {
     return saved ? JSON.parse(saved) : {};
   });
   const [penaltyToast, setPenaltyToast] = useState(null);
+  // X01: içinde bulunulan leg boyunca her oyuncunun attığı dartlar.
+  // { [oyuncuIndex]: [{ label, points, turn }] } — her leg başında sıfırlanır.
+  const [legThrows, setLegThrows] = useState(() => {
+    const saved = localStorage.getItem('dart_legThrows');
+    return saved ? JSON.parse(saved) : {};
+  });
+  // "TURU BİTİR"e eksik dartla basıldığında MISS butonunu yakıp söndürür.
+  const [autoMissFlash, setAutoMissFlash] = useState(false);
 
   const [turnDartsCount, setTurnDartsCount] = useState(() => parseInt(localStorage.getItem('dart_turnDartsCount')) || 0);
   const [multiplier, setMultiplier] = useState('single');
@@ -261,6 +269,7 @@ export default function App() {
     localStorage.setItem('dart_scores', JSON.stringify(scores));
     localStorage.setItem('dart_penaltyPoints', JSON.stringify(penaltyPoints));
     localStorage.setItem('dart_cricketPoints', JSON.stringify(cricketPoints));
+    localStorage.setItem('dart_legThrows', JSON.stringify(legThrows));
     localStorage.setItem('dart_turnDartsCount', turnDartsCount);
     localStorage.setItem('dart_x01Scores', JSON.stringify(x01Scores));
     localStorage.setItem('dart_x01InStatus', JSON.stringify(x01InStatus));
@@ -270,7 +279,7 @@ export default function App() {
     localStorage.setItem('dart_match_logs', JSON.stringify(matchLogs));
   }, [
     lang, theme, step, playerCount, players, selectedGame, gameMode, x01Rules, targetLegs, winner,
-    activePlayerIndex, bullOffOrder, currentLegNumber, currentTargets, scores, penaltyPoints, cricketPoints, turnDartsCount,
+    activePlayerIndex, bullOffOrder, currentLegNumber, currentTargets, scores, penaltyPoints, cricketPoints, legThrows, turnDartsCount,
     x01Scores, x01InStatus, roundsWon, playerRoundsCount, gameHistory, matchLogs
   ]);
 
@@ -391,6 +400,7 @@ export default function App() {
     setScores(initialScores);
     setPenaltyPoints(initialPenalties);
     setCricketPoints(initialPenalties);
+    setLegThrows({});
     setX01Scores(initialX01);
     setX01InStatus(initialInStatus);
     setRoundsWon(initialRounds);
@@ -453,6 +463,7 @@ export default function App() {
     setScores(newScores);
     setPenaltyPoints(newPenalties);
     setCricketPoints({ ...newPenalties });
+    setLegThrows({});
     setX01Scores(newX01);
     setX01InStatus(newInStatus);
     setPlayerRoundsCount(newPlayerRounds);
@@ -475,6 +486,7 @@ export default function App() {
         x01InStatus: { ...x01InStatus },
         penaltyPoints: { ...penaltyPoints },
         cricketPoints: { ...cricketPoints },
+        legThrows: JSON.parse(JSON.stringify(legThrows)),
         playerRoundsCount: { ...playerRoundsCount },
         activePlayerIndex,
         turnDartsCount,
@@ -611,7 +623,7 @@ export default function App() {
       setTimeout(() => {
         setShowCricketSummaryOverlay(false);
         setIsTurnFlashing(false);
-        handleNextTurn();
+        advanceTurn();
       }, 3000);
     }
   };
@@ -677,6 +689,7 @@ export default function App() {
     if (isBust) {
       setX01Scores((prev) => ({ ...prev, [activePlayerIndex]: turnStartScore }));
       setCurrentTurnDarts((prev) => [...prev, { label: `${label} (BUST)`, points: 0 }]);
+      recordLegThrow(activePlayerIndex, { label, points: 0, bust: true });
       setMultiplier('single');
 
       setShowBustOverlay(true);
@@ -685,7 +698,7 @@ export default function App() {
       setTimeout(() => {
         setShowBustOverlay(false);
         setIsTurnFlashing(false);
-        handleNextTurn();
+        advanceTurn();
       }, 3000);
       return;
     }
@@ -693,6 +706,7 @@ export default function App() {
     setX01Scores((prev) => ({ ...prev, [activePlayerIndex]: remaining }));
     const newTurnDarts = [...currentTurnDarts, { label, points }];
     setCurrentTurnDarts(newTurnDarts);
+    recordLegThrow(activePlayerIndex, { label, points });
     setMultiplier('single');
 
     if (remaining === 0) {
@@ -704,7 +718,7 @@ export default function App() {
       setIsTurnFlashing(true);
       setTimeout(() => {
         setIsTurnFlashing(false);
-        handleNextTurn();
+        advanceTurn();
       }, 3000);
     }
   };
@@ -717,7 +731,18 @@ export default function App() {
     }
   };
 
-  const handleNextTurn = () => {
+  /* Bir dartı, oyuncunun bu leg'deki atış geçmişine ekler (X01). */
+  const recordLegThrow = (playerIdx, entry) => {
+    const turnNo = (playerRoundsCount[playerIdx] || 0) + 1;
+    setLegThrows((prev) => ({
+      ...prev,
+      [playerIdx]: [...(prev[playerIdx] || []), { ...entry, turn: turnNo }],
+    }));
+  };
+
+  /* Sırayı bir sonraki oyuncuya devreder. Doğrudan çağrılmaz;
+     kullanıcı "TURU BİTİR"e bastığında handleEndTurnClick üzerinden gelir. */
+  const advanceTurn = () => {
     if (winner) return;
     saveStateToHistory();
 
@@ -733,6 +758,52 @@ export default function App() {
     setIsTurnFlashing(false);
     setShowBustOverlay(false);
     setShowCricketSummaryOverlay(false);
+    setAutoMissFlash(false);
+  };
+
+  /* "TURU BİTİR" butonu. Turda 3 dart işaretlenmediyse eksik kalanlar MISS
+     olarak tamamlanır, tur özeti gösterilir ve ardından sıra devredilir.
+     Böylece hem istatistikler doğru kalır hem de ne olduğu görünür olur. */
+  const handleEndTurnClick = () => {
+    if (winner || isTurnFlashing || showBustOverlay || showCricketSummaryOverlay) return;
+
+    const thrown = currentTurnDarts.length;
+    if (thrown >= 3) {
+      advanceTurn();
+      return;
+    }
+
+    const missCount = 3 - thrown;
+    const missDarts = Array.from({ length: missCount }, () => ({ label: 'MISS', points: 0 }));
+    const filledDarts = [...currentTurnDarts, ...missDarts];
+
+    setCurrentTurnDarts(filledDarts);
+    setTurnDartsCount(3);
+    setMultiplier('single');
+
+    if (selectedGame === 'x01') {
+      // Eksik dartları atış geçmişine de MISS olarak yaz.
+      const turnNo = (playerRoundsCount[activePlayerIndex] || 0) + 1;
+      setLegThrows((prev) => ({
+        ...prev,
+        [activePlayerIndex]: [
+          ...(prev[activePlayerIndex] || []),
+          ...missDarts.map((d) => ({ ...d, turn: turnNo })),
+        ],
+      }));
+      setAutoMissFlash(true);
+    }
+
+    // Her iki oyunda da tur özeti pop-up'ı gösterilir.
+    setShowCricketSummaryOverlay(true);
+    setIsTurnFlashing(true);
+
+    setTimeout(() => {
+      setShowCricketSummaryOverlay(false);
+      setIsTurnFlashing(false);
+      setAutoMissFlash(false);
+      advanceTurn();
+    }, 1600);
   };
 
   const handleUndo = () => {
@@ -745,6 +816,7 @@ export default function App() {
     setX01InStatus(lastState.x01InStatus || {});
     setPenaltyPoints(lastState.penaltyPoints || {});
     setCricketPoints(lastState.cricketPoints || {});
+    setLegThrows(lastState.legThrows || {});
     setPlayerRoundsCount(lastState.playerRoundsCount);
     setActivePlayerIndex(lastState.activePlayerIndex);
     setTurnDartsCount(lastState.turnDartsCount);
@@ -768,6 +840,7 @@ export default function App() {
       setX01InStatus({});
       setPenaltyPoints({});
     setCricketPoints({});
+    setLegThrows({});
     setFocusedPlayerIdx(null);
       setRoundsWon({});
       setPlayerRoundsCount({});
@@ -789,6 +862,7 @@ export default function App() {
     setX01InStatus({});
     setPenaltyPoints({});
     setCricketPoints({});
+    setLegThrows({});
     setFocusedPlayerIdx(null);
     setRoundsWon({});
     setPlayerRoundsCount({});
@@ -1049,7 +1123,7 @@ export default function App() {
             <div className="action-bar cricket-action-bar">
               <button className="btn-text" onClick={handleResetGame}>{t.exit}</button>
 
-              <button className="btn-next" onClick={handleNextTurn} disabled={isTurnFlashing || showCricketSummaryOverlay}>
+              <button className="btn-next" onClick={handleEndTurnClick} disabled={isTurnFlashing || showCricketSummaryOverlay}>
                 {t.endTurn} ({turnDartsCount}/3)
               </button>
 
@@ -1139,7 +1213,11 @@ export default function App() {
                 <button className="x01-side-btn btn-bull" onClick={() => handleX01DartHit(25)} disabled={isTurnFlashing || showBustOverlay}>
                   BULL
                 </button>
-                <button className="x01-side-btn btn-miss" onClick={() => handleX01DartHit(0)} disabled={isTurnFlashing || showBustOverlay}>
+                <button
+                  className={`x01-side-btn btn-miss ${autoMissFlash ? 'is-auto-flash' : ''}`}
+                  onClick={() => handleX01DartHit(0)}
+                  disabled={isTurnFlashing || showBustOverlay}
+                >
                   MISS (0)
                 </button>
               </div>
@@ -1160,7 +1238,7 @@ export default function App() {
 
             <div className="action-bar">
               <button className="btn-text" onClick={handleResetGame}>{t.exit}</button>
-              <button className="btn-next" onClick={handleNextTurn} disabled={isTurnFlashing || showBustOverlay}>
+              <button className="btn-next" onClick={handleEndTurnClick} disabled={isTurnFlashing || showBustOverlay}>
                 {t.endTurn} ({currentTurnDarts.length}/3)
               </button>
               <button className="btn-text" onClick={handleUndo} style={{ opacity: gameHistory.length === 0 || isTurnFlashing || showBustOverlay ? 0.3 : 1 }} disabled={gameHistory.length === 0 || isTurnFlashing || showBustOverlay}>
@@ -1333,6 +1411,28 @@ export default function App() {
                       </div>
                     );
                   })}
+                </div>
+              )}
+
+              {/* X01: bu leg'de atılan dartlar, en yenisi en üstte */}
+              {selectedGame === 'x01' && (legThrows[focusedPlayerIdx] || []).length > 0 && (
+                <div className="focus-throws">
+                  <div className="focus-throws-title">
+                    {lang === 'tr' ? 'BU LEG’DEKİ ATIŞLAR' : 'THROWS THIS LEG'}
+                  </div>
+                  <div className="focus-throw-list">
+                    {[...(legThrows[focusedPlayerIdx] || [])].reverse().map((th, i) => (
+                      <div key={i} className={`focus-throw-row ${th.bust ? 'is-bust' : ''}`}>
+                        <span className="focus-throw-turn">
+                          {lang === 'tr' ? 'Tur' : 'Turn'} {th.turn}
+                        </span>
+                        <span className="focus-throw-label">{th.label}</span>
+                        <span className="focus-throw-points">
+                          {th.bust ? 'BUST' : th.points}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 
