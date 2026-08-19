@@ -47,6 +47,16 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* iOS/Safari, border: none/transparent verilse bile <button> öğelerine
+   kendi sistem çerçevesini/gölgesini çizmeye devam edebilir. Bunu tüm
+   butonlarda baştan kapatıyoruz ki özel border/arkaplan ayarlarımız
+   gerçekten tek görünen çerçeve olsun. */
+button {
+  -webkit-appearance: none;
+  appearance: none;
+  font-family: inherit;
+}
+
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
