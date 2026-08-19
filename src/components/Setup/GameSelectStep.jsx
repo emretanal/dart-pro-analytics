@@ -2,13 +2,18 @@ import { useState } from 'react';
 import HowToPlayModal from '../Help/HowToPlayModal';
 
 export default function GameSelectStep({ onSelect, lang = 'tr' }) {
-  const [subStep, setSubStep] = useState('main'); // 'main' | 'cricket' | 'x01'
+  const [subStep, setSubStep] = useState('main'); // 'main' | 'cricket' | 'x01-mode' | 'x01-rules'
   const [selectedX01Mode, setSelectedX01Mode] = useState('501');
   const [x01Rules, setX01Rules] = useState({ doubleIn: false, doubleOut: true });
   const [showGuide, setShowGuide] = useState(false);
 
   const handleCricketSelect = (mode) => {
     onSelect('cricket', mode);
+  };
+
+  const handleX01ModeSelect = (mode) => {
+    setSelectedX01Mode(mode);
+    setSubStep('x01-rules');
   };
 
   const handleX01Submit = () => {
@@ -33,7 +38,7 @@ export default function GameSelectStep({ onSelect, lang = 'tr' }) {
               <div className="game-card-desc">15-20, Extended, Cut-Throat, Wild-Card</div>
             </button>
 
-            <button className="btn-game-card" onClick={() => setSubStep('x01')}>
+            <button className="btn-game-card" onClick={() => setSubStep('x01-mode')}>
               <div className="game-card-title">X01 {lang === 'tr' ? 'Oyunları' : 'Games'}</div>
               <div className="game-card-desc">301, 501, 701</div>
             </button>
@@ -82,7 +87,7 @@ export default function GameSelectStep({ onSelect, lang = 'tr' }) {
         </div>
       )}
 
-      {subStep === 'x01' && (
+      {subStep === 'x01-mode' && (
         <div className="game-select-list">
           <div className="sub-section-title">{lang === 'tr' ? 'Oyun Modu Seçin:' : 'Select Game Mode:'}</div>
 
@@ -90,7 +95,7 @@ export default function GameSelectStep({ onSelect, lang = 'tr' }) {
             <button
               key={mode}
               className={`btn-game-card ${selectedX01Mode === mode ? 'active-mode' : ''}`}
-              onClick={() => setSelectedX01Mode(mode)}
+              onClick={() => handleX01ModeSelect(mode)}
             >
               <div className="game-card-title">{mode}</div>
               <div className="game-card-desc">
@@ -101,7 +106,17 @@ export default function GameSelectStep({ onSelect, lang = 'tr' }) {
             </button>
           ))}
 
-          <div className="sub-section-title" style={{ marginTop: '12px' }}>
+          <div className="setup-action-row">
+            <button className="btn-setup-back" onClick={() => setSubStep('main')}>
+              {lang === 'tr' ? 'Geri' : 'Back'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {subStep === 'x01-rules' && (
+        <div className="game-select-list">
+          <div className="sub-section-title">
             {lang === 'tr' ? 'X01 Kurallarını Belirleyin:' : 'Set X01 Rules:'}
           </div>
 
@@ -136,7 +151,7 @@ export default function GameSelectStep({ onSelect, lang = 'tr' }) {
           </div>
 
           <div className="setup-action-row">
-            <button className="btn-setup-back" onClick={() => setSubStep('main')}>
+            <button className="btn-setup-back" onClick={() => setSubStep('x01-mode')}>
               {lang === 'tr' ? 'Geri' : 'Back'}
             </button>
             <button className="btn-setup-submit" onClick={handleX01Submit}>
