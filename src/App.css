@@ -20,6 +20,7 @@
    ========================================================================== */
 :root,
 [data-theme='dark'] {
+  color-scheme: dark;
   --bg-primary: #000000;
   --bg-card: #0f0f10;
   --bg-surface: #1a1a1c;
@@ -36,6 +37,7 @@
    TEMA: GÜNDÜZ MODU
    ========================================================================== */
 [data-theme='light'] {
+  color-scheme: light;
   --bg-primary: #ececed;
   --bg-card: #ffffff;
   --bg-surface: #f7f7f8;
@@ -1371,6 +1373,14 @@ body {
 
 .trophy-icon {
   font-size: 3.5rem;
+}
+
+/* Daha önce index.css'teki genel h1 kuralına bağlıydı; artık kendi stili var. */
+.winner-modal h1 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
 }
 
 .winner-name {
