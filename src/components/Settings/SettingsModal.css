@@ -1,0 +1,90 @@
+/* Seçenekler (ayarlar) modalı.
+   .guide-header ve .winner-overlay stilleri App.css / HowToPlayModal.css
+   içinde tanımlı; burada yalnızca bu modala özgü stiller var. */
+
+/* Alttan açılan sayfa (bottom sheet) görünümü.
+   .history-modal height:100dvh verdiği için burada sıfırlanıyor. */
+.history-modal.settings-modal {
+  width: 100vw;
+  max-width: 480px;
+  height: auto;
+  max-height: 85dvh;
+  align-self: flex-end;
+  background-color: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  padding: 16px 14px calc(20px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  overflow-y: auto;
+  animation: settingsSlideUp 0.2s ease-out;
+}
+
+@keyframes settingsSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.settings-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-top: 4px;
+}
+
+.settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+
+.settings-group-label {
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--accent-color);
+}
+
+.settings-group-desc {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+/* Segment kontrolü: iki seçenekli, çerçevesiz, dolgu ile ayrışan */
+.settings-segmented {
+  display: flex;
+  gap: 4px;
+  background-color: var(--bg-surface);
+  padding: 4px;
+  border-radius: var(--radius-md);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.settings-segment {
+  flex: 1;
+  padding: 11px 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.settings-segment.active {
+  background-color: var(--accent-color);
+  /* Yeşil zemin üzerinde sabit koyu metin; tema değişkeni kullanılmamalı. */
+  color: #04150c;
+}

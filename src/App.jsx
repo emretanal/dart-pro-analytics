@@ -5,6 +5,7 @@ import GameSelectStep from './components/Setup/GameSelectStep';
 import LegTargetStep from './components/Setup/LegTargetStep';
 import BullOffStep from './components/Setup/BullOffStep';
 import HowToPlayModal from './components/Help/HowToPlayModal';
+import SettingsModal from './components/Settings/SettingsModal';
 import { getCheckoutSuggestion } from './utils/checkoutTable';
 import './App.css';
 
@@ -38,11 +39,21 @@ const EXTENDED_CRICKET_TARGETS = [
 
 const MARK_SYMBOLS = ['', '/', 'X', '⭕'];
 
+/* Üst çubukta gösterilen Cricket mod adları */
+const CRICKET_MODE_LABELS = {
+  standard: { tr: 'Standart', en: 'Standard' },
+  extended: { tr: 'Extended', en: 'Extended' },
+  cutthroat: { tr: 'Cezalı', en: 'Cut-Throat' },
+  'no-score': { tr: 'No-Score', en: 'No-Score' },
+  wildcard: { tr: 'Wild-Card', en: 'Wild-Card' },
+};
+
 const TRANSLATIONS = {
   tr: {
     targetCol: 'Hedef',
     historyLogs: 'Geçmiş',
     howToPlay: 'Nasıl Oynanır?',
+    options: 'Seçenekler',
     noHistory: 'Henüz kaydedilmiş bir maç bulunmuyor.',
     clearLogs: 'Tüm Maç Geçmişini Temizle',
     clearLogsConfirm: 'Tüm maç geçmişini silmek istediğinize emin misiniz?',
@@ -70,6 +81,7 @@ const TRANSLATIONS = {
     targetCol: 'Target',
     historyLogs: 'History',
     howToPlay: 'How to Play?',
+    options: 'Options',
     noHistory: 'No match logs recorded yet.',
     clearLogs: 'Clear All Match Logs',
     clearLogsConfirm: 'Are you sure you want to clear all match history?',
@@ -181,6 +193,7 @@ export default function App() {
   });
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [showGuideModal, setShowGuideModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   // Oyun seçim ekranının (adım 1) kendi iç alt-adımı: App'in "step" state'i
   // sadece 1'den 2'ye geçtiğinde GameSelectStep unmount olur; "Geri" ile adım
@@ -800,22 +813,48 @@ export default function App() {
 
   const isSetupMode = step < 6;
 
+  // Üst çubukta gösterilecek aktif oyun bilgisi (ana ekran dışındaki ekranlarda)
+  const gameContextLabel =
+    selectedGame === 'cricket'
+      ? `🏏 Cricket · ${CRICKET_MODE_LABELS[gameMode]?.[lang] || gameMode}`
+      : selectedGame === 'x01'
+        ? `🔢 X01 · ${gameMode}`
+        : '';
+
   return (
     <div className={`app-container ${isSetupMode ? 'setup-mode-container' : ''}`} data-theme={theme}>
+      {/* Üst çubuk:
+          - Ana ekran (step 1): Seçenekler + Geçmiş + Rehber
+          - Diğer tüm ekranlar: aktif oyun bilgisi + Rehber
+          Böylece çubuk hiçbir zaman 3 öğeyi geçmez ve dar telefonlarda taşmaz. */}
       <div className="top-header-bar">
-        <button className="btn-header-action btn-theme-toggle" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
-          {theme === 'dark' ? '🌙' : '☀️'}
-        </button>
-        <button className="btn-header-action" onClick={() => setLang(lang === 'tr' ? 'en' : 'tr')}>
-          🌐 {lang.toUpperCase()}
-        </button>
-        <button className="btn-header-action" onClick={() => setShowGuideModal(true)}>
-          📖 <span className="btn-label-text">{t.howToPlay}</span>
-        </button>
-        {step === 1 && (
-          <button className="btn-header-action" onClick={() => setShowHistoryModal(true)}>
-            📊 <span className="btn-label-text">{t.historyLogs}</span> ({matchLogs.length})
-          </button>
+        {step === 1 ? (
+          <>
+            <div className="header-side">
+              <button className="btn-header-action" onClick={() => setShowSettingsModal(true)}>
+                ⚙️ <span className="btn-label-text">{t.options}</span>
+              </button>
+            </div>
+            <div className="header-side">
+              <button className="btn-header-action" onClick={() => setShowHistoryModal(true)}>
+                📊 <span className="btn-label-text">{t.historyLogs}</span> ({matchLogs.length})
+              </button>
+              <button className="btn-header-action" onClick={() => setShowGuideModal(true)}>
+                📖 <span className="btn-label-text">{t.howToPlay}</span>
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="header-side">
+              <span className="header-context-label">{gameContextLabel}</span>
+            </div>
+            <div className="header-side">
+              <button className="btn-header-action" onClick={() => setShowGuideModal(true)}>
+                📖 <span className="btn-label-text">{t.howToPlay}</span>
+              </button>
+            </div>
+          </>
         )}
       </div>
 
@@ -1105,6 +1144,18 @@ export default function App() {
           onClose={() => setShowGuideModal(false)}
           lang={lang}
           gameContext={selectedGame}
+          gameMode={gameMode}
+          x01Rules={x01Rules}
+        />
+
+        {/* SEÇENEKLER (TEMA + DİL) MODALI */}
+        <SettingsModal
+          isOpen={showSettingsModal}
+          onClose={() => setShowSettingsModal(false)}
+          theme={theme}
+          setTheme={setTheme}
+          lang={lang}
+          setLang={setLang}
         />
 
       </main>

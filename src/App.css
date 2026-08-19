@@ -145,6 +145,25 @@ body {
   line-height: 1;
 }
 
+/* Üst çubuğun sol ve sağ blokları */
+.header-side {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+/* Oyun ekranlarında solda duran aktif oyun bilgisi */
+.header-context-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-left: 4px;
+}
+
 /* Dar ekranlarda başlık çubuğunun tek satırda kalması için uzun buton
    etiketlerini gizle; simge (ve varsa sayaç) yeterli bilgiyi verir. */
 @media (max-width: 430px) {

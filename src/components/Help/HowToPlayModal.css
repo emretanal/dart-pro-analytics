@@ -212,3 +212,47 @@
   font-size: 0.72rem;
   color: var(--text-secondary);
 }
+
+/* ==========================================================================
+   BÖLÜM BLOKLARI (Amaç / Nasıl Oynanır / Puanlama / Kazanma / İpuçları)
+   ========================================================================== */
+.guide-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.guide-block-title {
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent-color);
+  text-align: left;
+}
+
+.guide-block .guide-bullet-list {
+  gap: 7px;
+}
+
+.guide-block .guide-bullet-list li {
+  text-align: left;
+}
+
+/* Kazanma koşulu kartı: vurgulu ama çerçevesiz */
+.guide-card-highlight {
+  background-color: var(--accent-blue-bg);
+}
+
+.guide-card-highlight span {
+  color: var(--text-primary);
+}
+
+.guide-card {
+  text-align: left;
+}
+
+.guide-intro {
+  text-align: left;
+}
