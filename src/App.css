@@ -8,11 +8,14 @@
   --text-secondary: #94a3b8;
   --accent-color: #10b981;
   --accent-hover: #059669;
+  --accent-blue: #4da6ff;
+  --accent-blue-bg: rgba(77, 166, 255, 0.14);
   --danger-color: #ef4444;
   --warning-color: #f59e0b;
   --radius-lg: 16px;
   --radius-md: 12px;
   --radius-sm: 8px;
+  --radius-xl: 20px;
 }
 
 * {
@@ -92,11 +95,17 @@ body {
    (Oyun Türü, Oyuncu Sayısı, İsimler, Leg Hedefi, Bull-Off adımlarının
    ortak "kart" ve "standart buton" görünümü)
    ========================================================================== */
+.app-container.setup-mode-container .app-content {
+  padding: 20px 16px 24px;
+  box-sizing: border-box;
+}
+
 .hero-card {
   width: 100%;
-  max-width: 380px;
-  margin: auto;
-  padding: 32px 20px 28px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: 30px 22px 26px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -107,22 +116,22 @@ body {
 .setup-header-icon {
   font-size: 2.75rem;
   line-height: 1;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .setup-title {
-  font-size: 1.3rem;
+  font-size: 1.35rem;
   font-weight: 800;
   color: var(--text-primary);
   line-height: 1.3;
-  margin: 2px 0 6px;
+  margin: 2px 0 8px;
 }
 
 .setup-subtitle {
   font-size: 0.85rem;
   color: var(--text-secondary);
   line-height: 1.45;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
   max-width: 320px;
 }
 
@@ -141,9 +150,9 @@ body {
 .btn-count-step,
 .btn-leg-step {
   width: 100%;
-  background-color: var(--bg-surface);
+  background-color: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   color: var(--text-primary);
   cursor: pointer;
   text-align: left;
@@ -154,7 +163,7 @@ body {
 .btn-game-card:hover,
 .btn-count-step:hover,
 .btn-leg-step:hover {
-  border-color: var(--accent-color);
+  border-color: var(--accent-blue);
 }
 
 .btn-game-card:active,
@@ -173,29 +182,29 @@ body {
 }
 
 .btn-game-card {
-  padding: 14px 16px;
+  padding: 16px 18px;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
 }
 
 .game-card-title {
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 800;
   color: var(--text-primary);
 }
 
 .game-card-desc {
-  font-size: 0.76rem;
+  font-size: 0.78rem;
   color: var(--text-secondary);
-  line-height: 1.35;
+  line-height: 1.4;
 }
 
 .btn-how-to-play {
-  margin-top: 16px;
+  margin-top: 18px;
   background: transparent;
   border: none;
-  color: var(--accent-color);
+  color: var(--accent-blue);
   font-weight: 700;
   font-size: 0.85rem;
   cursor: pointer;
@@ -204,33 +213,34 @@ body {
 
 .sub-section-title {
   width: 100%;
-  text-align: left;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-bottom: 4px;
+  text-align: center;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--accent-blue);
+  margin: 18px 0 14px;
 }
 
 .setup-action-row {
   width: 100%;
   display: flex;
+  justify-content: flex-start;
   gap: 10px;
-  margin-top: 20px;
+  margin-top: 22px;
 }
 
 .setup-action-row .btn-setup-back,
 .setup-action-row .btn-setup-submit {
   width: auto;
+  height: 54px;
 }
 
 .setup-action-row .btn-setup-back {
-  flex: 1;
+  flex: 0 0 auto;
+  padding: 0 26px;
 }
 
 .setup-action-row .btn-setup-submit {
-  flex: 1.6;
+  flex: 1;
 }
 
 /* Oyuncu Sayısı Grid (2x2) */
@@ -242,22 +252,23 @@ body {
 }
 
 .btn-count-step {
-  padding: 18px 10px;
+  padding: 20px 12px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
 }
 
 .btn-num {
-  font-size: 1.8rem;
+  font-size: 1.7rem;
   font-weight: 900;
-  color: var(--accent-color);
+  color: var(--accent-blue);
 }
 
 .btn-text-sub {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
+  font-size: 0.85rem;
+  color: var(--text-primary);
   font-weight: 600;
 }
 
@@ -274,17 +285,17 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
 }
 
 .leg-count-num {
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 800;
   color: var(--text-primary);
 }
 
 .leg-count-sub {
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   color: var(--text-secondary);
 }
 
@@ -293,46 +304,51 @@ body {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   margin-bottom: 4px;
 }
 
 .toggle-rule-card {
   display: flex;
   align-items: center;
-  gap: 12px;
-  background-color: var(--bg-surface);
+  gap: 14px;
+  background-color: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 12px 14px;
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
   cursor: pointer;
   text-align: left;
+  transition: border-color 0.15s ease;
+}
+
+.toggle-rule-card:has(input:checked) {
+  border-color: var(--accent-blue);
 }
 
 .toggle-rule-card input[type='checkbox'] {
-  width: 20px;
-  height: 20px;
+  width: 26px;
+  height: 26px;
   flex-shrink: 0;
-  accent-color: var(--accent-color);
+  accent-color: var(--accent-blue);
   cursor: pointer;
 }
 
 .toggle-rule-info {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
 .toggle-rule-title {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--text-primary);
 }
 
 .toggle-rule-desc {
-  font-size: 0.72rem;
+  font-size: 0.76rem;
   color: var(--text-secondary);
-  line-height: 1.35;
+  line-height: 1.4;
 }
 
 /* --- Oyuncu İsimleri Formu --- */
@@ -352,40 +368,40 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  background-color: var(--bg-surface);
+  background-color: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   padding: 4px;
   transition: border-color 0.15s ease;
 }
 
 .name-input-wrapper.is-active .name-input-group {
-  border-color: var(--accent-color);
+  border-color: var(--accent-blue);
 }
 
 .player-badge {
   flex-shrink: 0;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--bg-primary);
-  border-radius: var(--radius-sm);
+  background-color: var(--accent-blue-bg);
+  border-radius: 50%;
   font-size: 0.75rem;
   font-weight: 800;
-  color: var(--accent-color);
-  margin-left: 2px;
+  color: var(--accent-blue);
+  margin-left: 4px;
 }
 
 .name-input-field {
   flex: 1;
-  height: 44px;
+  height: 46px;
   background: transparent;
   border: none;
   outline: none;
   color: var(--text-primary);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 600;
   padding-right: 10px;
 }
@@ -399,17 +415,18 @@ body {
   top: calc(100% + 4px);
   left: 0;
   right: 0;
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
+  background-color: var(--bg-card);
+  border: 1px solid var(--accent-blue);
+  border-radius: var(--radius-md);
   overflow: hidden;
   z-index: 20;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
 .suggestion-item {
-  padding: 10px 14px;
-  font-size: 0.85rem;
+  padding: 11px 14px;
+  font-size: 0.88rem;
+  font-weight: 600;
   color: var(--text-primary);
   cursor: pointer;
   text-align: left;
@@ -422,10 +439,10 @@ body {
 /* --- Bull-Off Sıralama Kartları --- */
 .bulloff-order-card {
   width: 100%;
-  background-color: var(--bg-surface);
+  background-color: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 10px 12px;
+  border-radius: var(--radius-lg);
+  padding: 12px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -434,13 +451,18 @@ body {
 
 .bulloff-rank-badge {
   flex-shrink: 0;
-  font-size: 0.68rem;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
   font-weight: 800;
-  color: var(--accent-color);
-  background-color: var(--bg-primary);
+  color: #ffffff;
+  background-color: var(--accent-blue);
   border-radius: var(--radius-sm);
-  padding: 6px 8px;
+  padding: 8px 10px;
   white-space: nowrap;
+  text-align: center;
 }
 
 .bulloff-player-info {
@@ -448,11 +470,11 @@ body {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .bulloff-player-name {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 800;
   color: var(--text-primary);
   overflow: hidden;
@@ -467,12 +489,12 @@ body {
 
 .btn-hit-chip {
   flex: 1;
-  padding: 7px 4px;
+  padding: 9px 4px;
   background-color: var(--bg-primary);
   border: 1px solid var(--border-color);
-  border-radius: 20px;
+  border-radius: var(--radius-sm);
   color: var(--text-secondary);
-  font-size: 0.66rem;
+  font-size: 0.72rem;
   font-weight: 800;
   cursor: pointer;
   white-space: nowrap;
@@ -504,13 +526,13 @@ body {
 }
 
 .btn-move {
-  width: 32px;
-  height: 28px;
+  width: 34px;
+  height: 30px;
   background-color: var(--bg-primary);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   color: var(--text-primary);
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   cursor: pointer;
 }
 
@@ -518,6 +540,7 @@ body {
   opacity: 0.3;
   cursor: not-allowed;
 }
+
 
 /* ==========================================================================
    2. SPLASH SCREEN
@@ -752,9 +775,9 @@ body {
 }
 
 .x01-player-card.active {
-  border-color: var(--accent-color);
-  box-shadow: 0 0 12px rgba(16, 185, 129, 0.25);
-  background-color: #1a2e3b;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 12px rgba(77, 166, 255, 0.25);
+  background-color: #1a2536;
 }
 
 .x01-big-score {
@@ -826,8 +849,8 @@ body {
 
 .turn-total-sum {
   font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--text-secondary);
+  font-weight: 800;
+  color: var(--accent-color);
 }
 
 /* Keypad (Tuş Takımı) */
@@ -889,14 +912,16 @@ body {
 
 .btn-bull {
   grid-column: span 2;
-  background-color: #15803d;
-  color: #fff;
+  background-color: rgba(16, 185, 129, 0.08);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
 }
 
 .btn-miss {
   grid-column: span 3;
-  background-color: #334155;
-  color: var(--text-secondary);
+  background-color: rgba(239, 68, 68, 0.08);
+  border-color: var(--danger-color);
+  color: var(--danger-color);
 }
 
 /* ==========================================================================
