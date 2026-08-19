@@ -1105,10 +1105,16 @@ export default function App() {
                     {num}
                   </button>
                 ))}
-                <button className="x01-num-btn btn-bull" onClick={() => handleX01DartHit(25)} disabled={isTurnFlashing || showBustOverlay}>
+              </div>
+
+              {/* BULL ve MISS kendi satırında, DOUBLE/TRIPLE ile aynı
+                  genişlikte (ekranı eşit paylaşırlar). Önceden 5 sütunlu
+                  sayı ızgarasının içindeydiler ve 2/5 - 3/5 bölünüyordu. */}
+              <div className="x01-bull-miss-row">
+                <button className="x01-side-btn btn-bull" onClick={() => handleX01DartHit(25)} disabled={isTurnFlashing || showBustOverlay}>
                   BULL
                 </button>
-                <button className="x01-num-btn btn-miss" onClick={() => handleX01DartHit(0)} disabled={isTurnFlashing || showBustOverlay}>
+                <button className="x01-side-btn btn-miss" onClick={() => handleX01DartHit(0)} disabled={isTurnFlashing || showBustOverlay}>
                   MISS (0)
                 </button>
               </div>
