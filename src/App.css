@@ -1967,3 +1967,241 @@ body {
     color: #fff;
   }
 }
+
+/* ==========================================================================
+   10. GEÇMİŞ MAÇ - LEG SKOR TABLOLARI (TAM EKRAN)
+   ========================================================================== */
+.btn-leg-detail {
+  width: 100%;
+  margin-top: 8px;
+  padding: 9px 10px;
+  background-color: var(--accent-blue-bg);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--accent-color);
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.leg-detail-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  background-color: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+}
+
+.leg-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 14px 12px;
+  flex-shrink: 0;
+}
+
+.leg-detail-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  text-align: left;
+}
+
+.leg-detail-game {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.leg-detail-date {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+.leg-detail-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 14px calc(20px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.leg-detail-winner {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-align: left;
+}
+
+.leg-detail-winner strong {
+  color: var(--accent-color);
+}
+
+.leg-board-card {
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-md);
+  padding: 12px;
+}
+
+.leg-board-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.leg-board-no {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--accent-color);
+}
+
+.leg-board-winner {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* ---- Cricket tablosu ---- */
+.leg-board-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.leg-board-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+.leg-board-table th {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+  padding: 6px 4px;
+  white-space: nowrap;
+}
+
+.leg-board-table th.is-winner {
+  color: var(--accent-color);
+}
+
+.leg-board-table td {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  padding: 6px 4px;
+}
+
+.leg-th-target,
+.leg-td-target {
+  text-align: left;
+  color: var(--text-secondary) !important;
+  font-size: 0.78rem !important;
+  white-space: nowrap;
+}
+
+.leg-board-table td.is-closed {
+  color: var(--accent-color);
+}
+
+.leg-total-row td {
+  border-top: 1px solid var(--border-color);
+  font-size: 0.8rem;
+}
+
+.leg-total-row td.is-points {
+  color: var(--accent-color);
+}
+
+.leg-total-row td.is-penalty {
+  color: var(--danger-color);
+}
+
+/* ---- X01 leg görünümü ---- */
+.leg-x01-players {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.leg-x01-player {
+  background-color: var(--bg-card);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+}
+
+.leg-x01-player.is-winner {
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+.leg-x01-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.leg-x01-name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.leg-x01-score {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: var(--accent-color);
+}
+
+.leg-x01-score-lbl {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.leg-x01-darts {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  text-align: left;
+  margin-top: 2px;
+}
+
+.leg-x01-turns {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.leg-x01-turn-row {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.leg-x01-turn-no {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.leg-x01-turn-darts {
+  flex: 1;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.leg-x01-turn-darts .is-bust {
+  color: var(--danger-color);
+}

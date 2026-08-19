@@ -187,6 +187,13 @@ export default function App() {
   });
   // "TURU BİTİR"e eksik dartla basıldığında MISS butonunu yakıp söndürür.
   const [autoMissFlash, setAutoMissFlash] = useState(false);
+  // Maç boyunca biten her leg'in son skor tablosu. Maç bitince kayda geçer.
+  const [legSnapshots, setLegSnapshots] = useState(() => {
+    const saved = localStorage.getItem('dart_legSnapshots');
+    return saved ? JSON.parse(saved) : [];
+  });
+  // Geçmişte detayı açılan maç kaydı (tam ekran leg görüntüleyici)
+  const [historyDetailLog, setHistoryDetailLog] = useState(null);
 
   const [turnDartsCount, setTurnDartsCount] = useState(() => parseInt(localStorage.getItem('dart_turnDartsCount')) || 0);
   const [multiplier, setMultiplier] = useState('single');
@@ -270,6 +277,7 @@ export default function App() {
     localStorage.setItem('dart_penaltyPoints', JSON.stringify(penaltyPoints));
     localStorage.setItem('dart_cricketPoints', JSON.stringify(cricketPoints));
     localStorage.setItem('dart_legThrows', JSON.stringify(legThrows));
+    localStorage.setItem('dart_legSnapshots', JSON.stringify(legSnapshots));
     localStorage.setItem('dart_turnDartsCount', turnDartsCount);
     localStorage.setItem('dart_x01Scores', JSON.stringify(x01Scores));
     localStorage.setItem('dart_x01InStatus', JSON.stringify(x01InStatus));
@@ -279,11 +287,11 @@ export default function App() {
     localStorage.setItem('dart_match_logs', JSON.stringify(matchLogs));
   }, [
     lang, theme, step, playerCount, players, selectedGame, gameMode, x01Rules, targetLegs, winner,
-    activePlayerIndex, bullOffOrder, currentLegNumber, currentTargets, scores, penaltyPoints, cricketPoints, legThrows, turnDartsCount,
+    activePlayerIndex, bullOffOrder, currentLegNumber, currentTargets, scores, penaltyPoints, cricketPoints, legThrows, legSnapshots, turnDartsCount,
     x01Scores, x01InStatus, roundsWon, playerRoundsCount, gameHistory, matchLogs
   ]);
 
-  const saveMatchToLogs = (winnerName, finalRoundsWon) => {
+  const saveMatchToLogs = (winnerName, finalRoundsWon, legs = []) => {
     const now = new Date();
     const formattedDate = `${now.toLocaleDateString(lang === 'tr' ? 'tr-TR' : 'en-US')} - ${now.toLocaleTimeString(lang === 'tr' ? 'tr-TR' : 'en-US', { hour: '2-digit', minute: '2-digit' })}`;
 
@@ -316,7 +324,8 @@ export default function App() {
       gameType: gameTypeLabel,
       targetLegs,
       winner: winnerName,
-      playerStats
+      playerStats,
+      legs,
     };
 
     setMatchLogs((prev) => [newMatchRecord, ...prev]);
@@ -401,6 +410,7 @@ export default function App() {
     setPenaltyPoints(initialPenalties);
     setCricketPoints(initialPenalties);
     setLegThrows({});
+    setLegSnapshots([]);
     setX01Scores(initialX01);
     setX01InStatus(initialInStatus);
     setRoundsWon(initialRounds);
@@ -416,7 +426,45 @@ export default function App() {
     setGameHistory([]);
   };
 
-  const startNextLeg = (winnerIdx) => {
+  /* Leg'in bitiş anındaki skor tablosunu kalıcı bir nesneye dönüştürür.
+     ÖNEMLİ: startNextLeg setTimeout içinden çağrıldığı için o anki closure
+     ESKİ state'i görür; kazanan dartın tabloya yansıması için güncel
+     değerler `live` ile dışarıdan geçilir. */
+  const buildLegSnapshot = (winnerIdx, live = {}) => {
+    const s = live.scores || scores;
+    const x01 = live.x01Scores || x01Scores;
+    const cp = live.cricketPoints || cricketPoints;
+    const pp = live.penaltyPoints || penaltyPoints;
+    const lt = live.legThrows || legThrows;
+
+    return {
+      legNumber: currentLegNumber,
+      winnerName: players[winnerIdx],
+      game: selectedGame,
+      mode: gameMode,
+      targets:
+        selectedGame === 'cricket'
+          ? currentTargets.map((tg) => ({ id: tg.id, display: tg.display }))
+          : null,
+      players: players.map((name, idx) => ({
+        name,
+        isWinner: idx === winnerIdx,
+        darts: getTotalDarts(idx),
+        marks: selectedGame === 'cricket' ? { ...(s[idx] || {}) } : null,
+        score:
+          selectedGame === 'x01'
+            ? x01[idx]
+            : gameMode === 'cutthroat'
+              ? pp[idx] || 0
+              : CRICKET_SCORING_MODES.includes(gameMode)
+                ? cp[idx] || 0
+                : null,
+        turns: selectedGame === 'x01' ? groupThrowsByTurn(lt[idx]) : null,
+      })),
+    };
+  };
+
+  const startNextLeg = (winnerIdx, live = {}) => {
     const newWonCount = (roundsWon[winnerIdx] || 0) + 1;
     const updatedRoundsWon = {
       ...roundsWon,
@@ -425,10 +473,15 @@ export default function App() {
 
     setRoundsWon(updatedRoundsWon);
 
+    // Biten leg'in son tablosunu sakla
+    const snapshot = buildLegSnapshot(winnerIdx, live);
+    const allSnapshots = [...legSnapshots, snapshot];
+    setLegSnapshots(allSnapshots);
+
     if (newWonCount >= targetLegs) {
       const winnerName = players[winnerIdx];
       setWinner(winnerName);
-      saveMatchToLogs(winnerName, updatedRoundsWon);
+      saveMatchToLogs(winnerName, updatedRoundsWon, allSnapshots);
       return;
     }
 
@@ -611,7 +664,17 @@ export default function App() {
       }
 
       if (isLegWon) {
-        setTimeout(() => startNextLeg(playerIdx), 50);
+        // Kazanan dartın işaretleri/puanları tabloya girsin diye güncel
+        // değerler açıkça geçiliyor (state henüz yazılmamış olabilir).
+        setTimeout(
+          () =>
+            startNextLeg(playerIdx, {
+              scores: updatedScores,
+              cricketPoints: updatedCricketPoints,
+              penaltyPoints: updatedPenalties,
+            }),
+          50
+        );
         return;
       }
     }
@@ -710,7 +773,23 @@ export default function App() {
     setMultiplier('single');
 
     if (remaining === 0) {
-      setTimeout(() => startNextLeg(activePlayerIndex), 100);
+      // Bitiş dartı ve 0 skoru kayda girsin diye güncel değerler geçiliyor.
+      const turnNo = (playerRoundsCount[activePlayerIndex] || 0) + 1;
+      const finalThrows = {
+        ...legThrows,
+        [activePlayerIndex]: [
+          ...(legThrows[activePlayerIndex] || []),
+          { label, points, turn: turnNo },
+        ],
+      };
+      setTimeout(
+        () =>
+          startNextLeg(activePlayerIndex, {
+            x01Scores: { ...x01Scores, [activePlayerIndex]: 0 },
+            legThrows: finalThrows,
+          }),
+        100
+      );
       return;
     }
 
@@ -854,6 +933,7 @@ export default function App() {
       setPenaltyPoints({});
     setCricketPoints({});
     setLegThrows({});
+    setLegSnapshots([]);
     setFocusedPlayerIdx(null);
       setRoundsWon({});
       setPlayerRoundsCount({});
@@ -876,6 +956,7 @@ export default function App() {
     setPenaltyPoints({});
     setCricketPoints({});
     setLegThrows({});
+    setLegSnapshots([]);
     setFocusedPlayerIdx(null);
     setRoundsWon({});
     setPlayerRoundsCount({});
@@ -1341,6 +1422,22 @@ export default function App() {
                           </div>
                         ))}
                       </div>
+
+                      {/* Leg skor tabloları yalnızca bu özellik eklendikten
+                          sonra oynanan maçlarda bulunur. */}
+                      {log.legs && log.legs.length > 0 && (
+                        <button
+                          className="btn-leg-detail"
+                          onClick={() => {
+                            setHistoryDetailLog(log);
+                            setShowHistoryModal(false);
+                          }}
+                        >
+                          {lang === 'tr'
+                            ? `📋 Leg Skor Tabloları (${log.legs.length})`
+                            : `📋 Leg Scoreboards (${log.legs.length})`}
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -1351,6 +1448,133 @@ export default function App() {
                   {t.clearLogs}
                 </button>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* GEÇMİŞ MAÇ - LEG SKOR TABLOLARI (TAM EKRAN) */}
+        {historyDetailLog && (
+          <div className="leg-detail-overlay">
+            <div className="leg-detail-header">
+              <div className="leg-detail-title">
+                <span className="leg-detail-game">🎯 {historyDetailLog.gameType}</span>
+                <span className="leg-detail-date">{historyDetailLog.date}</span>
+              </div>
+              <button
+                className="btn-text"
+                onClick={() => {
+                  setHistoryDetailLog(null);
+                  setShowHistoryModal(true);
+                }}
+              >
+                {t.close}
+              </button>
+            </div>
+
+            <div className="leg-detail-body">
+              <div className="leg-detail-winner">
+                🏆 {t.winner}: <strong>{historyDetailLog.winner}</strong>
+              </div>
+
+              {historyDetailLog.legs.map((leg) => (
+                <div key={leg.legNumber} className="leg-board-card">
+                  <div className="leg-board-head">
+                    <span className="leg-board-no">
+                      {lang === 'tr' ? 'LEG' : 'LEG'} {leg.legNumber}
+                    </span>
+                    <span className="leg-board-winner">🏆 {leg.winnerName}</span>
+                  </div>
+
+                  {/* ---- CRICKET: hedef × oyuncu tablosu ---- */}
+                  {leg.game === 'cricket' && leg.targets && (
+                    <div className="leg-board-scroll">
+                      <table className="leg-board-table">
+                        <thead>
+                          <tr>
+                            <th className="leg-th-target">{t.targetCol}</th>
+                            {leg.players.map((p, i) => (
+                              <th key={i} className={p.isWinner ? 'is-winner' : ''}>
+                                {p.name}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {leg.targets.map((tg) => (
+                            <tr key={tg.id}>
+                              <td className="leg-td-target">{tg.display}</td>
+                              {leg.players.map((p, i) => {
+                                const m = p.marks?.[tg.id] || 0;
+                                return (
+                                  <td key={i} className={m >= 3 ? 'is-closed' : ''}>
+                                    {getSymbol(m)}
+                                  </td>
+                                );
+                              })}
+                            </tr>
+                          ))}
+                          {leg.players.some((p) => p.score !== null) && (
+                            <tr className="leg-total-row">
+                              <td className="leg-td-target">
+                                {leg.mode === 'cutthroat' ? t.penalty : t.points}
+                              </td>
+                              {leg.players.map((p, i) => (
+                                <td key={i} className={leg.mode === 'cutthroat' ? 'is-penalty' : 'is-points'}>
+                                  {p.score}
+                                </td>
+                              ))}
+                            </tr>
+                          )}
+                          <tr className="leg-total-row">
+                            <td className="leg-td-target">{t.darts}</td>
+                            {leg.players.map((p, i) => (
+                              <td key={i}>{p.darts}</td>
+                            ))}
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+
+                  {/* ---- X01: oyuncu başına kalan skor ve tur tur atışlar ---- */}
+                  {leg.game === 'x01' && (
+                    <div className="leg-x01-players">
+                      {leg.players.map((p, i) => (
+                        <div key={i} className={`leg-x01-player ${p.isWinner ? 'is-winner' : ''}`}>
+                          <div className="leg-x01-head">
+                            <span className="leg-x01-name">{p.name}</span>
+                            <span className="leg-x01-score">
+                              {p.score} <span className="leg-x01-score-lbl">{t.remaining}</span>
+                            </span>
+                          </div>
+                          <div className="leg-x01-darts">
+                            {t.darts}: {p.darts}
+                          </div>
+                          {p.turns && p.turns.length > 0 && (
+                            <div className="leg-x01-turns">
+                              {p.turns.map((g) => (
+                                <div key={g.turn} className="leg-x01-turn-row">
+                                  <span className="leg-x01-turn-no">
+                                    {lang === 'tr' ? 'Tur' : 'Turn'} {g.turn}:
+                                  </span>
+                                  <span className="leg-x01-turn-darts">
+                                    {g.darts.map((d, di) => (
+                                      <span key={di} className={d.bust ? 'is-bust' : ''}>
+                                        {d.label}
+                                        {di < g.darts.length - 1 ? ' - ' : ''}
+                                      </span>
+                                    ))}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         )}
