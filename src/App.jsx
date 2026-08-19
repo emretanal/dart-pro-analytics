@@ -1011,30 +1011,32 @@ export default function App() {
               </table>
             </div>
 
+            {/* Çarpan butonları kendi satırında, ekranı ikiye bölecek şekilde.
+                Önceden aksiyon çubuğunda 40x40px kalıyor ve zor basılıyordu. */}
+            <div className="multiplier-row">
+              <button
+                className={`btn-mult ${multiplier === 'double' ? 'active-double' : ''}`}
+                onClick={() => toggleMultiplier('double')}
+                disabled={isTurnFlashing || showCricketSummaryOverlay}
+              >
+                DOUBLE (D)
+              </button>
+              <button
+                className={`btn-mult ${multiplier === 'triple' ? 'active-triple' : ''}`}
+                onClick={() => toggleMultiplier('triple')}
+                disabled={isTurnFlashing || showCricketSummaryOverlay}
+              >
+                TRIPLE (T)
+              </button>
+            </div>
+
             <div className="action-bar cricket-action-bar">
               <button className="btn-text" onClick={handleResetGame}>{t.exit}</button>
-              
-              <div className="multiplier-group">
-                <button 
-                  className={`btn-mult ${multiplier === 'double' ? 'active-double' : ''}`}
-                  onClick={() => toggleMultiplier('double')}
-                  disabled={isTurnFlashing || showCricketSummaryOverlay}
-                >
-                  D
-                </button>
-                <button 
-                  className={`btn-mult ${multiplier === 'triple' ? 'active-triple' : ''}`}
-                  onClick={() => toggleMultiplier('triple')}
-                  disabled={isTurnFlashing || showCricketSummaryOverlay}
-                >
-                  T
-                </button>
-              </div>
 
               <button className="btn-next" onClick={handleNextTurn} disabled={isTurnFlashing || showCricketSummaryOverlay}>
                 {t.endTurn} ({turnDartsCount}/3)
               </button>
-              
+
               <button className="btn-text" onClick={handleUndo} style={{ opacity: gameHistory.length === 0 || isTurnFlashing || showCricketSummaryOverlay ? 0.3 : 1 }} disabled={gameHistory.length === 0 || isTurnFlashing || showCricketSummaryOverlay}>
                 {t.undo}
               </button>
@@ -1064,13 +1066,6 @@ export default function App() {
                 </div>
               ))}
             </div>
-
-            {checkoutSuggestion && (
-              <div className="checkout-badge-box">
-                <span className="checkout-label">🎯 {t.checkoutRoute}:</span>
-                <span className="checkout-value">{renderCheckoutRoute(checkoutSuggestion)}</span>
-              </div>
-            )}
 
             <div className={`x01-turn-display ${isTurnFlashing ? 'flashing-turn' : ''}`}>
               <span className="turn-dart-item">{currentTurnDarts[0]?.label || '-'}</span>
@@ -1116,6 +1111,19 @@ export default function App() {
                 <button className="x01-num-btn btn-miss" onClick={() => handleX01DartHit(0)} disabled={isTurnFlashing || showBustOverlay}>
                   MISS (0)
                 </button>
+              </div>
+
+              {/* Bitiş rotası BULL/MISS'in altında ve alanı her zaman ayrılmış
+                  durumda. Önceden skor kartlarının hemen altındaydı ve 170'in
+                  altına inildiğinde aniden belirip tüm tuş takımını aşağı
+                  kaydırıyordu; bu da yanlış tuşa basılmasına yol açıyordu. */}
+              <div className={`checkout-badge-box ${checkoutSuggestion ? '' : 'is-empty'}`}>
+                {checkoutSuggestion && (
+                  <>
+                    <span className="checkout-label">🎯 {t.checkoutRoute}:</span>
+                    <span className="checkout-value">{renderCheckoutRoute(checkoutSuggestion)}</span>
+                  </>
+                )}
               </div>
             </div>
 

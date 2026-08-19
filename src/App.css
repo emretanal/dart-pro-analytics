@@ -1170,7 +1170,10 @@ body {
 }
 
 /* Checkout Rotası Rozeti */
+/* Bitiş rotası kutusu. Yükseklik öneri olmasa da SABİT tutulur; aksi halde
+   170'in altına inildiğinde kutu belirip tuş takımını aşağı kaydırıyor. */
 .checkout-badge-box {
+  min-height: 38px;
   background-color: var(--bg-surface);
   border: 1px solid var(--accent-color);
   border-radius: var(--radius-sm);
@@ -1181,6 +1184,14 @@ body {
   gap: 8px;
   font-size: 0.85rem;
   font-weight: 700;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+/* Öneri yokken alan korunur ama kutu görünmez olur. */
+.checkout-badge-box.is-empty {
+  background-color: transparent;
+  border-color: transparent;
 }
 
 .checkout-label {
@@ -1320,19 +1331,25 @@ body {
   flex-shrink: 0;
 }
 
-.multiplier-group {
+/* Cricket çarpan satırı: aksiyon çubuğunun hemen üstünde, iki buton
+   ekranı eşit paylaşır. */
+.multiplier-row {
   display: flex;
-  gap: 6px;
+  gap: 8px;
+  padding: 8px 10px 0;
+  flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .btn-mult {
-  width: 40px;
-  height: 40px;
+  flex: 1;
+  height: 46px;
   background-color: var(--bg-surface);
   border: 1px solid var(--card-border);
   border-radius: var(--radius-sm);
   color: var(--text-primary);
   font-weight: 800;
+  font-size: 0.85rem;
   cursor: pointer;
 }
 
@@ -1663,6 +1680,21 @@ body {
 
   .btn-x01-mult {
     height: 36px;
+  }
+
+  .btn-mult {
+    height: 40px;
+    font-size: 0.8rem;
+  }
+
+  .multiplier-row {
+    padding: 6px 8px 0;
+  }
+
+  .checkout-badge-box {
+    min-height: 32px;
+    padding: 6px 10px;
+    font-size: 0.78rem;
   }
 
   .board-mark-btn {
