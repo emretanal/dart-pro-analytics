@@ -179,6 +179,13 @@ export default function App() {
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [showGuideModal, setShowGuideModal] = useState(false);
 
+  // Oyun seçim ekranının (adım 1) kendi iç alt-adımı: App'in "step" state'i
+  // sadece 1'den 2'ye geçtiğinde GameSelectStep unmount olur; "Geri" ile adım
+  // 1'e dönüldüğünde bu state'ler burada tutulduğu için sıfırlanmadan kalır.
+  const [gameSelectSubStep, setGameSelectSubStep] = useState('main');
+  const [x01ModeDraft, setX01ModeDraft] = useState('501');
+  const [x01RulesDraft, setX01RulesDraft] = useState({ doubleIn: false, doubleOut: true });
+
   // Splash Screen süresi yarıya (1500ms) düşürüldü
   useEffect(() => {
     if (showSplash) {
@@ -673,6 +680,9 @@ export default function App() {
       setPlayerRoundsCount({});
       setWinner(null);
       setGameHistory([]);
+      setGameSelectSubStep('main');
+      setX01ModeDraft('501');
+      setX01RulesDraft({ doubleIn: false, doubleOut: true });
     }
   };
 
@@ -689,6 +699,9 @@ export default function App() {
     setPlayerRoundsCount({});
     setWinner(null);
     setGameHistory([]);
+    setGameSelectSubStep('main');
+    setX01ModeDraft('501');
+    setX01RulesDraft({ doubleIn: false, doubleOut: true });
   };
 
   const clearAllMatchLogs = () => {
@@ -800,7 +813,20 @@ export default function App() {
       </div>
 
       <main className="app-content">
-        {step === 1 && <GameSelectStep onSelect={handleGameSelect} onBack={() => {}} isFirstStep={true} lang={lang} />}
+        {step === 1 && (
+          <GameSelectStep
+            onSelect={handleGameSelect}
+            onBack={() => {}}
+            isFirstStep={true}
+            lang={lang}
+            subStep={gameSelectSubStep}
+            setSubStep={setGameSelectSubStep}
+            selectedX01Mode={x01ModeDraft}
+            setSelectedX01Mode={setX01ModeDraft}
+            x01Rules={x01RulesDraft}
+            setX01Rules={setX01RulesDraft}
+          />
+        )}
         {step === 2 && <PlayerCountStep onSelect={handlePlayerCountSelect} onBack={() => setStep(1)} lang={lang} />}
         {step === 3 && <PlayerNamesStep playerCount={playerCount} onSubmit={handlePlayerNamesSubmit} onBack={() => setStep(2)} lang={lang} />}
         {step === 4 && <LegTargetStep onSelect={handleLegTargetSelect} onBack={() => setStep(3)} lang={lang} />}

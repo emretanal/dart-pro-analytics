@@ -88,6 +88,9 @@ body {
   flex-direction: column;
   width: 100%;
   box-sizing: border-box;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* ==========================================================================
@@ -98,6 +101,111 @@ body {
 .app-container.setup-mode-container .app-content {
   padding: 20px 16px 24px;
   box-sizing: border-box;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Kısa boylu mobil ekranlar (SE, küçük Android'ler, klavye açıkken vb.):
+   tüm setup ekranlarının tek bakışta sığması için boşluk/yazı boyutlarını
+   kademeli olarak sıkılaştır. */
+@media (max-height: 760px) {
+  .app-container.setup-mode-container .app-content {
+    padding: 14px 14px 18px;
+  }
+
+  .hero-card {
+    padding: 20px 18px 18px;
+  }
+
+  .setup-header-icon {
+    font-size: 2.1rem;
+    margin-bottom: 4px;
+  }
+
+  .setup-title {
+    font-size: 1.15rem;
+    margin-bottom: 4px;
+  }
+
+  .setup-subtitle {
+    font-size: 0.8rem;
+    margin-bottom: 14px;
+  }
+
+  .game-select-list,
+  .bulloff-order-list,
+  .names-input-list,
+  .player-count-grid,
+  .leg-select-grid {
+    gap: 8px;
+  }
+
+  .btn-game-card {
+    padding: 12px 14px;
+  }
+
+  .btn-count-step {
+    padding: 14px 10px;
+  }
+
+  .btn-leg-step {
+    padding: 10px 8px;
+  }
+
+  .sub-section-title {
+    margin: 12px 0 10px;
+    font-size: 0.95rem;
+  }
+
+  .toggle-rule-card {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .x01-rules-container {
+    gap: 8px;
+  }
+
+  .setup-action-row {
+    margin-top: 14px;
+  }
+
+  .setup-action-row .btn-setup-back,
+  .setup-action-row .btn-setup-submit {
+    height: 46px;
+  }
+}
+
+@media (max-height: 640px) {
+  .hero-card {
+    padding: 16px 14px 14px;
+  }
+
+  .setup-header-icon {
+    font-size: 1.7rem;
+    margin-bottom: 2px;
+  }
+
+  .setup-title {
+    font-size: 1.02rem;
+  }
+
+  .setup-subtitle {
+    font-size: 0.76rem;
+    margin-bottom: 10px;
+  }
+
+  .btn-game-card,
+  .btn-count-step,
+  .btn-leg-step,
+  .toggle-rule-card {
+    padding: 9px 12px;
+  }
+
+  .game-card-desc,
+  .toggle-rule-desc {
+    display: none;
+  }
 }
 
 .hero-card {
@@ -1236,4 +1344,44 @@ body {
   font-size: 0.85rem;
   cursor: pointer;
   margin-top: 12px;
+}
+
+/* ==========================================================================
+   7. KISA EKRANLAR İÇİN OYUN TAHTASI SIKILAŞTIRMASI (Cricket & X01)
+   ========================================================================== */
+@media (max-height: 700px) {
+  .x01-theme {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .x01-player-card {
+    padding: 8px 6px;
+  }
+
+  .x01-big-score {
+    font-size: 1.8rem;
+    margin: 2px 0;
+  }
+
+  .x01-turn-display {
+    padding: 8px;
+  }
+
+  .x01-keypad-container {
+    gap: 6px;
+  }
+
+  .x01-num-btn {
+    height: 40px;
+    font-size: 0.92rem;
+  }
+
+  .btn-x01-mult {
+    height: 36px;
+  }
+
+  .board-mark-btn {
+    height: 38px;
+  }
 }

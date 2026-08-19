@@ -1,10 +1,16 @@
 import { useState } from 'react';
 import HowToPlayModal from '../Help/HowToPlayModal';
 
-export default function GameSelectStep({ onSelect, lang = 'tr' }) {
-  const [subStep, setSubStep] = useState('main'); // 'main' | 'cricket' | 'x01-mode' | 'x01-rules'
-  const [selectedX01Mode, setSelectedX01Mode] = useState('501');
-  const [x01Rules, setX01Rules] = useState({ doubleIn: false, doubleOut: true });
+export default function GameSelectStep({
+  onSelect,
+  lang = 'tr',
+  subStep,
+  setSubStep,
+  selectedX01Mode,
+  setSelectedX01Mode,
+  x01Rules,
+  setX01Rules,
+}) {
   const [showGuide, setShowGuide] = useState(false);
 
   const handleCricketSelect = (mode) => {

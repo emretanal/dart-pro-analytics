@@ -1,14 +1,11 @@
 import { useState } from 'react';
 
 export default function PlayerNamesStep({ playerCount, onSubmit, onBack, lang = 'tr' }) {
-  const [names, setNames] = useState(() => {
-    const savedHistory = JSON.parse(localStorage.getItem('dart_player_name_history') || '[]');
-    const initial = [];
-    for (let i = 0; i < playerCount; i++) {
-      initial.push(savedHistory[i] || `${lang === 'tr' ? 'Oyuncu' : 'Player'} ${i + 1}`);
-    }
-    return initial;
-  });
+  // Alanlar boş başlar; "Oyuncu 1", "Oyuncu 2" vb. yalnızca placeholder olarak
+  // görünür. Kullanıcı yazmaya başlayınca placeholder otomatik kaybolur,
+  // hiç yazılmazsa gönderim sırasında (handleSubmit) aynı metin varsayılan
+  // isim olarak kullanılır.
+  const [names, setNames] = useState(() => Array(playerCount).fill(''));
 
   const [activeInputIndex, setActiveInputIndex] = useState(null);
   const [nameHistory] = useState(() => {
