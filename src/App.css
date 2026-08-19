@@ -1170,10 +1170,14 @@ body {
 }
 
 /* Checkout Rotası Rozeti */
-/* Bitiş rotası kutusu. Yükseklik öneri olmasa da SABİT tutulur; aksi halde
-   170'in altına inildiğinde kutu belirip tuş takımını aşağı kaydırıyor. */
+/* Bitiş rotası kutusu. Yükseklik HER ZAMAN sabittir (min-height değil):
+   öneri olsun olmasın, rota kısa ya da uzun olsun kutu hep aynı yeri kaplar.
+   Aksi halde 170'in altına inildiğinde veya uzun bir rota satıra sığmayıp
+   alta taştığında tuş takımı aşağı kayıyor. */
 .checkout-badge-box {
-  min-height: 38px;
+  height: 38px;
+  overflow: hidden;
+  white-space: nowrap;
   background-color: var(--bg-surface);
   border: 1px solid var(--accent-color);
   border-radius: var(--radius-sm);
@@ -1719,7 +1723,7 @@ body {
   }
 
   .checkout-badge-box {
-    min-height: 32px;
+    height: 32px;
     padding: 6px 10px;
     font-size: 0.78rem;
   }
@@ -1731,4 +1735,165 @@ body {
   .compact-extended .board-mark-btn {
     min-height: 30px;
   }
+}
+
+/* ==========================================================================
+   9. OYUNCU DETAYI - TAM EKRAN
+   Skor kartına dokununca açılır, ekrana dokununca kapanır.
+   ========================================================================== */
+.player-focus-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background-color: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 16px calc(20px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+  cursor: pointer;
+  animation: focusFadeIn 0.15s ease-out;
+}
+
+@keyframes focusFadeIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.player-focus-card {
+  width: 100%;
+  max-width: var(--max-app-width);
+  max-height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2px;
+}
+
+.focus-legs {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.focus-name {
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  line-height: 1.15;
+  word-break: break-word;
+}
+
+.focus-turn-badge {
+  margin-top: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background-color: rgba(16, 185, 129, 0.14);
+  color: var(--accent-color);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.focus-score {
+  font-size: 5rem;
+  font-weight: 900;
+  color: var(--accent-color);
+  line-height: 1;
+  margin-top: 10px;
+}
+
+.focus-score.is-penalty {
+  color: var(--danger-color);
+}
+
+.focus-score-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  margin-bottom: 18px;
+}
+
+.focus-stats {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.focus-stat {
+  flex: 1;
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-md);
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.focus-stat-value {
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: var(--text-primary);
+}
+
+.focus-stat-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+/* Cricket: hedef başına isabet durumu */
+.focus-targets {
+  margin-top: 14px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(58px, 1fr));
+  gap: 6px;
+}
+
+.focus-target-item {
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-sm);
+  padding: 8px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.focus-target-item.is-closed {
+  background-color: rgba(16, 185, 129, 0.14);
+}
+
+.focus-target-num {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.focus-target-mark {
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: var(--accent-color);
+  min-height: 1.2em;
+  line-height: 1.2;
+}
+
+.focus-hint {
+  margin-top: 20px;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+/* Alçak ekranlarda tam ekran görünümü sıkıştır */
+@media (max-height: 700px) {
+  .focus-name { font-size: 1.6rem; }
+  .focus-score { font-size: 3.6rem; margin-top: 6px; }
+  .focus-score-label { margin-bottom: 12px; }
+  .focus-targets { margin-top: 10px; }
+  .focus-hint { margin-top: 12px; }
 }

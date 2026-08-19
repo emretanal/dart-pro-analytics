@@ -79,6 +79,8 @@ const TRANSLATIONS = {
     penalty: 'Ceza',
     points: 'Puan',
     legs: 'Leg',
+    remaining: 'Kalan',
+    turnBadge: 'SIRASI',
     darts: 'Dart',
     rounds: 'Tur',
     checkoutRoute: 'Bitiş Rotası',
@@ -109,6 +111,8 @@ const TRANSLATIONS = {
     penalty: 'Penalty',
     points: 'Points',
     legs: 'Legs',
+    remaining: 'Remaining',
+    turnBadge: 'TURN',
     darts: 'Darts',
     rounds: 'Rounds',
     checkoutRoute: 'Checkout Route',
@@ -213,6 +217,8 @@ export default function App() {
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [showGuideModal, setShowGuideModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  // Skor kartına dokununca o oyuncunun detayını tam ekran gösterir.
+  const [focusedPlayerIdx, setFocusedPlayerIdx] = useState(null);
 
   // Oyun seçim ekranının (adım 1) kendi iç alt-adımı: App'in "step" state'i
   // sadece 1'den 2'ye geçtiğinde GameSelectStep unmount olur; "Geri" ile adım
@@ -762,6 +768,7 @@ export default function App() {
       setX01InStatus({});
       setPenaltyPoints({});
     setCricketPoints({});
+    setFocusedPlayerIdx(null);
       setRoundsWon({});
       setPlayerRoundsCount({});
       setWinner(null);
@@ -782,6 +789,7 @@ export default function App() {
     setX01InStatus({});
     setPenaltyPoints({});
     setCricketPoints({});
+    setFocusedPlayerIdx(null);
     setRoundsWon({});
     setPlayerRoundsCount({});
     setWinner(null);
@@ -961,7 +969,15 @@ export default function App() {
                       <th key={idx} className={`player-col-header ${idx === activePlayerIndex ? 'active' : ''}`}>
                         {/* İçerik ayrı bir kart içinde: <th> üzerinde border-radius
                             çalışmadığı için yuvarlak köşeler bu div'e uygulanıyor. */}
-                        <div className="player-header-card">
+                        <div
+                          className="player-header-card"
+                          role="button"
+                          tabIndex={0}
+                          onClick={() => setFocusedPlayerIdx(idx)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') setFocusedPlayerIdx(idx);
+                          }}
+                        >
                           <div className="rounds-label">{t.legs}: {roundsWon[idx] || 0} / {targetLegs}</div>
                           <div className="p-name">{name}</div>
                           {/* Büyük rakam moda göre anlamlı olan skoru gösterir:
@@ -1048,7 +1064,16 @@ export default function App() {
           <div className="darts-score-theme x01-theme">
             <div className="x01-header-grid" style={{ gridTemplateColumns: `repeat(${players.length}, 1fr)` }}>
               {players.map((name, idx) => (
-                <div key={idx} className={`x01-player-card ${idx === activePlayerIndex ? 'active' : ''}`}>
+                <div
+                  key={idx}
+                  className={`x01-player-card ${idx === activePlayerIndex ? 'active' : ''}`}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setFocusedPlayerIdx(idx)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') setFocusedPlayerIdx(idx);
+                  }}
+                >
                   <div className="rounds-label">
                     Legs: {roundsWon[idx] || 0} / {targetLegs}
                     {x01Rules.doubleIn && (
@@ -1235,6 +1260,85 @@ export default function App() {
                   {t.clearLogs}
                 </button>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* OYUNCU DETAYI - TAM EKRAN
+            Skor kartına dokununca açılır, ekranın herhangi bir yerine
+            dokununca kapanır. */}
+        {focusedPlayerIdx !== null && players[focusedPlayerIdx] && (
+          <div className="player-focus-overlay" onClick={() => setFocusedPlayerIdx(null)}>
+            <div className="player-focus-card">
+              <div className="focus-legs">
+                {t.legs}: {roundsWon[focusedPlayerIdx] || 0} / {targetLegs}
+              </div>
+              <div className="focus-name">{players[focusedPlayerIdx]}</div>
+              {focusedPlayerIdx === activePlayerIndex && (
+                <div className="focus-turn-badge">● {t.turnBadge}</div>
+              )}
+
+              <div
+                className={`focus-score ${
+                  selectedGame === 'cricket' && gameMode === 'cutthroat' ? 'is-penalty' : ''
+                }`}
+              >
+                {selectedGame === 'x01'
+                  ? x01Scores[focusedPlayerIdx]
+                  : gameMode === 'cutthroat'
+                    ? penaltyPoints[focusedPlayerIdx] || 0
+                    : CRICKET_SCORING_MODES.includes(gameMode)
+                      ? cricketPoints[focusedPlayerIdx] || 0
+                      : roundsWon[focusedPlayerIdx] || 0}
+              </div>
+              <div className="focus-score-label">
+                {selectedGame === 'x01'
+                  ? t.remaining
+                  : gameMode === 'cutthroat'
+                    ? t.penalty
+                    : CRICKET_SCORING_MODES.includes(gameMode)
+                      ? t.points
+                      : t.legs}
+              </div>
+
+              <div className="focus-stats">
+                <div className="focus-stat">
+                  <span className="focus-stat-value">{getTotalDarts(focusedPlayerIdx)}</span>
+                  <span className="focus-stat-label">{t.darts}</span>
+                </div>
+                <div className="focus-stat">
+                  <span className="focus-stat-value">
+                    {selectedGame === 'cricket'
+                      ? calculateMPR(focusedPlayerIdx)
+                      : calculateX01Avg(focusedPlayerIdx)}
+                  </span>
+                  <span className="focus-stat-label">
+                    {selectedGame === 'cricket' ? 'MPR' : '3-Dart Avg'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Cricket: hangi hedefin kaç isabetle kapandığı */}
+              {selectedGame === 'cricket' && (
+                <div className="focus-targets">
+                  {currentTargets.map((target) => {
+                    const marks = scores[focusedPlayerIdx]?.[target.id] || 0;
+                    return (
+                      <div
+                        key={target.id}
+                        className={`focus-target-item ${marks >= 3 ? 'is-closed' : ''}`}
+                      >
+                        <span className="focus-target-num">{target.display}</span>
+                        <span className="focus-target-mark">{getSymbol(marks)}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              <div className="focus-hint">
+                {lang === 'tr' ? 'Kapatmak için ekrana dokunun' : 'Tap anywhere to close'}
+              </div>
             </div>
           </div>
         )}
