@@ -731,6 +731,19 @@ export default function App() {
     }
   };
 
+  /* Atışları tur numarasına göre gruplar; en yeni tur en üstte döner.
+     Tur içindeki dartlar atılma sırasını korur. */
+  const groupThrowsByTurn = (throwList = []) => {
+    const byTurn = new Map();
+    throwList.forEach((th) => {
+      if (!byTurn.has(th.turn)) byTurn.set(th.turn, []);
+      byTurn.get(th.turn).push(th);
+    });
+    return [...byTurn.entries()]
+      .map(([turn, darts]) => ({ turn, darts }))
+      .sort((a, b) => b.turn - a.turn);
+  };
+
   /* Bir dartı, oyuncunun bu leg'deki atış geçmişine ekler (X01). */
   const recordLegThrow = (playerIdx, entry) => {
     const turnNo = (playerRoundsCount[playerIdx] || 0) + 1;
@@ -1421,14 +1434,18 @@ export default function App() {
                     {lang === 'tr' ? 'BU LEG’DEKİ ATIŞLAR' : 'THROWS THIS LEG'}
                   </div>
                   <div className="focus-throw-list">
-                    {[...(legThrows[focusedPlayerIdx] || [])].reverse().map((th, i) => (
-                      <div key={i} className={`focus-throw-row ${th.bust ? 'is-bust' : ''}`}>
+                    {groupThrowsByTurn(legThrows[focusedPlayerIdx]).map((group) => (
+                      <div key={group.turn} className="focus-throw-row">
                         <span className="focus-throw-turn">
-                          {lang === 'tr' ? 'Tur' : 'Turn'} {th.turn}
+                          {lang === 'tr' ? 'Tur' : 'Turn'} {group.turn}:
                         </span>
-                        <span className="focus-throw-label">{th.label}</span>
-                        <span className="focus-throw-points">
-                          {th.bust ? 'BUST' : th.points}
+                        <span className="focus-throw-darts">
+                          {group.darts.map((d, i) => (
+                            <span key={i} className={d.bust ? 'is-bust' : ''}>
+                              {d.label}
+                              {i < group.darts.length - 1 ? ' - ' : ''}
+                            </span>
+                          ))}
                         </span>
                       </div>
                     ))}

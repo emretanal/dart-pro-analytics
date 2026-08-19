@@ -1930,15 +1930,16 @@ body {
   padding: 8px 10px;
 }
 
+/* Her satır bir tur: "Tur 2: D20 - D20 - 20" */
 .focus-throw-turn {
-  font-size: 0.68rem;
+  font-size: 0.8rem;
   font-weight: 700;
   color: var(--text-secondary);
-  min-width: 46px;
-  text-align: left;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-.focus-throw-label {
+.focus-throw-darts {
   flex: 1;
   font-size: 0.95rem;
   font-weight: 800;
@@ -1946,17 +1947,8 @@ body {
   text-align: left;
 }
 
-.focus-throw-points {
-  font-size: 0.9rem;
-  font-weight: 900;
-  color: var(--accent-color);
-  min-width: 42px;
-  text-align: right;
-}
-
-/* Bust olan atış kırmızı gösterilir */
-.focus-throw-row.is-bust .focus-throw-label,
-.focus-throw-row.is-bust .focus-throw-points {
+/* Bust olan dart kırmızı gösterilir; tur toplamı 0 sayılmıştır. */
+.focus-throw-darts .is-bust {
   color: var(--danger-color);
 }
 
