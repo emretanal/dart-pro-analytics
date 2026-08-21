@@ -1616,23 +1616,22 @@ export default function App() {
                                   {t.darts}: {p.darts}
                                 </span>
                               </div>
-                              <div className="leg-x01-turns">
-                                {p.turns.map((g) => (
-                                  <div key={g.turn} className="leg-x01-turn-row">
-                                    <span className="leg-x01-turn-no">
-                                      {lang === 'tr' ? 'Tur' : 'Turn'} {g.turn}:
-                                    </span>
-                                    <span className="leg-x01-turn-darts">
-                                      {g.darts.map((d, di) => (
-                                        <span key={di} className={d.wasted ? 'is-bust' : ''}>
-                                          {d.label}
-                                          {di < g.darts.length - 1 ? ' - ' : ''}
-                                        </span>
+                              <table className="leg-turn-table">
+                                <tbody>
+                                  {p.turns.map((g) => (
+                                    <tr key={g.turn}>
+                                      <td className="ltt-turn">
+                                        {lang === 'tr' ? 'Tur' : 'Turn'} {g.turn}
+                                      </td>
+                                      {[0, 1, 2].map((di) => (
+                                        <td key={di} className={g.darts[di]?.wasted ? 'is-bust' : ''}>
+                                          {g.darts[di]?.label || '·'}
+                                        </td>
                                       ))}
-                                    </span>
-                                  </div>
-                                ))}
-                              </div>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
                             </div>
                           ) : null
                         )}
@@ -1654,23 +1653,25 @@ export default function App() {
                             {t.darts}: {p.darts}
                           </div>
                           {p.turns && p.turns.length > 0 && (
-                            <div className="leg-x01-turns">
-                              {p.turns.map((g) => (
-                                <div key={g.turn} className="leg-x01-turn-row">
-                                  <span className="leg-x01-turn-no">
-                                    {lang === 'tr' ? 'Tur' : 'Turn'} {g.turn}:
-                                  </span>
-                                  <span className="leg-x01-turn-darts">
-                                    {g.darts.map((d, di) => (
-                                      <span key={di} className={d.bust ? 'is-bust' : ''}>
-                                        {d.label}
-                                        {di < g.darts.length - 1 ? ' - ' : ''}
-                                      </span>
+                            <table className="leg-turn-table">
+                              <tbody>
+                                {p.turns.map((g) => (
+                                  <tr key={g.turn}>
+                                    <td className="ltt-turn">
+                                      {lang === 'tr' ? 'Tur' : 'Turn'} {g.turn}
+                                    </td>
+                                    {[0, 1, 2].map((di) => (
+                                      <td
+                                        key={di}
+                                        className={g.darts[di]?.bust || g.darts[di]?.wasted ? 'is-bust' : ''}
+                                      >
+                                        {g.darts[di]?.label || '·'}
+                                      </td>
                                     ))}
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
                           )}
                         </div>
                       ))}
@@ -1760,23 +1761,28 @@ export default function App() {
                   <div className="focus-throws-title">
                     {lang === 'tr' ? 'BU LEG’DEKİ ATIŞLAR' : 'THROWS THIS LEG'}
                   </div>
-                  <div className="focus-throw-list">
-                    {groupThrowsByTurn(legThrows[focusedPlayerIdx]).map((group) => (
-                      <div key={group.turn} className="focus-throw-row">
-                        <span className="focus-throw-turn">
-                          {lang === 'tr' ? 'Tur' : 'Turn'} {group.turn}:
-                        </span>
-                        <span className="focus-throw-darts">
-                          {group.darts.map((d, i) => (
-                            <span key={i} className={d.bust || d.wasted ? 'is-bust' : ''}>
-                              {d.label}
-                              {i < group.darts.length - 1 ? ' - ' : ''}
-                            </span>
+                  {/* Tur | Dart 1 | Dart 2 | Dart 3 — dört eşit sütun */}
+                  <table className="leg-turn-table focus-turn-table">
+                    <tbody>
+                      {groupThrowsByTurn(legThrows[focusedPlayerIdx]).map((group) => (
+                        <tr key={group.turn}>
+                          <td className="ltt-turn">
+                            {lang === 'tr' ? 'Tur' : 'Turn'} {group.turn}
+                          </td>
+                          {[0, 1, 2].map((di) => (
+                            <td
+                              key={di}
+                              className={
+                                group.darts[di]?.bust || group.darts[di]?.wasted ? 'is-bust' : ''
+                              }
+                            >
+                              {group.darts[di]?.label || '·'}
+                            </td>
                           ))}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
 

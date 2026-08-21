@@ -1940,41 +1940,20 @@ body {
   text-align: left;
 }
 
-.focus-throw-list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+/* Tam ekran detaydaki tur tablosu: kutu yok, yalnızca eşit sütunlar.
+   Ortak .leg-turn-table stilini kullanır, burada sadece punto büyütülür. */
+.focus-turn-table td {
+  font-size: 0.92rem;
+  padding: 6px 2px;
 }
 
-.focus-throw-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background-color: var(--bg-surface);
-  border-radius: var(--radius-sm);
-  padding: 8px 10px;
+.focus-turn-table td.ltt-turn {
+  font-size: 0.76rem;
 }
 
-/* Her satır bir tur: "Tur 2: D20 - D20 - 20" */
-.focus-throw-turn {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--text-secondary);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.focus-throw-darts {
-  flex: 1;
-  font-size: 0.95rem;
-  font-weight: 800;
-  color: var(--text-primary);
-  text-align: left;
-}
-
-/* Bust olan dart kırmızı gösterilir; tur toplamı 0 sayılmıştır. */
-.focus-throw-darts .is-bust {
-  color: var(--danger-color);
+/* Satırlar arasında ince ayraç */
+.focus-turn-table tr + tr td {
+  border-top: 1px solid var(--border-color);
 }
 
 /* ---- TURU BİTİR ile otomatik MISS: butonu yakıp söndür ---- */
@@ -2165,14 +2144,20 @@ body {
   gap: 10px;
 }
 
+/* Kutu yok: oyuncu blokları yalnızca boşlukla ayrılır. */
 .leg-x01-player {
-  background-color: var(--bg-card);
-  border-radius: var(--radius-sm);
-  padding: 10px;
+  background-color: transparent;
+  border-radius: 0;
+  padding: 6px 0 2px;
 }
 
-.leg-x01-player.is-winner {
-  background-color: rgba(16, 185, 129, 0.1);
+.leg-x01-player + .leg-x01-player {
+  margin-top: 4px;
+}
+
+/* Kazananı arka plan kutusu yerine isim rengiyle belirt */
+.leg-x01-player.is-winner .leg-x01-name {
+  color: var(--accent-color);
 }
 
 .leg-x01-head {
@@ -2207,36 +2192,33 @@ body {
   margin-top: 2px;
 }
 
-.leg-x01-turns {
-  margin-top: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
+/* Tur tablosu: Tur | Dart 1 | Dart 2 | Dart 3 — dört eşit sütun.
+   Böylece dartlar turlar arasında dikey olarak hizalanır. */
+.leg-turn-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  margin-top: 6px;
 }
 
-.leg-x01-turn-row {
-  display: flex;
-  gap: 8px;
-  align-items: baseline;
-}
-
-.leg-x01-turn-no {
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: var(--text-secondary);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.leg-x01-turn-darts {
-  flex: 1;
+.leg-turn-table td {
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--text-primary);
-  text-align: left;
+  padding: 4px 2px;
+  text-align: center;
 }
 
-.leg-x01-turn-darts .is-bust {
+.leg-turn-table td.ltt-turn {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* Bust veya kapalı hedefe giden dart */
+.leg-turn-table td.is-bust {
   color: var(--danger-color);
 }
 
