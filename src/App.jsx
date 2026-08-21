@@ -459,7 +459,8 @@ export default function App() {
               : CRICKET_SCORING_MODES.includes(gameMode)
                 ? cp[idx] || 0
                 : null,
-        turns: selectedGame === 'x01' ? groupThrowsByTurn(lt[idx]) : null,
+        // Atış geçmişi her iki oyunda da kaydedilir
+        turns: groupThrowsByTurn(lt[idx]),
       })),
     };
   };
@@ -580,6 +581,14 @@ export default function App() {
     const newTurnDarts = [...currentTurnDarts, { label: hitLabel }];
     setCurrentTurnDarts(newTurnDarts);
 
+    // Hedef bu atıştan ÖNCE zaten kapalıysa dart yeni işaret üretmez;
+    // "boşa giden" olarak işaretlenir (listede kırmızı, MPR'ye dahil değil).
+    recordLegThrow(playerIdx, {
+      label: hitLabel,
+      targetId,
+      wasted: currentMarks >= 3,
+    });
+
     const newMarks = currentMarks + addedMarks;
 
     // Kapatma sonrası fazla isabetler. extraMarks = 3'ü aşan isabet sayısı.
@@ -664,14 +673,23 @@ export default function App() {
       }
 
       if (isLegWon) {
-        // Kazanan dartın işaretleri/puanları tabloya girsin diye güncel
-        // değerler açıkça geçiliyor (state henüz yazılmamış olabilir).
+        // Kazanan dartın işaretleri/puanları/atış kaydı tabloya girsin diye
+        // güncel değerler açıkça geçiliyor (state henüz yazılmamış olabilir).
+        const turnNo = (playerRoundsCount[playerIdx] || 0) + 1;
+        const finalThrows = {
+          ...legThrows,
+          [playerIdx]: [
+            ...(legThrows[playerIdx] || []),
+            { label: hitLabel, targetId, wasted: currentMarks >= 3, turn: turnNo },
+          ],
+        };
         setTimeout(
           () =>
             startNextLeg(playerIdx, {
               scores: updatedScores,
               cricketPoints: updatedCricketPoints,
               penaltyPoints: updatedPenalties,
+              legThrows: finalThrows,
             }),
           50
         );
@@ -873,27 +891,37 @@ export default function App() {
     setTurnDartsCount(3);
     setMultiplier('single');
 
+    // Eksik dartları atış geçmişine de MISS olarak yaz (her iki oyunda da).
+    const turnNo = (playerRoundsCount[activePlayerIndex] || 0) + 1;
+    setLegThrows((prev) => ({
+      ...prev,
+      [activePlayerIndex]: [
+        ...(prev[activePlayerIndex] || []),
+        ...missDarts.map((d) => ({ ...d, turn: turnNo })),
+      ],
+    }));
+
     if (selectedGame === 'x01') {
-      // Eksik dartları atış geçmişine de MISS olarak yaz.
-      const turnNo = (playerRoundsCount[activePlayerIndex] || 0) + 1;
-      setLegThrows((prev) => ({
-        ...prev,
-        [activePlayerIndex]: [
-          ...(prev[activePlayerIndex] || []),
-          ...missDarts.map((d) => ({ ...d, turn: turnNo })),
-        ],
-      }));
+      // X01: pop-up YOK. Davranış, MISS butonuna 3 kez basılmış gibi olsun —
+      // tur ekranı MISS'lerle dolar, MISS butonu yanıp söner, tur bitiş
+      // efektinden sonra sıra devreder.
       setAutoMissFlash(true);
+      setIsTurnFlashing(true);
+      setTimeout(() => {
+        setIsTurnFlashing(false);
+        setAutoMissFlash(false);
+        advanceTurn();
+      }, 3000);
+      return;
     }
 
-    // Her iki oyunda da tur özeti pop-up'ı gösterilir.
+    // Cricket: tur özeti pop-up'ı ile MISS - MISS - MISS gösterilir.
     setShowCricketSummaryOverlay(true);
     setIsTurnFlashing(true);
 
     setTimeout(() => {
       setShowCricketSummaryOverlay(false);
       setIsTurnFlashing(false);
-      setAutoMissFlash(false);
       advanceTurn();
     }, 1600);
   };
@@ -985,9 +1013,15 @@ export default function App() {
     return (completedRounds * 3) + currentTurnDartsCount;
   };
 
+  /* Zaten kapatılmış (3+ isabet) bir hedefe atılan dart yeni işaret
+     üretmez. Bu dartlar listede kırmızı gösterilir ve MPR hesabına
+     KATILMAZ — ne pay ne paydada yer alır. */
+  const getWastedDarts = (playerIdx) =>
+    (legThrows[playerIdx] || []).filter((th) => th.wasted).length;
+
   const calculateMPR = (playerIdx) => {
-    const totalDarts = getTotalDarts(playerIdx);
-    if (totalDarts === 0) return '0.00';
+    const countedDarts = getTotalDarts(playerIdx) - getWastedDarts(playerIdx);
+    if (countedDarts <= 0) return '0.00';
 
     let totalMarks = 0;
     currentTargets.forEach((target) => {
@@ -995,7 +1029,7 @@ export default function App() {
       totalMarks += Math.min(markCount, 3);
     });
 
-    const mpr = (totalMarks / totalDarts) * 3;
+    const mpr = (totalMarks / countedDarts) * 3;
     return mpr.toFixed(2);
   };
 
@@ -1536,6 +1570,42 @@ export default function App() {
                     </div>
                   )}
 
+                  {/* Cricket: oyuncu başına tur tur ne vurulduğu */}
+                  {leg.game === 'cricket' &&
+                    leg.players.some((p) => p.turns && p.turns.length > 0) && (
+                      <div className="leg-cricket-throws">
+                        {leg.players.map((p, i) =>
+                          p.turns && p.turns.length > 0 ? (
+                            <div key={i} className="leg-x01-player">
+                              <div className="leg-x01-head">
+                                <span className="leg-x01-name">{p.name}</span>
+                                <span className="leg-x01-darts">
+                                  {t.darts}: {p.darts}
+                                </span>
+                              </div>
+                              <div className="leg-x01-turns">
+                                {p.turns.map((g) => (
+                                  <div key={g.turn} className="leg-x01-turn-row">
+                                    <span className="leg-x01-turn-no">
+                                      {lang === 'tr' ? 'Tur' : 'Turn'} {g.turn}:
+                                    </span>
+                                    <span className="leg-x01-turn-darts">
+                                      {g.darts.map((d, di) => (
+                                        <span key={di} className={d.wasted ? 'is-bust' : ''}>
+                                          {d.label}
+                                          {di < g.darts.length - 1 ? ' - ' : ''}
+                                        </span>
+                                      ))}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ) : null
+                        )}
+                      </div>
+                    )}
+
                   {/* ---- X01: oyuncu başına kalan skor ve tur tur atışlar ---- */}
                   {leg.game === 'x01' && (
                     <div className="leg-x01-players">
@@ -1651,8 +1721,8 @@ export default function App() {
                 </div>
               )}
 
-              {/* X01: bu leg'de atılan dartlar, en yenisi en üstte */}
-              {selectedGame === 'x01' && (legThrows[focusedPlayerIdx] || []).length > 0 && (
+              {/* Bu leg'de atılan dartlar, en yeni tur en üstte (Cricket + X01) */}
+              {(legThrows[focusedPlayerIdx] || []).length > 0 && (
                 <div className="focus-throws">
                   <div className="focus-throws-title">
                     {lang === 'tr' ? 'BU LEG’DEKİ ATIŞLAR' : 'THROWS THIS LEG'}
@@ -1665,7 +1735,7 @@ export default function App() {
                         </span>
                         <span className="focus-throw-darts">
                           {group.darts.map((d, i) => (
-                            <span key={i} className={d.bust ? 'is-bust' : ''}>
+                            <span key={i} className={d.bust || d.wasted ? 'is-bust' : ''}>
                               {d.label}
                               {i < group.darts.length - 1 ? ' - ' : ''}
                             </span>
