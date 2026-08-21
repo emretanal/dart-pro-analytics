@@ -2214,3 +2214,35 @@ body {
   flex-direction: column;
   gap: 8px;
 }
+
+/* Kazanan ekranındaki "Rövanş" butonu: birincil eylem (Yeni Oyun) ile
+   ikincil eylem (Çıkış) arasında, ana vurgu rengiyle ama dolgusuz. */
+.btn-rematch {
+  width: 100%;
+  padding: 9px 12px;
+  background-color: var(--accent-blue-bg);
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--accent-color);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  transition: background-color 0.15s ease;
+}
+
+.btn-rematch:active {
+  background-color: rgba(16, 185, 129, 0.24);
+}
+
+.btn-rematch-title {
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.btn-rematch-desc {
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}

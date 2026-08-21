@@ -73,6 +73,8 @@ const TRANSLATIONS = {
     congrats: 'TEBRİKLER!',
     wonText: 'Leg galibiyeti alarak oyunu kazandı!',
     newGame: 'Yeni Oyun Başlat',
+    rematch: 'Rövanş',
+    rematchDesc: 'Aynı oyuncular, aynı mod, aynı leg sayısı',
     exit: 'Çıkış',
     endTurn: 'TURU BİTİR',
     undo: 'Geri Al',
@@ -105,6 +107,8 @@ const TRANSLATIONS = {
     congrats: 'CONGRATULATIONS!',
     wonText: 'Legs won to win the match!',
     newGame: 'Start New Game',
+    rematch: 'Rematch',
+    rematchDesc: 'Same players, same mode, same leg count',
     exit: 'Exit',
     endTurn: 'END TURN',
     undo: 'Undo',
@@ -949,6 +953,17 @@ export default function App() {
     setShowCricketSummaryOverlay(false);
   };
 
+  /* RÖVANŞ: aynı oyuncular, aynı oyun modu, aynı leg hedefiyle sıfırdan yeni
+     bir maç. Kurulum adımlarına dönmez, doğrudan skor ekranında kalır.
+     Wild-Card modunda hedefler resetBoard içinde yeniden rastgele çekilir. */
+  const handleRematch = () => {
+    resetBoard(players, selectedGame, gameMode, 0);
+    setCurrentLegNumber(1);
+    setFocusedPlayerIdx(null);
+    setAutoMissFlash(false);
+    setStep(6);
+  };
+
   const handleResetGame = () => {
     if (window.confirm(t.resetConfirm)) {
       setStep(1);
@@ -1418,6 +1433,10 @@ export default function App() {
               <div className="winner-modal-actions">
                 <button className="btn-setup-submit" onClick={handleResetGame}>
                   {t.newGame}
+                </button>
+                <button className="btn-rematch" onClick={handleRematch}>
+                  <span className="btn-rematch-title">🔁 {t.rematch}</span>
+                  <span className="btn-rematch-desc">{t.rematchDesc}</span>
                 </button>
                 <button className="btn-setup-back" onClick={handleExitToGameSelect}>
                   {t.exit}
