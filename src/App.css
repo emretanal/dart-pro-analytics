@@ -1618,14 +1618,59 @@ body {
   gap: 10px;
 }
 
+/* Kutu/çerçeve yok: maçlar birbirinden yalnızca ince bir ayraçla ayrılır. */
 .history-card {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius-md);
-  padding: 12px;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 14px 2px;
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.history-card + .history-card {
+  border-top: 1px solid var(--border-color);
+}
+
+/* Geçmiş özeti: tüm sütunlar eşit genişlikte */
+.history-stat-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  margin-top: 2px;
+}
+
+.history-stat-table th {
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  padding: 4px 2px;
+  text-align: center;
+}
+
+.history-stat-table td {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  padding: 5px 2px;
+  text-align: center;
+}
+
+.history-stat-table th:first-child,
+.history-stat-table td.hst-name {
+  text-align: left;
+}
+
+.history-stat-table td.hst-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-stat-table tr.is-winner td {
+  color: var(--accent-color);
 }
 
 .history-card-header {
@@ -1638,26 +1683,6 @@ body {
 .history-winner {
   font-size: 0.88rem;
   color: var(--text-primary);
-}
-
-.history-players-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding-top: 4px;
-  border-top: 1px solid var(--border-color);
-}
-
-.history-p-item {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-}
-
-.history-p-item.is-winner {
-  color: var(--accent-color);
-  font-weight: 700;
 }
 
 .btn-del-logs {
@@ -2042,10 +2067,16 @@ body {
   color: var(--accent-color);
 }
 
+/* Kutu yok; legler ince bir ayraçla ayrılır. */
 .leg-board-card {
-  background-color: var(--bg-surface);
-  border-radius: var(--radius-md);
-  padding: 12px;
+  background-color: transparent;
+  border-radius: 0;
+  padding: 4px 0 14px;
+}
+
+.leg-board-card + .leg-board-card {
+  border-top: 1px solid var(--border-color);
+  padding-top: 14px;
 }
 
 .leg-board-head {
@@ -2074,8 +2105,10 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
+/* table-layout: fixed → tüm sütunlar eşit genişlikte, içeriğe göre oynamaz */
 .leg-board-table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   text-align: center;
 }
@@ -2086,6 +2119,8 @@ body {
   color: var(--text-secondary);
   padding: 6px 4px;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .leg-board-table th.is-winner {
@@ -2101,7 +2136,6 @@ body {
 
 .leg-th-target,
 .leg-td-target {
-  text-align: left;
   color: var(--text-secondary) !important;
   font-size: 0.78rem !important;
   white-space: nowrap;

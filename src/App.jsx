@@ -1467,14 +1467,28 @@ export default function App() {
                       <div className="history-winner">
                         🏆 {t.winner}: <strong>{log.winner}</strong> ({log.targetLegs} Leg)
                       </div>
-                      <div className="history-players-grid">
-                        {log.playerStats.map((p, idx) => (
-                          <div key={idx} className={`history-p-item ${p.name === log.winner ? 'is-winner' : ''}`}>
-                            <span className="hp-name">{p.name}</span>
-                            <span className="hp-stat">{p.roundsWon} Leg | {p.statLabel}: {p.statValue}</span>
-                          </div>
-                        ))}
-                      </div>
+                      {/* Eşit genişlikli sütunlar: isim uzunluğundan bağımsız
+                          olarak değerler alt alta hizalanır. */}
+                      <table className="history-stat-table">
+                        <thead>
+                          <tr>
+                            <th>{lang === 'tr' ? 'Oyuncu' : 'Player'}</th>
+                            <th>{t.legs}</th>
+                            <th>{log.playerStats[0]?.statLabel || 'MPR'}</th>
+                            <th>{t.darts}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {log.playerStats.map((p, idx) => (
+                            <tr key={idx} className={p.name === log.winner ? 'is-winner' : ''}>
+                              <td className="hst-name">{p.name}</td>
+                              <td>{p.roundsWon}</td>
+                              <td>{p.statValue}</td>
+                              <td>{p.dartsThrown}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
 
                       {/* Leg skor tabloları yalnızca bu özellik eklendikten
                           sonra oynanan maçlarda bulunur. */}
