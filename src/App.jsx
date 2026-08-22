@@ -566,17 +566,26 @@ export default function App() {
     const targetObj = currentTargets.find(t => t.id === targetId);
     const currentMarks = scores[playerIdx]?.[targetId] || 0;
 
-    let addedMarks = 1;
-    if (multiplier === 'double') addedMarks = 2;
-    if (multiplier === 'triple') addedMarks = 3;
+    /* Extended Cricket'te House (H) bir seferde üç dart harcanarak vurulur.
+       Bu yüzden çarpandan etkilenmez, her zaman 1 isabet yazar ve turu
+       bitirir; hedefi kapatmak 3 ayrı tur sürer. */
+    const isHouseTarget = targetId === 'House';
 
-    if (targetId === 'Bull' && multiplier === 'triple') {
-      addedMarks = 2;
+    let addedMarks = 1;
+    if (!isHouseTarget) {
+      if (multiplier === 'double') addedMarks = 2;
+      if (multiplier === 'triple') addedMarks = 3;
+
+      if (targetId === 'Bull' && multiplier === 'triple') {
+        addedMarks = 2;
+      }
     }
 
     let hitLabel = targetObj.display;
-    if (multiplier === 'double') hitLabel = `D${targetObj.display}`;
-    if (multiplier === 'triple') hitLabel = `T${targetObj.display}`;
+    if (!isHouseTarget) {
+      if (multiplier === 'double') hitLabel = `D${targetObj.display}`;
+      if (multiplier === 'triple') hitLabel = `T${targetObj.display}`;
+    }
     if (targetId === 'Bull') {
       if (multiplier === 'double' || multiplier === 'triple') hitLabel = 'D-BULL';
       else hitLabel = 'BULL';
@@ -653,7 +662,8 @@ export default function App() {
     };
 
     setScores(updatedScores);
-    const newDartsCount = turnDartsCount + 1;
+    // House üç dartlık bir vuruştur: sayaç doğrudan 3'e çekilir ve tur biter.
+    const newDartsCount = isHouseTarget ? 3 : turnDartsCount + 1;
     setTurnDartsCount(newDartsCount);
     setMultiplier('single');
 
