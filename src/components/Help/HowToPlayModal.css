@@ -242,7 +242,7 @@
 
 /* Kazanma koşulu kartı: vurgulu ama çerçevesiz */
 .guide-card-highlight {
-  background-color: var(--accent-blue-bg);
+  background-color: var(--accent-bg);
 }
 
 .guide-card-highlight span {

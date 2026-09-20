@@ -69,10 +69,13 @@
   --accent-text: #6d28d9; /* beyaz üzerinde 7.10:1 */
 }
 
-/* Geriye dönük takma adlar (eski kurallar bunları kullanıyor) */
+/* NOT: Eskiden burada "--accent-blue: var(--accent-color)" gibi takma adlar
+   vardı. Bunlar HATALIYDI: :root üzerinde tanımlandıkları için --accent-color'ın
+   :root'taki (yeşil) değerini bir kez yakalayıp sabitliyorlardı. Vurgu rengi
+   .app-container üzerindeki data-accent ile değiştiği için takma adlar
+   güncellenmiyor ve kurulum ekranları hep yeşil kalıyordu. Tüm kullanımlar
+   doğrudan --accent-color / --accent-text / --accent-bg'ye bağlandı. */
 :root {
-  --accent-blue: var(--accent-color);
-  --accent-blue-bg: var(--accent-bg);
   --danger-color: #ef4444;
   --danger-text: #ef4444;
 }
@@ -511,7 +514,7 @@ body {
 .btn-game-card:hover,
 .btn-count-step:hover,
 .btn-leg-step:hover {
-  border-color: var(--accent-blue);
+  border-color: var(--accent-color);
 }
 
 .btn-game-card:active,
@@ -552,7 +555,7 @@ body {
   margin-top: 18px;
   background: transparent;
   border: none;
-  color: var(--accent-blue);
+  color: var(--accent-text);
   font-weight: 700;
   font-size: 0.85rem;
   cursor: pointer;
@@ -564,7 +567,7 @@ body {
   text-align: center;
   font-size: 1.05rem;
   font-weight: 800;
-  color: var(--accent-blue);
+  color: var(--accent-text);
   margin: 18px 0 14px;
 }
 
@@ -611,7 +614,7 @@ body {
 .btn-num {
   font-size: 1.7rem;
   font-weight: 900;
-  color: var(--accent-blue);
+  color: var(--accent-text);
 }
 
 .btn-text-sub {
@@ -670,7 +673,7 @@ body {
 }
 
 .toggle-rule-card:has(input:checked) {
-  border-color: var(--accent-blue);
+  border-color: var(--accent-color);
 }
 
 /* Yerel (native) onay kutusu koyu zeminde beyaz bir kutu olarak çizildiği
@@ -753,7 +756,7 @@ body {
 }
 
 .name-input-wrapper.is-active .name-input-group {
-  border-color: var(--accent-blue);
+  border-color: var(--accent-color);
 }
 
 .player-badge {
@@ -763,11 +766,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--accent-blue-bg);
+  background-color: var(--accent-bg);
   border-radius: 50%;
   font-size: 0.75rem;
   font-weight: 800;
-  color: var(--accent-blue);
+  color: var(--accent-text);
   margin-left: 4px;
 }
 
@@ -794,7 +797,7 @@ body {
   left: 0;
   right: 0;
   background-color: var(--bg-card);
-  border: 1px solid var(--accent-blue);
+  border: 1px solid var(--accent-color);
   border-radius: var(--radius-md);
   overflow: hidden;
   z-index: 20;
@@ -836,7 +839,7 @@ body {
   font-size: 0.8rem;
   font-weight: 800;
   color: #ffffff;
-  background-color: var(--accent-blue);
+  background-color: var(--accent-color);
   border-radius: var(--radius-sm);
   padding: 8px 10px;
   white-space: nowrap;
@@ -2055,7 +2058,7 @@ body {
   width: 100%;
   margin-top: 8px;
   padding: 9px 10px;
-  background-color: var(--accent-blue-bg);
+  background-color: var(--accent-bg);
   border: none;
   border-radius: var(--radius-sm);
   color: var(--accent-text);
@@ -2312,7 +2315,7 @@ body {
 .btn-rematch {
   width: 100%;
   padding: 9px 12px;
-  background-color: var(--accent-blue-bg);
+  background-color: var(--accent-bg);
   border: none;
   border-radius: var(--radius-md);
   color: var(--accent-text);

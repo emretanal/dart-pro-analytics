@@ -264,6 +264,16 @@ export default function App() {
     document.documentElement.lang = lang;
   }, [lang]);
 
+  /* Tema ve vurgu rengini <html> üzerine de yaz. data-theme yalnızca
+     .app-container üzerinde olduğunda <body> kök değerlerde kalıyor ve
+     gündüz modunda zemini siyah / metni beyaz oluyordu. Kapsayıcı üstünü
+     örttüğü için çoğu yerde görünmüyor ama durum çubuğu, kenar boşlukları
+     ve kendi rengini belirtmeyen öğeler bundan etkileniyordu. */
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.dataset.accent = accent;
+  }, [theme, accent]);
+
   useEffect(() => {
     localStorage.setItem('dart_lang', lang);
     localStorage.setItem('dart_theme', theme);
