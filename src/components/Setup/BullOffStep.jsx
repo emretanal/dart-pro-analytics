@@ -52,6 +52,12 @@ export default function BullOffStep({ players, onComplete, onBack, lang }) {
 
   return (
     <div className="hero-card">
+      <div className="setup-top-bar">
+        <button type="button" className="btn-setup-back-top" onClick={onBack}>
+          ← {isTr ? 'Geri' : 'Back'}
+        </button>
+      </div>
+
       <div className="setup-header-icon">🎯</div>
       <h2 className="setup-title">
         {isTr ? 'Bull-Off (Başlangıç Sıralaması)' : 'Bull-Off (Order Determination)'}
@@ -126,10 +132,6 @@ export default function BullOffStep({ players, onComplete, onBack, lang }) {
       </div>
 
       <div className="setup-action-row">
-        <button type="button" className="btn-setup-back" onClick={onBack}>
-          {isTr ? 'Geri' : 'Back'}
-        </button>
-
         <button type="button" className="btn-setup-submit" onClick={handleConfirm}>
           {isTr ? 'Sıralamayı Onayla & Başla ➔' : 'Confirm Order & Start ➔'}
         </button>

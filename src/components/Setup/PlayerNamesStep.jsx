@@ -41,6 +41,12 @@ export default function PlayerNamesStep({ playerCount, onSubmit, onBack, lang = 
 
   return (
     <div className="hero-card">
+      <div className="setup-top-bar">
+        <button type="button" className="btn-setup-back-top" onClick={onBack}>
+          ← {lang === 'tr' ? 'Geri' : 'Back'}
+        </button>
+      </div>
+
       <div className="setup-header-icon">👥</div>
       <h1 className="setup-title">
         {lang === 'tr' ? 'Oyuncu İsimleri' : 'Player Names'}
@@ -93,9 +99,6 @@ export default function PlayerNamesStep({ playerCount, onSubmit, onBack, lang = 
         </div>
 
         <div className="setup-action-row">
-          <button type="button" className="btn-setup-back" onClick={onBack}>
-            {lang === 'tr' ? 'Geri' : 'Back'}
-          </button>
           <button type="submit" className="btn-setup-submit">
             {lang === 'tr' ? 'İleri ➔' : 'Next ➔'}
           </button>

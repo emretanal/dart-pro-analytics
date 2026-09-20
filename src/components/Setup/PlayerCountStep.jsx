@@ -3,6 +3,12 @@ export default function PlayerCountStep({ onSelect, onBack, lang = 'tr' }) {
 
   return (
     <div className="hero-card">
+      <div className="setup-top-bar">
+        <button type="button" className="btn-setup-back-top" onClick={onBack}>
+          ← {lang === 'tr' ? 'Geri' : 'Back'}
+        </button>
+      </div>
+
       <div className="setup-header-icon">🎯</div>
       <h1 className="setup-title">
         {lang === 'tr' ? 'Kaç Oyuncu Oynayacak?' : 'How Many Players?'}
@@ -24,12 +30,6 @@ export default function PlayerCountStep({ onSelect, onBack, lang = 'tr' }) {
             </span>
           </button>
         ))}
-      </div>
-
-      <div className="setup-action-row">
-        <button className="btn-setup-back" onClick={onBack}>
-          {lang === 'tr' ? 'Geri' : 'Back'}
-        </button>
       </div>
     </div>
   );

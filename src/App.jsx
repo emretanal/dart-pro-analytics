@@ -1342,23 +1342,6 @@ export default function App() {
             </div>
 
             <div className="x01-keypad-container">
-              <div className="x01-multiplier-row">
-                <button 
-                  className={`btn-x01-mult ${multiplier === 'double' ? 'active-double' : ''}`}
-                  onClick={() => toggleMultiplier('double')}
-                  disabled={isTurnFlashing || showBustOverlay}
-                >
-                  DOUBLE (D)
-                </button>
-                <button 
-                  className={`btn-x01-mult ${multiplier === 'triple' ? 'active-triple' : ''}`}
-                  onClick={() => toggleMultiplier('triple')}
-                  disabled={isTurnFlashing || showBustOverlay}
-                >
-                  TRIPLE (T)
-                </button>
-              </div>
-
               <div className="x01-board-grid">
                 {x01NumbersList.map((num) => (
                   <button
@@ -1399,6 +1382,27 @@ export default function App() {
                     <span className="checkout-value">{renderCheckoutRoute(checkoutSuggestion)}</span>
                   </>
                 )}
+              </div>
+
+              {/* DOUBLE / TRIPLE artık tuş takımının en altında, "TURU BİTİR"
+                  satırının hemen üstünde: Cricket ekranındaki çarpan satırı ile
+                  aynı yerde durur, böylece iki oyun tipi arasında geçerken
+                  parmak alışkanlığı bozulmaz. */}
+              <div className="x01-multiplier-row">
+                <button
+                  className={`btn-x01-mult ${multiplier === 'double' ? 'active-double' : ''}`}
+                  onClick={() => toggleMultiplier('double')}
+                  disabled={isTurnFlashing || showBustOverlay}
+                >
+                  DOUBLE (D)
+                </button>
+                <button
+                  className={`btn-x01-mult ${multiplier === 'triple' ? 'active-triple' : ''}`}
+                  onClick={() => toggleMultiplier('triple')}
+                  disabled={isTurnFlashing || showBustOverlay}
+                >
+                  TRIPLE (T)
+                </button>
               </div>
             </div>
 

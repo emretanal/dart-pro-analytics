@@ -21,8 +21,26 @@ export default function GameSelectStep({
     onSelect('x01', selectedX01Mode, x01Rules);
   };
 
+  // Geri butonu kartın en üstünde sabit duruyor; hangi alt adımdaysak
+  // oraya göre hedefi değişiyor. 'main' ilk adım olduğu için geri
+  // gidilecek yer yok — buton görünmez, ama yerini koruyor ki başlık
+  // bütün adımlarda aynı hizada kalsın.
+  const backTarget = subStep === 'x01-rules' ? 'x01-mode' : subStep === 'main' ? null : 'main';
+
   return (
     <div className="hero-card">
+      <div className="setup-top-bar">
+        <button
+          type="button"
+          className={`btn-setup-back-top ${backTarget ? '' : 'is-placeholder'}`}
+          onClick={() => backTarget && setSubStep(backTarget)}
+          aria-hidden={backTarget ? undefined : true}
+          tabIndex={backTarget ? undefined : -1}
+        >
+          ← {lang === 'tr' ? 'Geri' : 'Back'}
+        </button>
+      </div>
+
       <div className="setup-header-icon">🎯</div>
       <h1 className="setup-title">
         {lang === 'tr' ? 'Oyun Türü Seçin' : 'Select Game Type'}
@@ -73,12 +91,6 @@ export default function GameSelectStep({
             <div className="game-card-title">Wild-Card Cricket</div>
             <div className="game-card-desc">{lang === 'tr' ? 'Her leg başında rastgele 7 sayı belirlenir' : 'Random 7 targets generated each leg'}</div>
           </button>
-
-          <div className="setup-action-row">
-            <button className="btn-setup-back" onClick={() => setSubStep('main')}>
-              {lang === 'tr' ? 'Geri' : 'Back'}
-            </button>
-          </div>
         </div>
       )}
 
@@ -100,12 +112,6 @@ export default function GameSelectStep({
               </div>
             </button>
           ))}
-
-          <div className="setup-action-row">
-            <button className="btn-setup-back" onClick={() => setSubStep('main')}>
-              {lang === 'tr' ? 'Geri' : 'Back'}
-            </button>
-          </div>
         </div>
       )}
 
@@ -146,9 +152,6 @@ export default function GameSelectStep({
           </div>
 
           <div className="setup-action-row">
-            <button className="btn-setup-back" onClick={() => setSubStep('x01-mode')}>
-              {lang === 'tr' ? 'Geri' : 'Back'}
-            </button>
             <button className="btn-setup-submit" onClick={handleX01Submit}>
               {lang === 'tr' ? 'Devam Et ➔' : 'Continue ➔'}
             </button>
