@@ -1,18 +1,80 @@
 :root {
   --max-app-width: 480px; /* 9:16 Dikey Standart Mobil Boyutu */
 
-  /* Tema dışı sabit tonlar: tek vurgu rengi yeşil, mavi kullanılmıyor */
-  --accent-color: #10b981;
-  --accent-hover: #059669;
-  --accent-blue: var(--accent-color);
-  --accent-blue-bg: rgba(16, 185, 129, 0.14);
-  --danger-color: #ef4444;
   --warning-color: #f59e0b;
 
   --radius-lg: 16px;
   --radius-md: 12px;
   --radius-sm: 8px;
   --radius-xl: 20px;
+}
+
+/* ==========================================================================
+   VURGU RENGİ SİSTEMİ
+
+   Canlı vurgu rengi DOLGU olarak iyi çalışır ama açık zeminde METİN olarak
+   okunmaz: yeşil #10b981 beyaz üzerinde yalnızca 2.54:1 kontrast verir,
+   WCAG AA ise normal metin için 4.5:1 ister. Bu yüzden dolgu ve metin
+   renkleri AYRILDI:
+
+     --accent-color : canlı dolgu / kenarlık rengi (mod fark etmez)
+     --accent-text  : metin ve ikon rengi (açık modda koyulaştırılmış)
+     --accent-on    : canlı dolgunun ÜZERİNDEKİ metin (her zaman koyu)
+     --accent-bg    : yumuşak tonlu zemin
+
+   Aynı ayrım --danger-color / --danger-text için de geçerlidir.
+   ========================================================================== */
+
+/* ---- YEŞİL (varsayılan) ---- */
+[data-accent='green'],
+:root {
+  --accent-color: #10b981;
+  --accent-hover: #059669;
+  --accent-text: #10b981;
+  --accent-on: #04150c;
+  --accent-rgb: 16, 185, 129;
+  --accent-bg: rgba(var(--accent-rgb), 0.14);
+}
+
+[data-theme='light'][data-accent='green'],
+[data-theme='light'] {
+  --accent-text: #03694a; /* beyaz üzerinde 6.72:1 */
+}
+
+/* ---- MAVİ ---- */
+[data-accent='blue'] {
+  --accent-color: #3b9eff;
+  --accent-hover: #1d86f0;
+  --accent-text: #4da6ff;
+  --accent-on: #04121f;
+  --accent-rgb: 59, 158, 255;
+  --accent-bg: rgba(var(--accent-rgb), 0.16);
+}
+
+[data-theme='light'][data-accent='blue'] {
+  --accent-text: #1d4ed8; /* beyaz üzerinde 6.70:1 */
+}
+
+/* ---- MOR ---- */
+[data-accent='purple'] {
+  --accent-color: #a78bfa;
+  --accent-hover: #8b5cf6;
+  --accent-text: #b794f6;
+  --accent-on: #14081f;
+  --accent-rgb: 167, 139, 250;
+  --accent-bg: rgba(var(--accent-rgb), 0.18);
+}
+
+[data-theme='light'][data-accent='purple'] {
+  --accent-text: #6d28d9; /* beyaz üzerinde 7.10:1 */
+}
+
+/* Geriye dönük takma adlar (eski kurallar bunları kullanıyor) */
+:root {
+  --accent-blue: var(--accent-color);
+  --accent-blue-bg: var(--accent-bg);
+  --danger-color: #ef4444;
+  --danger-text: #ef4444;
 }
 
 /* ==========================================================================
@@ -46,7 +108,10 @@
      bir hat bırakıldı; gece modunda tamamen şeffaf. */
   --card-border: #eaeaec;
   --text-primary: #18181b;
-  --text-secondary: #6b6b70;
+  /* #6b6b70 açık zeminde 4.49:1 ile eşiğin hemen altında kalıyordu */
+  --text-secondary: #5f5f66;
+  /* #ef4444 açık zeminde 3.76:1; metin için koyulaştırıldı */
+  --danger-text: #c81e1e;
 }
 
 * {
@@ -460,7 +525,7 @@ body {
 .btn-count-step.active-mode,
 .btn-leg-step.active-mode {
   border-color: var(--accent-color);
-  background-color: rgba(16, 185, 129, 0.12);
+  background-color: rgba(var(--accent-rgb), 0.12);
   box-shadow: 0 0 0 1px var(--accent-color);
 }
 
@@ -822,7 +887,7 @@ body {
 .btn-hit-chip.sbull.active {
   background-color: var(--accent-color);
   border-color: var(--accent-color);
-  color: #020617;
+  color: var(--accent-on);
 }
 
 .btn-hit-chip.miss.active {
@@ -993,7 +1058,7 @@ body {
 /* Sırası gelen oyuncu: yeşil dolgu + iç halka (layout kaymasın diye
    border yerine inset box-shadow kullanıldı). */
 .player-col-header.active .player-header-card {
-  background-color: rgba(16, 185, 129, 0.14);
+  background-color: rgba(var(--accent-rgb), 0.14);
   box-shadow: inset 0 0 0 1.5px var(--accent-color);
 }
 
@@ -1017,14 +1082,14 @@ body {
 .p-score {
   font-size: 1.3rem;
   font-weight: 900;
-  color: var(--accent-color);
+  color: var(--accent-text);
   margin: 2px 0 0;
   line-height: 1.1;
 }
 
 /* Cezalı modda puan istenmeyen bir şeydir; kırmızı gösterilir. */
 .p-score.is-penalty {
-  color: var(--danger-color);
+  color: var(--danger-text);
 }
 
 .p-score-label {
@@ -1049,7 +1114,7 @@ body {
 }
 
 .penalty-box {
-  color: var(--danger-color);
+  color: var(--danger-text);
   font-weight: 700;
 }
 
@@ -1084,7 +1149,7 @@ body {
   background-color: var(--bg-surface);
   border: 1px solid var(--card-border);
   border-radius: var(--radius-sm);
-  color: var(--accent-color);
+  color: var(--accent-text);
   font-size: 1.3rem;
   font-weight: 900;
   cursor: pointer;
@@ -1096,7 +1161,7 @@ body {
 
 .board-mark-btn.active-turn {
   border-color: var(--accent-color);
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.3);
 }
 
 .board-mark-btn:active {
@@ -1168,14 +1233,14 @@ body {
 
 .x01-player-card.active {
   border-color: var(--accent-color);
-  box-shadow: 0 0 12px rgba(16, 185, 129, 0.22);
-  background-color: rgba(16, 185, 129, 0.08);
+  box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.22);
+  background-color: rgba(var(--accent-rgb), 0.08);
 }
 
 .x01-big-score {
   font-size: 2.2rem;
   font-weight: 900;
-  color: var(--accent-color);
+  color: var(--accent-text);
   line-height: 1.1;
   margin: 4px 0;
 }
@@ -1214,7 +1279,7 @@ body {
 }
 
 .checkout-value {
-  color: var(--accent-color);
+  color: var(--accent-text);
   font-weight: 800;
 }
 
@@ -1223,7 +1288,7 @@ body {
 }
 
 .checkout-part-dbull {
-  color: var(--danger-color);
+  color: var(--danger-text);
 }
 
 /* Tur İçi Atılan Dartlar Ekranı */
@@ -1257,7 +1322,7 @@ body {
 .turn-total-sum {
   font-size: 0.85rem;
   font-weight: 800;
-  color: var(--accent-color);
+  color: var(--accent-text);
 }
 
 /* Keypad (Tuş Takımı) */
@@ -1342,15 +1407,15 @@ body {
 }
 
 .btn-bull {
-  background-color: rgba(16, 185, 129, 0.08);
+  background-color: rgba(var(--accent-rgb), 0.08);
   border-color: var(--accent-color);
-  color: var(--accent-color);
+  color: var(--accent-text);
 }
 
 .btn-miss {
   background-color: rgba(239, 68, 68, 0.08);
   border-color: var(--danger-color);
-  color: var(--danger-color);
+  color: var(--danger-text);
 }
 
 /* ==========================================================================
@@ -1404,7 +1469,7 @@ body {
   flex: 1;
   height: 42px;
   background-color: var(--accent-color);
-  color: #020617;
+  color: var(--accent-on);
   border: none;
   border-radius: var(--radius-sm);
   font-weight: 800;
@@ -1457,7 +1522,7 @@ body {
 .cricket-summary-player {
   font-size: 1.2rem;
   font-weight: 800;
-  color: var(--accent-color);
+  color: var(--accent-text);
 }
 
 .cricket-summary-title {
@@ -1566,7 +1631,7 @@ body {
 .winner-name {
   font-size: 1.6rem;
   font-weight: 900;
-  color: var(--accent-color);
+  color: var(--accent-text);
 }
 
 .winner-desc {
@@ -1586,7 +1651,7 @@ body {
   width: 100%;
   height: 48px;
   background-color: var(--accent-color);
-  color: #020617;
+  color: var(--accent-on);
   border: none;
   border-radius: var(--radius-md);
   font-weight: 800;
@@ -1681,7 +1746,7 @@ body {
 }
 
 .history-stat-table tr.is-winner td {
-  color: var(--accent-color);
+  color: var(--accent-text);
 }
 
 .history-card-header {
@@ -1826,8 +1891,8 @@ body {
   margin-top: 4px;
   padding: 3px 10px;
   border-radius: 999px;
-  background-color: rgba(16, 185, 129, 0.14);
-  color: var(--accent-color);
+  background-color: rgba(var(--accent-rgb), 0.14);
+  color: var(--accent-text);
   font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.04em;
@@ -1836,13 +1901,13 @@ body {
 .focus-score {
   font-size: 5rem;
   font-weight: 900;
-  color: var(--accent-color);
+  color: var(--accent-text);
   line-height: 1;
   margin-top: 10px;
 }
 
 .focus-score.is-penalty {
-  color: var(--danger-color);
+  color: var(--danger-text);
 }
 
 .focus-score-label {
@@ -1902,7 +1967,7 @@ body {
 }
 
 .focus-target-item.is-closed {
-  background-color: rgba(16, 185, 129, 0.14);
+  background-color: rgba(var(--accent-rgb), 0.14);
 }
 
 .focus-target-num {
@@ -1914,7 +1979,7 @@ body {
 .focus-target-mark {
   font-size: 0.95rem;
   font-weight: 900;
-  color: var(--accent-color);
+  color: var(--accent-text);
   min-height: 1.2em;
   line-height: 1.2;
 }
@@ -1947,7 +2012,7 @@ body {
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.08em;
-  color: var(--accent-color);
+  color: var(--accent-text);
   text-align: left;
 }
 
@@ -1975,7 +2040,7 @@ body {
 @keyframes autoMissPulse {
   0%, 100% {
     background-color: rgba(239, 68, 68, 0.08);
-    color: var(--danger-color);
+    color: var(--danger-text);
   }
   50% {
     background-color: var(--danger-color);
@@ -1993,7 +2058,7 @@ body {
   background-color: var(--accent-blue-bg);
   border: none;
   border-radius: var(--radius-sm);
-  color: var(--accent-color);
+  color: var(--accent-text);
   font-size: 0.8rem;
   font-weight: 800;
   cursor: pointer;
@@ -2054,7 +2119,7 @@ body {
 }
 
 .leg-detail-winner strong {
-  color: var(--accent-color);
+  color: var(--accent-text);
 }
 
 /* Kutu yok; legler ince bir ayraçla ayrılır. */
@@ -2080,7 +2145,7 @@ body {
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.08em;
-  color: var(--accent-color);
+  color: var(--accent-text);
 }
 
 .leg-board-winner {
@@ -2114,7 +2179,7 @@ body {
 }
 
 .leg-board-table th.is-winner {
-  color: var(--accent-color);
+  color: var(--accent-text);
 }
 
 .leg-board-table td {
@@ -2132,7 +2197,7 @@ body {
 }
 
 .leg-board-table td.is-closed {
-  color: var(--accent-color);
+  color: var(--accent-text);
 }
 
 .leg-total-row td {
@@ -2141,11 +2206,11 @@ body {
 }
 
 .leg-total-row td.is-points {
-  color: var(--accent-color);
+  color: var(--accent-text);
 }
 
 .leg-total-row td.is-penalty {
-  color: var(--danger-color);
+  color: var(--danger-text);
 }
 
 /* ---- X01 leg görünümü ---- */
@@ -2168,7 +2233,7 @@ body {
 
 /* Kazananı arka plan kutusu yerine isim rengiyle belirt */
 .leg-x01-player.is-winner .leg-x01-name {
-  color: var(--accent-color);
+  color: var(--accent-text);
 }
 
 .leg-x01-head {
@@ -2187,7 +2252,7 @@ body {
 .leg-x01-score {
   font-size: 1.15rem;
   font-weight: 900;
-  color: var(--accent-color);
+  color: var(--accent-text);
 }
 
 .leg-x01-score-lbl {
@@ -2230,7 +2295,7 @@ body {
 
 /* Bust veya kapalı hedefe giden dart */
 .leg-turn-table td.is-bust {
-  color: var(--danger-color);
+  color: var(--danger-text);
 }
 
 
@@ -2250,7 +2315,7 @@ body {
   background-color: var(--accent-blue-bg);
   border: none;
   border-radius: var(--radius-md);
-  color: var(--accent-color);
+  color: var(--accent-text);
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -2260,7 +2325,7 @@ body {
 }
 
 .btn-rematch:active {
-  background-color: rgba(16, 185, 129, 0.24);
+  background-color: rgba(var(--accent-rgb), 0.24);
 }
 
 .btn-rematch-title {

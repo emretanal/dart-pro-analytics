@@ -134,6 +134,8 @@ export default function App() {
 
   // Gece (varsayılan, siyah ağırlıklı) / Gündüz mod anahtarı
   const [theme, setTheme] = useState(() => localStorage.getItem('dart_theme') || 'dark');
+  // Vurgu rengi: green | blue | purple
+  const [accent, setAccent] = useState(() => localStorage.getItem('dart_accent') || 'green');
 
   const [showSplash, setShowSplash] = useState(() => {
     const isMidGame = localStorage.getItem('dart_step') === '6';
@@ -265,6 +267,7 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('dart_lang', lang);
     localStorage.setItem('dart_theme', theme);
+    localStorage.setItem('dart_accent', accent);
     localStorage.setItem('dart_step', step);
     localStorage.setItem('dart_playerCount', playerCount);
     localStorage.setItem('dart_players', JSON.stringify(players));
@@ -290,7 +293,7 @@ export default function App() {
     localStorage.setItem('dart_gameHistory', JSON.stringify(gameHistory));
     localStorage.setItem('dart_match_logs', JSON.stringify(matchLogs));
   }, [
-    lang, theme, step, playerCount, players, selectedGame, gameMode, x01Rules, targetLegs, winner,
+    lang, theme, accent, step, playerCount, players, selectedGame, gameMode, x01Rules, targetLegs, winner,
     activePlayerIndex, bullOffOrder, currentLegNumber, currentTargets, scores, penaltyPoints, cricketPoints, legThrows, legSnapshots, turnDartsCount,
     x01Scores, x01InStatus, roundsWon, playerRoundsCount, gameHistory, matchLogs
   ]);
@@ -1096,7 +1099,7 @@ export default function App() {
 
   if (showSplash) {
     return (
-      <div className="app-container setup-mode-container" data-theme={theme}>
+      <div className="app-container setup-mode-container" data-theme={theme} data-accent={accent}>
         <div className="splash-screen">
           <div className="splash-content">
             <div className="splash-logo">🎯</div>
@@ -1127,7 +1130,7 @@ export default function App() {
         : '';
 
   return (
-    <div className={`app-container ${isSetupMode ? 'setup-mode-container' : 'game-mode-container'}`} data-theme={theme}>
+    <div className={`app-container ${isSetupMode ? 'setup-mode-container' : 'game-mode-container'}`} data-theme={theme} data-accent={accent}>
       {/* Üst çubuk:
           - Ana ekran (step 1): Seçenekler + Geçmiş + Rehber
           - Diğer tüm ekranlar: aktif oyun bilgisi + Rehber
@@ -1460,7 +1463,7 @@ export default function App() {
           <div className="winner-overlay">
             <div className="history-modal">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                <h2 style={{ margin: 0, color: 'var(--accent-color)', fontSize: '1.2rem' }}>📜 {t.historyLogs}</h2>
+                <h2 style={{ margin: 0, color: 'var(--accent-text)', fontSize: '1.2rem' }}>📜 {t.historyLogs}</h2>
                 <button className="btn-text" onClick={() => setShowHistoryModal(false)}>{t.close}</button>
               </div>
 
@@ -1819,6 +1822,8 @@ export default function App() {
           onClose={() => setShowSettingsModal(false)}
           theme={theme}
           setTheme={setTheme}
+          accent={accent}
+          setAccent={setAccent}
           lang={lang}
           setLang={setLang}
         />

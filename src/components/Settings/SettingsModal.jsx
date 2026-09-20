@@ -1,5 +1,13 @@
 import './SettingsModal.css';
 
+/* Seçilebilir vurgu renkleri. Örnek nokta rengi, o renk temasının canlı
+   dolgu tonudur (App.css içindeki --accent-color ile aynı). */
+export const ACCENTS = [
+  { id: 'green', swatch: '#10b981', tr: 'Yeşil', en: 'Green' },
+  { id: 'blue', swatch: '#3b9eff', tr: 'Mavi', en: 'Blue' },
+  { id: 'purple', swatch: '#a78bfa', tr: 'Mor', en: 'Purple' },
+];
+
 const SETTINGS_CONTENT = {
   tr: {
     title: '⚙️ Seçenekler',
@@ -8,6 +16,8 @@ const SETTINGS_CONTENT = {
     themeDesc: 'Uygulamanın renk temasını seçin.',
     dark: '🌙 Gece',
     light: '☀️ Gündüz',
+    accentLabel: 'VURGU RENGİ',
+    accentDesc: 'Butonlarda ve skorlarda kullanılan ana renk.',
     langLabel: 'DİL',
     langDesc: 'Arayüz dilini değiştirin.',
   },
@@ -18,12 +28,23 @@ const SETTINGS_CONTENT = {
     themeDesc: 'Choose the colour theme of the app.',
     dark: '🌙 Dark',
     light: '☀️ Light',
+    accentLabel: 'ACCENT COLOUR',
+    accentDesc: 'The main colour used on buttons and scores.',
     langLabel: 'LANGUAGE',
     langDesc: 'Change the interface language.',
   },
 };
 
-export default function SettingsModal({ isOpen, onClose, theme, setTheme, lang, setLang }) {
+export default function SettingsModal({
+  isOpen,
+  onClose,
+  theme,
+  setTheme,
+  lang,
+  setLang,
+  accent,
+  setAccent,
+}) {
   if (!isOpen) return null;
 
   const c = SETTINGS_CONTENT[lang] || SETTINGS_CONTENT.tr;
@@ -55,6 +76,24 @@ export default function SettingsModal({ isOpen, onClose, theme, setTheme, lang, 
               >
                 {c.light}
               </button>
+            </div>
+          </div>
+
+          <div className="settings-group">
+            <div className="settings-group-label">{c.accentLabel}</div>
+            <div className="settings-group-desc">{c.accentDesc}</div>
+            <div className="settings-segmented">
+              {ACCENTS.map((a) => (
+                <button
+                  key={a.id}
+                  className={`settings-segment settings-accent ${accent === a.id ? 'active' : ''}`}
+                  onClick={() => setAccent(a.id)}
+                  aria-pressed={accent === a.id}
+                >
+                  <span className="accent-swatch" style={{ backgroundColor: a.swatch }} />
+                  {lang === 'tr' ? a.tr : a.en}
+                </button>
+              ))}
             </div>
           </div>
 
