@@ -1371,23 +1371,9 @@ export default function App() {
                 </button>
               </div>
 
-              {/* Bitiş rotası BULL/MISS'in altında ve alanı her zaman ayrılmış
-                  durumda. Önceden skor kartlarının hemen altındaydı ve 170'in
-                  altına inildiğinde aniden belirip tüm tuş takımını aşağı
-                  kaydırıyordu; bu da yanlış tuşa basılmasına yol açıyordu. */}
-              <div className={`checkout-badge-box ${checkoutSuggestion ? '' : 'is-empty'}`}>
-                {checkoutSuggestion && (
-                  <>
-                    <span className="checkout-label">🎯 {t.checkoutRoute}:</span>
-                    <span className="checkout-value">{renderCheckoutRoute(checkoutSuggestion)}</span>
-                  </>
-                )}
-              </div>
-
-              {/* DOUBLE / TRIPLE artık tuş takımının en altında, "TURU BİTİR"
-                  satırının hemen üstünde: Cricket ekranındaki çarpan satırı ile
-                  aynı yerde durur, böylece iki oyun tipi arasında geçerken
-                  parmak alışkanlığı bozulmaz. */}
+              {/* DOUBLE / TRIPLE, BULL/MISS'in hemen altında: parmağın sayı
+                  ızgarasından çıkıp ulaştığı ilk satır çarpan satırı olsun
+                  diye. Bitiş rotası ise en altta duruyor. */}
               <div className="x01-multiplier-row">
                 <button
                   className={`btn-x01-mult ${multiplier === 'double' ? 'active-double' : ''}`}
@@ -1403,6 +1389,19 @@ export default function App() {
                 >
                   TRIPLE (T)
                 </button>
+              </div>
+
+              {/* Bitiş rotası tuş takımının en altında ve alanı her zaman
+                  ayrılmış durumda. Önceden skor kartlarının hemen altındaydı;
+                  170'in altına inildiğinde aniden belirip tüm tuş takımını
+                  aşağı kaydırıyor, bu da yanlış tuşa basılmasına yol açıyordu. */}
+              <div className={`checkout-badge-box ${checkoutSuggestion ? '' : 'is-empty'}`}>
+                {checkoutSuggestion && (
+                  <>
+                    <span className="checkout-label">🎯 {t.checkoutRoute}:</span>
+                    <span className="checkout-value">{renderCheckoutRoute(checkoutSuggestion)}</span>
+                  </>
+                )}
               </div>
             </div>
 
