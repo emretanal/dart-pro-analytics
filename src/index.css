@@ -34,6 +34,10 @@ body {
   max-width: 100%;
   overflow-x: hidden;
   -webkit-text-size-adjust: 100%;
+  /* iOS Safari, sayfa kaydırılamaz olsa bile parmakla çekince "lastik bant"
+     efekti yapar ve içerik yukarı/aşağı oynar. overscroll-behavior: none
+     hem bu sıçramayı hem de iç kaydırmanın sayfaya zincirlenmesini keser. */
+  overscroll-behavior: none;
 }
 
 #root {

@@ -122,6 +122,13 @@ body {
   height: 100dvh;
   min-height: 0;
   overflow: hidden;
+  /* Sayı girişi sırasında sayfanın kayması / "lastik bant" ile zıplaması
+     engellenir. Burada touch-action: none KULLANILMAZ: tarayıcı, jest
+     başlarken ata zincirindeki touch-action değerlerini kesiştirdiği için
+     bu, içerideki .board-scroll-wrapper'ın kaydırılmasını da kilitler ve
+     Extended Cricket'te alttaki hedefler (B, T, D, H) erişilemez hale
+     gelir. Kaydırmayı zaten overflow: hidden + 100dvh engelliyor. */
+  overscroll-behavior: none;
 }
 
 .top-header-bar {
@@ -925,6 +932,10 @@ body {
   overflow-y: auto;
   width: 100%;
   -webkit-overflow-scrolling: touch;
+  /* Extended Cricket'te 15 hedef küçük ekrana sığmayabilir; burada kaydırma
+     açık kalmalı. overscroll-behavior: contain → kaydırma sona gelince
+     sayfaya zincirlenmez, yani ekran zıplamaz. */
+  overscroll-behavior: contain;
   /* Tablonun kalan yüksekliği doldurabilmesi için flex kapsayıcı. */
   display: flex;
   flex-direction: column;
@@ -2261,4 +2272,31 @@ body {
   font-size: 0.66rem;
   font-weight: 600;
   color: var(--text-secondary);
+}
+
+
+/* ==========================================================================
+   11. KAYDIRMA DAVRANIŞI
+   Oyun (sayı girişi) ekranlarında kaydırma kapalıdır; yalnızca aşağıdaki
+   geçmiş / detay alanları kaydırılabilir. Hepsinde overscroll-behavior:
+   contain var, böylece liste sonuna gelindiğinde sayfa zıplamaz.
+   ========================================================================== */
+/* X01 skor ekranı: içinde kaydırılabilir hiçbir alan yok, her şey ekrana
+   sığacak şekilde ölçekleniyor. Bu yüzden pan jesti tamamen kapatılabilir —
+   burada ata zinciri sorunu oluşmaz. Butonlara dokunma etkilenmez. */
+.darts-score-theme.x01-theme {
+  touch-action: none;
+}
+
+/* Geçmiş / detay ekranları: kaydırma açıkça serbest, ama liste sonuna
+   gelindiğinde sayfaya zincirlenmez (contain) — yani ekran zıplamaz. */
+.history-list,
+.leg-detail-body,
+.player-focus-card,
+.guide-content-body,
+.history-modal.settings-modal,
+.app-container.setup-mode-container .app-content {
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
